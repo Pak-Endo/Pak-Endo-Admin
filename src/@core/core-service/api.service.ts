@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
@@ -14,15 +11,26 @@ const headersConfig = {
   'access-control-allow-origin': '*'
 };
 
+/**
+ * A base class service for handling api calls generically
+ */
 @Injectable({
   providedIn: 'root'
 })
+
+/**
+ * The class that every service in the project will extend to handle apis
+ */
 export class ApiService<T> {
 
   constructor(
     protected http: HttpClient
   ) { }
 
+  /**
+   *
+   * @returns HttpHeaders to attach to Server request
+   */
   private setHeaders(): HttpHeaders {
     const header = {
       ...headersConfig,
@@ -31,23 +39,12 @@ export class ApiService<T> {
     return new HttpHeaders(header);
   }
 
-  public setCrmHeaders(crmToken: string): HttpHeaders {
-    const token = crmToken
-    const header = {
-      ...headersConfig,
-      'Content-Type': 'application/json',
-      'Authorization': `${token}`
-    };
-    return new HttpHeaders(header);
-  }
-
-  private setHeadersForMedia(): HttpHeaders {
-    const header = {
-      ...headersConfig,
-    };
-    return new HttpHeaders(header);
-  }
-
+  /**
+   *
+   * @param {string} path
+   * @param {any} params
+   * @returns The response will be an Observable object. See {@link ApiResponse} for more details
+   */
   public get(
     path: string,
     params?: any
@@ -61,7 +58,12 @@ export class ApiService<T> {
     );
   }
 
-
+  /**
+   *
+   * @param {string} path
+   * @param {object} body
+   * @returns The response will be an Observable object. See {@link ApiResponse} for more details
+   */
   public post(
     path: string,
     body: Object = {}
@@ -76,15 +78,13 @@ export class ApiService<T> {
     );
   }
 
-  public postMedia(
-    path: string,
-    body: any = {}
-  ): Observable<ApiResponse<T>> {
-    return this.mapAndCatchError<T>(
-      this.http.post<ApiResponse<T>>(`${environment.apiUrl}${path}`, body));
-  }
-
-  // In case of monitoring request progress
+  /**
+   *
+   * @param {string} path
+   * @param {object} body
+   * @param {number }progress
+   * @returns The progress of the media upload request along with the response from server
+   */
 
   public postMediaProgress(path: string, body: any = {}, progress: number): Observable<ApiResponse<T>> {
     return new Observable((success) => {
@@ -110,6 +110,12 @@ export class ApiService<T> {
     })
   }
 
+  /**
+   *
+   * @param {string} path
+   * @param {object} body
+   * @returns The response will be an Observable object. See {@link ApiResponse} for more details
+   */
   public put(
     path: string,
     body: Object = {}
@@ -124,6 +130,12 @@ export class ApiService<T> {
     );
   }
 
+  /**
+   *
+   * @param {string} path
+   * @param {object} body
+   * @returns The response will be an Observable object. See {@link ApiResponse} for more details
+   */
   public delete(
     path: string,
     body: Object = {}
@@ -137,6 +149,11 @@ export class ApiService<T> {
     );
   }
 
+  /**
+   *
+   * @param {object} obj
+   * @returns takes an object as an argument and returns a query string to attach to the request url and send as queryparams
+   */
   private objectToQueryString(obj: any): string {
     const str = [];
     for (const p in obj)
@@ -146,6 +163,11 @@ export class ApiService<T> {
     return str.join('&');
   }
 
+  /**
+   *
+   * @param {Observable} response
+   * @returns An Observable of type -> See {@link ApiResponse}
+   */
   private mapAndCatchError<TData>(
     response: Observable<any>
   ): Observable<ApiResponse<TData>> {

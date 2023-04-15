@@ -11,27 +11,34 @@ import { SignInResponse } from '../../../../@core/models/sign-in-response.model'
 import { User } from '../../../../@core/models/user.model';
 import { ApiService } from '../../../../@core/core-service/api.service';
 
+/**
+ * @type {SignInResponse | any}
+ */
 type AuthApiData = SignInResponse | any;
 
+/**
+ * The service for handling authentication related tasks.
+ * @extends ApiService
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService extends ApiService<AuthApiData> {
 
-  currentUser$: Observable<User | null>;
-  isLoading$: Observable<boolean>;
-  currentUserSubject: BehaviorSubject<User | null>;
-  isLoadingSubject: BehaviorSubject<boolean>;
+  public currentUser$: Observable<User | null>;
+  public isLoading$: Observable<boolean>;
+  private currentUserSubject: BehaviorSubject<User | null>;
+  private isLoadingSubject: BehaviorSubject<boolean>;
 
-  get currentUserValue(): User | null {
+  public get currentUserValue(): User | null {
     return this.currentUserSubject.value;
   }
 
-  set currentUserValue(user: User | null) {
+  public set currentUserValue(user: User | null) {
     this.currentUserSubject.next(user);
   }
 
-  get JwtToken(): string {
+  public get JwtToken(): string {
     return getItem(StorageItem.JwtToken)?.toString() || '';
   }
 
@@ -47,8 +54,12 @@ export class AuthService extends ApiService<AuthApiData> {
 
   }
 
-  // public methods
-  login(params: AuthCredentials) {
+  /**
+   *
+   * @param {AuthCredentials} params
+   * @returns The user object and jwt token
+   */
+  public login(params: AuthCredentials) {
     this.isLoadingSubject.next(true);
     return this.post('/api/auth/login', params).pipe(
       map((result: ApiResponse<any>) => {
@@ -84,16 +95,26 @@ export class AuthService extends ApiService<AuthApiData> {
     );
   }
 
-  logout() {
+   /**
+   *
+   *
+   * @returns void
+   */
+  public logout(): void {
     this.currentUserSubject.next(null);
     setItem(StorageItem.User, null);
     setItem(StorageItem.JwtToken, null);
-    this.router.navigate(['/api/auth/login'], {
+    this.router.navigate(['/auth/login'], {
       queryParams: {},
     });
   }
 
-  registration(user: RegisterModel) {
+  /**
+   *
+   * @param {RegisterModel} user
+   * @returns The user object after registration sucess
+   */
+  public registration(user: RegisterModel) {
     this.isLoadingSubject.next(true);
     return this.post('/api/auth/signup',user).pipe(
       map((user:ApiResponse<SignInResponse>) => {
@@ -104,7 +125,7 @@ export class AuthService extends ApiService<AuthApiData> {
     );
   }
 
-  updateUser(user:User) {
+  public updateUser(user:User) {
     if (user) {
       this.currentUserSubject.next(user);
       setItem(StorageItem.User, user);
