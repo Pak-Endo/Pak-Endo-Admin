@@ -59,7 +59,7 @@ export class AuthService extends ApiService<AuthApiData> {
    * @param {AuthCredentials} params
    * @returns The user object and jwt token
    */
-  public login(params: AuthCredentials) {
+  public login(params: AuthCredentials): Observable<ApiResponse<AuthApiData>> {
     this.isLoadingSubject.next(true);
     return this.post('/api/auth/login', params).pipe(
       map((result: ApiResponse<any>) => {
@@ -88,8 +88,7 @@ export class AuthService extends ApiService<AuthApiData> {
         }
       }),
       catchError((err) => {
-        console.error('err', err);
-        return of(undefined);
+        return of(err);
       }),
       finalize(() => this.isLoadingSubject.next(false))
     );
