@@ -1,27 +1,24 @@
-# AngularPersonalBoilerplate
+# Mohid's Angular Boilerplate
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.1.
+| Angular | Compodoc | Tailwind CSS |
+| ------------ | ------------- | ------------- |
+| <img src="https://angular.io/assets/images/logos/angular/angular.svg" width="100" height="100"> | ![Compodoc logo](https://compodoc.app/assets/img/logo.png) | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Tailwind_CSS_Logo.svg/1200px-Tailwind_CSS_Logo.svg.png" width="100" height="100">
 
-## Development server
+## Features
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Uses the latest stable ***Angular*** releases (currently using version ***15.2.1***)
+- Fully configured as a ***PWA (Progressive Web App)***, with service workers, web manifest and icons etc.
+- Fully configured to use ***[Tailwind CSS](https://tailwindcss.com/)*** for all styling and designing. Includes many pre-defined custom classes in the tailwind config file
+- Configured with ***[Compodoc](https://compodoc.app/)*** to handle the documentation of the entire project (components, services, injectables etc.)
+- Comes pre built with custom ***Auth Service***, ***JWT Interceptor***, ***Server Error Interceptor*** for handling authentication
+- Custom Utility file for handling Local Storage manipulation
+- A core Factory Service for handling APIs. Fully customised to handle api response and errors without the need to use `try-catch` or `catchError` repeatedly. Generic methods to handle all REST API methods as well as handling payloads, query parameters etc. For more see the file `api.service.ts`
 
-## Code scaffolding
+## Usage Notes:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Download or clone the repo. In the command line or terminal run `npm install` to install dependencies and that's it. You are ready to go!
 
-## Build
+To generate documentation:
+   - Use command `npm run compodoc:build` to generate the documentation build.
+   - Use command `npm run compodoc:serve` to view the documentation at `http://127.0.0.1:8080`
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
