@@ -13,6 +13,7 @@
 - Comes pre built with custom ***Auth Service***, ***JWT Interceptor***, ***Server Error Interceptor*** for handling authentication
 - Custom Utility file for handling Local Storage manipulation
 - A core Factory Service for handling APIs. Fully customised to handle api response and errors without the need to use `try-catch` or `catchError` repeatedly. Generic methods to handle all REST API methods as well as handling payloads, query parameters etc. For more see the file `api.service.ts`
+- Comes with pre made ***Auth Guard*** for handling route access and protection based on user's authorization.
 
 ## Usage Notes:
 
