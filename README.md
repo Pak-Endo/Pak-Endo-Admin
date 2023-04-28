@@ -1,4 +1,4 @@
-# Mohid's Angular Boilerplate
+# Mohid's Angular-Custom-Boilerplate
 
 | Angular | Compodoc | Tailwind CSS |
 | ------------ | ------------- | ------------- |
