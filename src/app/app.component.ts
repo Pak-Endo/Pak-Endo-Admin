@@ -11,7 +11,7 @@ function promptUser(event: VersionReadyEvent): boolean {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'Angular_Personal_Boilerplate';
+  title = 'Event Manager Admin Panel';
 
   constructor(appRef: ApplicationRef, swUpdate: SwUpdate) {
     const appIsStable$ = appRef.isStable.pipe(first(isStable => isStable === true));
