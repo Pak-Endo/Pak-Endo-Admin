@@ -61,7 +61,7 @@ export class AuthService extends ApiService<AuthApiData> {
    */
   public login(params: AuthCredentials): Observable<ApiResponse<AuthApiData>> {
     this.isLoadingSubject.next(true);
-    return this.post('/api/auth/login', params).pipe(
+    return this.post('/auth/login', params).pipe(
       map((result: ApiResponse<any>) => {
         console.log('result',result);
         if (!result.hasErrors()) {
@@ -77,7 +77,7 @@ export class AuthService extends ApiService<AuthApiData> {
       }),
       exhaustMap((res)=>{
         if (res?.data?.user) {
-          return this.get(`/api/user/getUserByID/${res.data.user.id}`)
+          return this.get(`/user/getUserByID/${res.data.user.id}`)
         } else {
           return of(null);
         }
@@ -115,7 +115,7 @@ export class AuthService extends ApiService<AuthApiData> {
    */
   public registration(user: RegisterModel) {
     this.isLoadingSubject.next(true);
-    return this.post('/api/auth/signup',user).pipe(
+    return this.post('/auth/signup',user).pipe(
       map((user:ApiResponse<SignInResponse>) => {
         this.isLoadingSubject.next(false);
         return user;
