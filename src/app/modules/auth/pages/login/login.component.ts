@@ -39,7 +39,8 @@ export class LoginComponent implements OnDestroy {
 
   onSubmit() {
     if(this.loginForm.invalid) {
-      return this.loginForm.markAllAsTouched()
+      this.loginForm.markAllAsTouched()
+      return this.loginForm.markAsDirty()
     }
     this.isSigningIn.next(true)
     this.auth.login(this.loginForm.value).pipe(takeUntil(this.destroy$), first()).subscribe(response => {
