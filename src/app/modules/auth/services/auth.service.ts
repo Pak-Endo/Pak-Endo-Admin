@@ -10,6 +10,8 @@ import { ApiResponse } from '../../../../@core/models/core-response-model/respon
 import { SignInResponse } from '../../../../@core/models/sign-in-response.model';
 import { User } from '../../../../@core/models/user.model';
 import { ApiService } from '../../../../@core/core-service/api.service';
+import { TuiNotification } from '@taiga-ui/core';
+import { NotificationsService } from 'src/@core/core-service/notifications.service';
 
 /**
  * @type {SignInResponse | any}
@@ -44,7 +46,8 @@ export class AuthService extends ApiService<AuthApiData> {
 
   constructor(
     protected override http: HttpClient,
-    private router: Router
+    private router: Router,
+    private notif: NotificationsService
   ) {
     super(http);
     this.isLoadingSubject = new BehaviorSubject<boolean>(false);
@@ -61,9 +64,8 @@ export class AuthService extends ApiService<AuthApiData> {
    */
   public login(params: AuthCredentials): Observable<ApiResponse<AuthApiData>> {
     this.isLoadingSubject.next(true);
-    return this.post('/auth/login', params).pipe(
+    return this.post('/auth/loginAdmin', params).pipe(
       map((result: ApiResponse<any>) => {
-        console.log('result',result);
         if (!result.hasErrors()) {
           setItem(StorageItem.User, result?.data?.user || null);
           setItem(StorageItem.JwtToken, result?.data?.token || null);
@@ -72,17 +74,18 @@ export class AuthService extends ApiService<AuthApiData> {
           return result
         }
         else {
-          throw result.errors[0]?.error?.message
+          this.notif.displayNotification(result.errors[0]?.error?.message || 'Failed to authenticate', 'Login Failed!', TuiNotification.Error);
+          return null
         }
       }),
-      exhaustMap((res)=>{
+      exhaustMap((res) => {
         if (res?.data?.user) {
-          return this.get(`/user/getUserByID/${res.data.user.id}`)
+          return this.get(`/user/getUserById/${res.data.user.id}`)
         } else {
           return of(null);
         }
       }),
-      tap((res)=> {
+      tap((res) => {
         if(res && !res?.hasErrors()) {
           this.updateUser(res.data)
         }
@@ -92,6 +95,29 @@ export class AuthService extends ApiService<AuthApiData> {
       }),
       finalize(() => this.isLoadingSubject.next(false))
     );
+  }
+
+  public sendForgotPassEmail(email: string): Observable<ApiResponse<any>> {
+    return this.post(`/auth/forgotPassword/${email}`).pipe(map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        return res.data
+      }
+      else {
+        return this.notif.displayNotification(res.errors[0]?.error?.message || 'Something went wrong. Please try again', 'Forgot Password!', TuiNotification.Error);
+      }
+    }))
+  }
+
+  public resetPassword(resetPasswordValue: any): Observable<ApiResponse<any>> {
+    return this.post(`/auth/resetPassword`, resetPasswordValue)
+    .pipe(map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        return res.data
+      }
+      else {
+        return this.notif.displayNotification(res.errors[0]?.error?.message || 'Something went wrong. Please try again', 'Reset Password!', TuiNotification.Error);
+      }
+    }))
   }
 
    /**

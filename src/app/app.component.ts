@@ -1,6 +1,8 @@
 import { ApplicationRef, Component } from '@angular/core';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { concat, filter, first, interval } from 'rxjs';
+import { AuthService } from './modules/auth/services/auth.service';
+import { Router } from '@angular/router';
 
 function promptUser(event: VersionReadyEvent): boolean {
   return true;
@@ -13,7 +15,11 @@ function promptUser(event: VersionReadyEvent): boolean {
 export class AppComponent {
   title = 'Event Manager Admin Panel';
 
-  constructor(appRef: ApplicationRef, swUpdate: SwUpdate) {
+  constructor(appRef: ApplicationRef, swUpdate: SwUpdate, auth: AuthService, router: Router) {
+    if(auth.currentUserValue && (window.location.pathname === '/' || window.location.pathname === '/auth/login')) {
+      router.navigate(['/dashboard'])
+    }
+
     const appIsStable$ = appRef.isStable.pipe(first(isStable => isStable === true));
     const everySixHours$ = interval(6 * 60 * 60 * 1000);
     const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);

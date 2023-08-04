@@ -47,13 +47,13 @@ export class LoginComponent implements OnDestroy {
       if(response) {
         this.isSigningIn.next(false);
         this.notif.displayNotification('You have logged in successfully', 'User Login', TuiNotification.Success);
+        this.router.navigate(['/dashboard'])
       }
       else {
         this.isSigningIn.next(false);
       }
     })
   }
-
 
   ngOnDestroy(): void {
     this.destroy$.complete();
