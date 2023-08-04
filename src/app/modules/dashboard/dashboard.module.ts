@@ -5,6 +5,7 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard.component';
 import { HeaderComponent } from 'src/app/standalone-components/header/header.component';
 import { SidenavComponent } from 'src/app/standalone-components/sidenav/sidenav.component';
+import {TuiArcChartModule} from '@taiga-ui/addon-charts';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { SidenavComponent } from 'src/app/standalone-components/sidenav/sidenav.
     CommonModule,
     DashboardRoutingModule,
     HeaderComponent,
-    SidenavComponent
+    SidenavComponent,
+    TuiArcChartModule
   ]
 })
 export class DashboardModule { }
