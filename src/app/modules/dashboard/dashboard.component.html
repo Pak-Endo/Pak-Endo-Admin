@@ -1,71 +1,60 @@
-<app-header></app-header>
-<section class="grid grid-cols-12 gap-2 w-full mt-14">
-  <div class="col-span-2 -mt-2">
-    <app-sidenav></app-sidenav>
-  </div>
-  <div class="col-span-10 mt-5">
-    <!--EVENTS SUMMARY + CALENDAR-->
-    <section class="grid grid-cols-12 gap-3">
-      <!--SUMMARY-->
-      <div class="col-span-6 shadow-md rounded-md mx-3 p-5 bg-white drop-shadow-md ">
-        <h1 class="text-2xl font-bold mb-5 border-b-2 pb-2 border-gray-200">Events Summary</h1>
-        <div class="flex justify-around border-b border-gray-300 pb-3 pt-8">
+<!--EVENTS SUMMARY + CALENDAR-->
+<app-layout>
+  <section class="grid grid-cols-12 gap-3">
+    <!--SUMMARY-->
+    <div class="col-span-12 shadow-md rounded-md mx-3 p-5 bg-white drop-shadow-md border-t-8 border-[#224A75]">
+      <h1 class="text-2xl font-bold mb-5 border-b-2 pb-2 border-gray-200">Events Summary</h1>
+      <ng-container *ngIf="(dashboardStats | async) as data;">
+        <div class="flex justify-around pb-3">
           <div class="mx-2">
             <h5 class="font-medium text-sm text-gray-500 mb-3">Total Events</h5>
             <div class="inline-flex gap-x-2">
               <img src="../../../assets/planner.webp" alt="total_events" width="50" height="10">
-              <p class="text-5xl font-semibold">24</p>
+              <p class="text-5xl font-semibold">{{data?.total}}</p>
             </div>
           </div>
           <div class="mx-2">
             <h5 class="font-medium text-sm text-gray-500 mb-3">Upcoming Events</h5>
             <div class="inline-flex gap-x-2">
               <img src="../../../assets/upcoming.webp" alt="total_events" width="50" height="10">
-              <p class="text-5xl font-semibold">8</p>
+              <p class="text-5xl font-semibold">{{data?.upComing}}</p>
             </div>
           </div>
-        </div>
-
-        <div class="flex justify-around mt-5">
+  
           <div class="mx-2">
             <h5 class="font-medium text-sm text-gray-500 mb-3">Finished Events</h5>
             <div class="inline-flex gap-x-2">
               <img src="../../../assets/complete.webp" alt="total_events" width="50" height="10">
-              <p class="text-5xl font-semibold">6</p>
+              <p class="text-5xl font-semibold">{{data?.finished}}</p>
             </div>
           </div>
           <div class="mx-2">
             <h5 class="font-medium text-sm text-gray-500 mb-3">Ongoing Events</h5>
             <div class="inline-flex gap-x-2">
               <img src="../../../assets/event-production.webp" alt="total_events" width="50" height="10">
-              <p class="text-5xl font-semibold">10</p>
+              <p class="text-5xl font-semibold">{{data?.onGoing}}</p>
             </div>
           </div>
         </div>
-      </div>
-      <!--CALENDAR-->
-      <div class="col-span-6 shadow-md rounded-md mx-3 p-5 bg-white drop-shadow-md ">
-        <h1 class="text-2xl font-bold mb-5 border-b-2 pb-2 border-gray-200">Calendar View</h1>
-        <div class="inline-flex w-full">
-          <tui-calendar
-          [value]="value"
-          [month]="firstMonth"
-          [showAdjacent]="false"
-          [maxViewedMonth]="firstMonth"
-          (monthChange)="onMonthChangeFirst($event)"
-        ></tui-calendar>
-        <tui-calendar
-          [value]="value"
-          [month]="lastMonth"
-          [showAdjacent]="false"
-          [minViewedMonth]="lastMonth"
-          (monthChange)="onMonthChangeFirst($event)"
-        ></tui-calendar>
+      </ng-container>
+    </div>
+    <!--CALENDAR-->
+    <div class="col-span-12 shadow-md rounded-md mx-3 mt-5 p-5 bg-white drop-shadow-md border-t-8 border-[#224A75]">
+      <h1 class="text-2xl font-bold mb-5 border-b-2 pb-2 border-gray-200">Calendar View</h1>
+      <div class="w-full">
+        <full-calendar [options]="calendarOptions"></full-calendar>
+        <div class="flex justify-around my-5">
+            <div class="inline-flex">
+              <div class="h-5 w-5 rounded-full bg-[#f4c430]"></div> &nbsp; Upcoming events
+            </div>
+            <div class="inline-flex">
+            <div class="h-5 w-5 rounded-full bg-[#3B444B]"></div> &nbsp; Finished events
+          </div>
+          <div class="inline-flex">
+          <div class="h-5 w-5 rounded-full bg-[#118B4E]"></div> &nbsp; Ongoing events
+        </div>
         </div>
       </div>
-    </section>
-    <section class="shadow-md rounded-md mx-3 p-5 bg-white drop-shadow-md mt-6">
-      Show top rated events here!
-    </section>
-  </div>
-</section>
+    </div>
+  </section>
+</app-layout>

@@ -9,3 +9,7 @@
 .upcoming {
   --tui-chart-0: var(--tui-support-08)
 }
+
+.fc .fc-today-button {
+  text-transform: capitalize!important;
+}

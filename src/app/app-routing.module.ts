@@ -17,6 +17,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
   },
+  {
+    path: 'events',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./modules/events/events.module').then(m => m.EventsModule)
+  },
 ];
 
 @NgModule({

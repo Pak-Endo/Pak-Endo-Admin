@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard.component';
-import { HeaderComponent } from 'src/app/standalone-components/header/header.component';
-import { SidenavComponent } from 'src/app/standalone-components/sidenav/sidenav.component';
-import { TuiCalendarModule } from '@taiga-ui/core';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { LayoutComponent } from '../layout/layout.component';
 
 
 @NgModule({
@@ -15,10 +14,8 @@ import { TuiCalendarModule } from '@taiga-ui/core';
   imports: [
     CommonModule,
     DashboardRoutingModule,
-    HeaderComponent,
-    SidenavComponent,
-    NgOptimizedImage,
-    TuiCalendarModule
+    FullCalendarModule,
+    LayoutComponent
   ]
 })
 export class DashboardModule { }
