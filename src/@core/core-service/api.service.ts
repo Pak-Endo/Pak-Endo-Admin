@@ -91,7 +91,7 @@ export class ApiService<T> {
       const req = new HttpRequest('POST', `${environment.apiUrl}${path}`, body, {
         reportProgress: true
       });
-     this.http.request(req).subscribe((event: any) => {
+      this.http.request(req).subscribe((event: any) => {
         switch (event.type) {
           case HttpEventType.Sent:
             break;
@@ -108,6 +108,14 @@ export class ApiService<T> {
         }
       })
     })
+  }
+
+  public postMedia(
+    path: string,
+    body: any = {}
+  ): Observable<ApiResponse<T>> {
+    return this.mapAndCatchError<T>(
+      this.http.post<ApiResponse<T>>(`${environment.apiUrl}${path}`, body));
   }
 
   /**

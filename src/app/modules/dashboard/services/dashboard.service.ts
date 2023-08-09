@@ -23,11 +23,13 @@ export class DashboardService extends ApiService<DashboardResponse> {
         return res?.data
       }
       else {
-        return this.notif.displayNotification(
-          res.errors[0]?.error?.message || 'Something went wrong',
-          'Dashboard Statistics',
-          TuiNotification.Error
-        )
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(
+            res.errors[0]?.error?.message || 'Something went wrong',
+            'Dashboard Statistics',
+            TuiNotification.Error
+          )
+        }
       }
     }))
   }

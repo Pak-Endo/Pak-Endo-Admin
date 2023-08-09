@@ -30,7 +30,37 @@ export class EventsService extends ApiService<event> {
         return res.data
       }
       else {
-        return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Get all events', TuiNotification.Error)
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Get all events', TuiNotification.Error)
+        }
+      }
+    }))
+  }
+
+  createNewEvent(payload: EventData): Observable<ApiResponse<any>> {
+    return this.post(`/events/createNewEvent`, payload).pipe(shareReplay(), map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        this.notif.displayNotification('Event created successfully', 'Create Event', TuiNotification.Success)
+        return res.data
+      }
+      else {
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Create Event', TuiNotification.Error)
+        }
+      }
+    }))
+  }
+
+  updateEvent(payload: EventData, eventID: string | null): Observable<ApiResponse<any>> {
+    return this.put(`/events/updateEvent/${eventID}`, payload).pipe(shareReplay(), map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        this.notif.displayNotification('Event updated successfully', 'Update Event', TuiNotification.Success)
+        return res.data
+      }
+      else {
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Update Event', TuiNotification.Error)
+        }
       }
     }))
   }
