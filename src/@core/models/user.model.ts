@@ -13,7 +13,6 @@ export class User {
   role!: UserRole;
   deletedCheck!: boolean;
 }
-
 export class UserList {
   users!: User[];
   totalCount!: number;
@@ -35,4 +34,12 @@ export enum Gender {
   MALE = 'Male',
   FEMALE = 'Female',
   OTHER = 'Other'
+}
+
+export enum Type {
+  E = 'PES Executive Member',
+  H = 'PES Honorary Member',
+  I = 'International Executive Membership',
+  S = 'Scientific Members',
+  SE = 'Scientific Executive Members'
 }

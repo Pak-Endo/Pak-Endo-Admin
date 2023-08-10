@@ -127,7 +127,7 @@
   #template
   let-observer
 >
-  <h1 class="text-center text-3xl font-bold">Create Event</h1>
+  <h1 class="text-center text-3xl font-bold">{{eventID ? 'Edit': 'Create'}} Event</h1>
   <form [formGroup]="eventForm">
     <!--Title-->
     <label class="font-semibold text-base">Title</label>

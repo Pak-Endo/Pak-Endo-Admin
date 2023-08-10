@@ -1,27 +1,47 @@
-import { Component, Inject } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
-import { Observable, Subject, debounceTime, distinctUntilChanged, shareReplay, switchMap, takeUntil } from 'rxjs';
+import { Observable, Subject, Subscription, debounceTime, distinctUntilChanged, shareReplay, switchMap, takeUntil } from 'rxjs';
 import { MembersService } from './services/members.service';
+import {TuiCountryIsoCode} from '@taiga-ui/i18n'
+import { AuthService } from '../auth/services/auth.service';
+import { Type, User } from 'src/@core/models/user.model';
+import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
 
 @Component({
   selector: 'app-members',
   templateUrl: './members.component.html',
   styleUrls: ['./members.component.scss']
 })
-export class MembersComponent {
+export class MembersComponent implements OnDestroy {
   searchValue: FormControl = new FormControl();
   limit: number = 8;
   page: number = 1;
   index: number = 0;
   members$: Observable<any>;
   destroy$ = new Subject();
+  memberID!: string | null;
+  memberForm!: FormGroup;
+  prefixes: string[] = ['Mr.', 'Mrs.', 'Dr.', 'Prof. Dr.'];
+  genders: string[] = ['Male', 'Female', 'Other'];
+  types: string[] = ['PES Executive Member', 'PES Honorary Member', 'International Executive Membership', 'Scientific Members', 'Scientific Executive Members'];
+  dialogSubs: Subscription[] = [];
+  readonly countries: readonly TuiCountryIsoCode[] = [
+    TuiCountryIsoCode.PK,
+    TuiCountryIsoCode.US,
+    TuiCountryIsoCode.GB,
+    TuiCountryIsoCode.FR
+  ];
+  countryIsoCode = TuiCountryIsoCode.PK;
+  savingMember = new Subject<boolean>();
 
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
-    private memberService: MembersService
+    private memberService: MembersService,
+    private fb: FormBuilder
   ) {
+    this.initMemberForm();
     this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
     this.searchValue.valueChanges.pipe(
       debounceTime(400),
@@ -32,12 +52,60 @@ export class MembersComponent {
     ).subscribe();
   }
 
-  showAddorEditDialog(content: PolymorpheusContent<TuiDialogContext>, data?: any): void {
+  initMemberForm() {
+    this.memberForm = this.fb.group({
+      prefix: [null, Validators.required],
+      firstName: [null, Validators.required],
+      lastName: [null, Validators.required],
+      email: [null, Validators.compose([
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
+      ])],
+      phoneNumber: [null, Validators.required],
+      gender: [null, Validators.required],
+      status: [null, Validators.required],
+      city: [null, Validators.required],
+      type: [null, Validators.required]
+    })
+  }
 
+  get f() {
+    return this.memberForm.controls;
+  }
+
+  showAddorEditDialog(content: PolymorpheusContent<TuiDialogContext>, data?: any): void {
+    if(data) {
+      this.memberID = data?._id;
+      this.f['firstName'].setValue(data?.firstName)
+      this.f['lastName'].setValue(data?.lastName)
+      this.f['prefix'].setValue(data?.prefix)
+      this.f['phoneNumber'].setValue(data?.phoneNumber)
+      this.f['city'].setValue(data?.city)
+      this.f['gender'].setValue(data?.gender)
+      this.f['status'].setValue(this.showStatus(data?.status))
+      this.f['email'].setValue(data?.email);
+      let statuses: any = new Object(Type)
+      for (const key in statuses) {
+        if(key == data.type) {
+          data.type = statuses[key];
+        }
+      }
+      this.f['type'].setValue(data.type)
+    }
+    this.dialogSubs.push(this.dialogs.open(content, {
+      dismissible: false,
+      closeable: true,
+      size: 'fullscreen'
+    }).pipe(takeUntil(this.destroy$)).subscribe());
   }
 
   openDeleteDialog(content: PolymorpheusContent<TuiDialogContext>, id: string): void {
     
+  }
+
+  closeDialog() {
+    this.dialogSubs.forEach(val => val.unsubscribe());
+    this.memberForm.reset();
   }
 
   trackByFn(item: any, index: number): string {
@@ -70,5 +138,52 @@ export class MembersComponent {
         returnStr = 'Banned';
         return returnStr
     }
+  }
+
+  createMember() {
+    this.savingMember.next(true)
+    const payload = {...this.memberForm.value, password: '12345678'};
+    let data: any = new Object(Type)
+    for (const key in data) {
+      if(data[key] == payload.type) {
+        payload.type = key
+      }
+    }
+    this.memberService.postNewUser(payload)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res: any) => {
+      if(res) {
+        this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
+        this.dialogSubs.forEach(val => val.unsubscribe());
+        this.memberForm.reset();
+        this.savingMember.next(false)
+      }
+    })
+  }
+
+  editMemberData() {
+    this.savingMember.next(true)
+    const payload = {...this.memberForm.value};
+    let data: any = new Object(Type)
+    for (const key in data) {
+      if(data[key] == payload.type) {
+        payload.type = key
+      }
+    }
+    this.memberService.updateUser(payload, this.memberID).pipe(takeUntil(this.destroy$))
+    .subscribe((res: any) => {
+      if(res) {
+        this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
+        this.dialogSubs.forEach(val => val.unsubscribe());
+        this.memberForm.reset();
+        this.savingMember.next(false);
+        this.memberID = null
+      }
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.complete();
+    this.destroy$.unsubscribe();
   }
 }

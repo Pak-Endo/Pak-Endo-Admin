@@ -263,13 +263,13 @@ export class EventsComponent implements OnDestroy {
       endDate[1]?.ms
     ).getTime();
     const payload = Object.assign(this.eventForm.value, {startDate: startDateTimestamp}, {endDate: endDateTimestamp});
-    console.log(payload);
     this.eventService.updateEvent(payload, this.eventID).pipe(takeUntil(this.destroy$)).subscribe(val => {
       if(val) {
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
         this.savingEvent.next(false);
         this.dialogSubs.forEach(val => val.unsubscribe());
         this.eventForm.reset();
+        this.eventID = null
       }
     })
   }

@@ -36,4 +36,30 @@ export class MembersService extends ApiService<user> {
       }
     }))
   }
+
+  postNewUser(payload: User | any): Observable<ApiResponse<any>> {
+    return this.post(`/user/addNewUserForAdmin`, payload).pipe(shareReplay(), map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        return res.data
+      }
+      else {
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Add new member', TuiNotification.Error)
+        }
+      }
+    }))
+  }
+
+  updateUser(payload: Partial<User | any>, userID: string | null): Observable<ApiResponse<any>> {
+    return this.put(`/user/updateUser/${userID}`, payload).pipe(shareReplay(), map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        return res.data
+      }
+      else {
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Add new member', TuiNotification.Error)
+        }
+      }
+    }))
+  }
 }

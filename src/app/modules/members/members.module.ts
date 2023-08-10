@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { MembersRoutingModule } from './members-routing.module';
 import { MembersComponent } from './members.component';
 import { LayoutComponent } from '../layout/layout.component';
-import { TuiInputModule, TuiPaginationModule } from '@taiga-ui/kit';
-import { TuiButtonModule, TuiLoaderModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
+import { TuiDataListWrapperModule, TuiInputModule, TuiInputPhoneInternationalModule, TuiPaginationModule, TuiRadioBlockModule, TuiSelectModule } from '@taiga-ui/kit';
+import { TuiButtonModule, TuiGroupModule, TuiLoaderModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
@@ -23,7 +23,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     FormsModule,
     TuiPaginationModule,
     TuiButtonModule,
-    TuiLoaderModule
+    TuiLoaderModule,
+    TuiDataListWrapperModule,
+    TuiSelectModule,
+    TuiInputPhoneInternationalModule,
+    TuiRadioBlockModule,
+    TuiGroupModule
   ]
 })
 export class MembersModule { }

@@ -138,11 +138,12 @@ export class AuthService extends ApiService<AuthApiData> {
    * @param {RegisterModel} user
    * @returns The user object after registration sucess
    */
-  public registration(user: RegisterModel) {
+  public registration(user: RegisterModel | User | any) {
     this.isLoadingSubject.next(true);
     return this.post('/auth/signup',user).pipe(
-      map((user:ApiResponse<SignInResponse>) => {
+      map((user: ApiResponse<SignInResponse>) => {
         this.isLoadingSubject.next(false);
+        this.notif.displayNotification('Member added successfully', 'Add new member', TuiNotification.Success)
         return user;
       }),
       finalize(() => this.isLoadingSubject.next(false))
