@@ -53,8 +53,11 @@
           <ng-template #showEvents>
             <ng-container *ngFor="let event of data?.events; let i = index; let first = first; let last = last; trackBy: trackByFn">
               <tr class="bg-white border-b border-gray-300 text-gray-600">
-                <td class="pl-4 py-4 max-w-40">
-                  {{event?.title}}
+                <td class="pl-4 py-4 max-w-48">
+                  <div class="flex gap-2 items-center">
+                    <img [src]="event?.featuredImage" alt="featured" class="w-12 h-12 rounded-md">
+                    <span>{{event?.title}}</span>
+                  </div>
                 </td> 
                 <td class="px-2 py-4">
                   {{event?.startDate | date:'medium'}}
@@ -76,7 +79,7 @@
                   {{event?.eventStatus}}
                 </td> 
                 <td class="py-4">
-                  <tui-rating [(ngModel)]="rating" class="text-yellow-600"></tui-rating>
+                  <tui-rating [(ngModel)]="rating" class="text-yellow-600" disabled="true"></tui-rating>
                 </td>
                 <td class="py-4 inline-flex gap-2">
                   <button
@@ -96,6 +99,7 @@
                     appearance="custom"
                     size="s"
                     class="bg-red-500 text-white"
+                    (click)="openDeleteDialog(deleteTemplate, event?._id)"
                   >
                   </button>
                 </td> 
@@ -174,6 +178,7 @@
           timeMode="HH:MM"
           formControlName="startDate"
           [tuiTextfieldCleaner]="true"
+          [min]="today"
         >
           Choose a start date
         </tui-input-date-time>
@@ -188,6 +193,7 @@
         <tui-input-date-time
           timeMode="HH:MM"
           formControlName="endDate"
+          [min]="f['startDate'].value"
           [tuiTextfieldCleaner]="true"
         >
           Choose an end date
@@ -198,6 +204,10 @@
           control: f['endDate']
         }">
         </ng-container>
+        <ng-container
+            *ngIf="f['endDate']?.errors?.['dateValidator']">
+            <span class="text-xs text-orange-600">Start Date cannot be greater than the end date</span>
+          </ng-container>
       </div>
     </div>
     <span class="text-gray-500 text-xs">Note: The event will start at the exact time it was created if time is not provided</span>
@@ -218,7 +228,7 @@
     <label class="font-semibold text-base">Featured Image</label>
     <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
       <ng-container *ngIf="!f['featuredImage']?.value">
-        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+        <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
           <div class="flex flex-col items-center justify-center pt-5 pb-6">
             <tui-marker-icon
               mode="link"
@@ -231,7 +241,7 @@
         </label>
       </ng-container>
       <ng-container *ngIf="f['featuredImage']?.value">
-        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+        <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
           <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
             <div class="relative w-28 h-28">
               <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
@@ -317,7 +327,7 @@
       </button>
     </div>
   </form>
-  <div *ngIf="(uploadingMultiple | async) == true" class="absolute right-5 bottom-10 z-50">
+  <div *ngIf="(uploadingMultiple | async) == true" class="absolute right-3 bottom-6 z-50">
     <button (click)="toggle()" class="px-10 py-3 rounded-tr-md rounded-tl-md bg-[#234B76] text-white font-semibold">Media upload progress</button>
     <tui-expand [expanded]="toggleExpand" class="border border-gray-400 rounded-br-md rounded-bl-md h-18 shadow-md drop-shadow-md bg-white">
       <ng-template tuiExpandContent>
@@ -329,6 +339,19 @@
         </div>
       </ng-template>
     </tui-expand>
+  </div>
+</ng-template>
+
+<ng-template #deleteTemplate let-observer>
+  <h1 class="font-bold text-2xl text-center border-b border-gray-400 pb-3">Delete Event</h1>
+  <h1 class="font-bold text-xl text-center py-3">Are you sure you want to delete this event?</h1>
+  <div class="flex justify-center gap-3 mt-5">
+    <button [showLoader]="(savingEvent | async) == true" tuiButton appearance="custom" icon="tuiIconTrashLarge" class="bg-red-500 text-white" (click)="deleteEvent(); observer.complete()">
+      Delete
+    </button>
+    <button tuiButton appearance="secondary-destructive" icon="tuiIconCloseLarge" (click)="observer.complete()">
+      Cancel
+    </button>
   </div>
 </ng-template>
 

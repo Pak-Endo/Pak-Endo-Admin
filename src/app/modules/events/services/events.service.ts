@@ -64,4 +64,18 @@ export class EventsService extends ApiService<event> {
       }
     }))
   }
+
+  deleteEvent(eventID: string | null): Observable<ApiResponse<any>> {
+    return this.delete(`/events/deleteEvent/${eventID}`).pipe(map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        this.notif.displayNotification('Event succesfully removed', 'Delete Event', TuiNotification.Success)
+        return res.data
+      }
+      else {
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Delete Event', TuiNotification.Error)
+        }
+      }
+    }))
+  }
 }

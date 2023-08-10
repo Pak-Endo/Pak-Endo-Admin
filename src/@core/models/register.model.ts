@@ -4,7 +4,7 @@ export class RegisterModel extends User {
   setModel(_model: unknown) {
     const model = _model as RegisterModel;
     this.email = model.email || '';
-    this.username = model.username || '';
+    this.fullName = model.fullName || '';
     this.password = model.password || '';
   }
 }

@@ -1,6 +1,38 @@
 export class User {
   _id!: string;
+  prefix!: string;
+  firstName!: string;
+  lastName!: string;
+  fullName!: string;
   email!: string;
-  username!: string;
+  phoneNumber!: string;
+  memberID!: string;
   password!: string;
+  gender!: Gender;
+  status!: Status;
+  role!: UserRole;
+  deletedCheck!: boolean;
+}
+
+export class UserList {
+  users!: User[];
+  totalCount!: number;
+}
+
+export enum UserRole {
+  ADMIN = 'admin',
+  MEMBER = 'member'
+}
+
+export enum Status {
+  APPROVED = 1,
+  PENDING = 2,
+  REJECTED = 3,
+  BANNED = 4
+}
+
+export enum Gender {
+  MALE = 'Male',
+  FEMALE = 'Female',
+  OTHER = 'Other'
 }

@@ -22,6 +22,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./modules/events/events.module').then(m => m.EventsModule)
   },
+  { path: 'members', loadChildren: () => import('./modules/members/members.module').then(m => m.MembersModule) },
 ];
 
 @NgModule({

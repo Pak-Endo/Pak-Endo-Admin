@@ -1,5 +1,16 @@
 <nav class="bg-white fixed w-full z-40 top-0 left-0 shadow-md">
-  <div class="flex flex-wrap items-center justify-between max-w-screen p-4 mx-10">
-    <p class="font-semibold">PES Admin Panel</p>
+  <div class="flex flex-wrap items-center justify-between max-w-screen px-4 py-2 mx-10">
+    <p class="font-semibold font-['Preahvihear']">Event Manager</p>
+    <div class="flex gap-3">
+      <tui-avatar
+        [text]="currentUser?.firstName + currentUser?.lastName"
+        size="s"
+        [rounded]="true"
+      ></tui-avatar>
+      <div class="flex flex-col">
+        <p class="font-['Preahvihear']">{{currentUser?.firstName + ' ' + currentUser?.lastName}}</p>
+        <p class="font-['Preahvihear'] capitalize text-xs text-gray-400">{{currentUser?.role}}</p>
+      </div>
+    </div>
   </div>
 </nav>

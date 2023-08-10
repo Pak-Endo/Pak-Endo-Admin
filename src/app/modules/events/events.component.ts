@@ -31,6 +31,7 @@ export class EventsComponent implements OnDestroy {
   savingEvent = new Subject<boolean>();
   dialogSubs: Subscription[] = [];
   eventID: string | null = null;
+  today: TuiDay
 
   constructor(
     private eventService: EventsService,
@@ -40,6 +41,10 @@ export class EventsComponent implements OnDestroy {
   ) {
     this.initEventForm();
     this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
+    let day = new Date().getDate()
+    let month = new Date().getMonth()
+    let year = new Date().getFullYear()
+    this.today = new TuiDay(year, month, day)
     this.searchValue.valueChanges.pipe(
       debounceTime(400),
       distinctUntilChanged(),
@@ -110,6 +115,14 @@ export class EventsComponent implements OnDestroy {
       closeable: true,
       size: 'fullscreen'
     }).pipe(takeUntil(this.destroy$)).subscribe());
+  }
+
+  openDeleteDialog(content: PolymorpheusContent<TuiDialogContext>, id: string): void {
+    this.eventID = id;
+    this.dialogs.open(content, {
+      dismissible: true,
+      closeable: true,
+    }).pipe(takeUntil(this.destroy$)).subscribe()
   }
   
   uploadFeaturedImage(event: any) {
@@ -195,24 +208,25 @@ export class EventsComponent implements OnDestroy {
     this.savingEvent.next(true)
     let startDate: [TuiDay, TuiTime] = this.f['startDate']?.value;
     let endDate: [TuiDay, TuiTime] = this.f['endDate']?.value;
+    let today = new Date();
     const startDateTimestamp = new Date(
       startDate[0]?.year,
       startDate[0]?.month,
       startDate[0]?.day,
-      startDate[1]?.hours,
-      startDate[1]?.minutes,
-      startDate[1]?.seconds,
-      startDate[1]?.ms
+      startDate[1]?.hours ? startDate[1]?.hours : today.getHours(),
+      startDate[1]?.minutes ? startDate[1]?.minutes : today.getMinutes(),
+      startDate[1]?.seconds ? startDate[1]?.seconds : today.getSeconds(),
+      startDate[1]?.ms ? startDate[1]?.ms : today.getMilliseconds()
     ).getTime();
 
     const endDateTimestamp = new Date(
       endDate[0]?.year,
       endDate[0]?.month,
       endDate[0]?.day,
-      endDate[1]?.hours,
-      endDate[1]?.minutes,
-      endDate[1]?.seconds,
-      endDate[1]?.ms
+      endDate[1]?.hours ? endDate[1]?.hours : today.getHours(),
+      endDate[1]?.minutes ? endDate[1]?.minutes : today.getMinutes(),
+      endDate[1]?.seconds ? endDate[1]?.seconds : today.getSeconds(),
+      endDate[1]?.ms ? endDate[1]?.ms : today.getMilliseconds()
     ).getTime();
     const payload = Object.assign(this.eventForm.value, {startDate: startDateTimestamp}, {endDate: endDateTimestamp});
     this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
@@ -258,6 +272,18 @@ export class EventsComponent implements OnDestroy {
         this.eventForm.reset();
       }
     })
+  }
+
+  deleteEvent() {
+    this.savingEvent.next(true)
+    this.dialogSubs.push(this.eventService.deleteEvent(this.eventID)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(val => {
+      if(val) {
+        this.savingEvent.next(false);
+        this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
+      }
+    }))
   }
 
   ngOnDestroy(): void {
