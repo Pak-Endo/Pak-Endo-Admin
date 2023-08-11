@@ -94,6 +94,7 @@
                     appearance="custom"
                     size="s"
                     class="bg-red-500 text-white"
+                    (click)="openDeleteDialog(deleteTemplate, user._id)"
                   >
                   </button>
                 </td> 
@@ -385,4 +386,17 @@
       </span>
     </div>
   </ng-container>
+</ng-template>
+
+<ng-template #deleteTemplate let-observer>
+  <h1 class="font-bold text-2xl text-center border-b border-gray-400 pb-3">Remove Member</h1>
+  <h1 class="font-bold text-xl text-center py-3">Are you sure you want to delete this member?</h1>
+  <div class="flex justify-center gap-3 mt-5">
+    <button [showLoader]="(savingMember | async) == true" tuiButton appearance="custom" icon="tuiIconTrashLarge" class="bg-red-500 text-white" (click)="deleteMember(); observer.complete()">
+      Delete
+    </button>
+    <button tuiButton appearance="secondary-destructive" icon="tuiIconCloseLarge" (click)="observer.complete()">
+      Cancel
+    </button>
+  </div>
 </ng-template>

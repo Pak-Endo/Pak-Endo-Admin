@@ -2,11 +2,48 @@
   <div class="flex flex-wrap items-center justify-between max-w-screen px-4 py-2 mx-10">
     <p class="font-semibold font-['Preahvihear']">Event Manager</p>
     <div class="flex gap-3">
-      <tui-avatar
-        [text]="currentUser?.firstName + currentUser?.lastName"
-        size="s"
-        [rounded]="true"
-      ></tui-avatar>
+      <button
+        tuiTabBarItem
+        [icon]="'tuiIconBellLarge'"
+        [badge]="3"
+        class="-mt-1 px-3"
+        (click)="toggle(true)"
+        (tuiActiveZoneChange)="toggle($event)"
+      >
+        <div *tuiSidebar="openSideNav; direction: 'right';" class="px-4 py-5">
+          <h1 class="text-center font-bold text-xl border-b border-gray-300 pb-4">Notifications</h1>
+          <div class="flex flex-col">
+            <tui-notification
+              status="success"
+              class="tui-space_vertical-4"
+            >
+              A short simple informative message
+            </tui-notification>
+            <tui-notification
+              status="error"
+            >
+              A short simple informative message
+            </tui-notification>
+            <tui-notification
+              status="info"
+              class="tui-space_vertical-4"
+            >
+              A short simple informative message
+            </tui-notification>
+          </div>
+        </div>
+      </button>
+      <tui-hosted-dropdown
+        [content]="dropdown"
+        [(open)]="open"
+      >
+        <tui-avatar
+          [text]="currentUser?.firstName + currentUser?.lastName"
+          size="s"
+          class="cursor-pointer"
+          [rounded]="true"
+        ></tui-avatar>
+      </tui-hosted-dropdown>
       <div class="flex flex-col">
         <p class="font-['Preahvihear']">{{currentUser?.firstName + ' ' + currentUser?.lastName}}</p>
         <p class="font-['Preahvihear'] capitalize text-xs text-gray-400">{{currentUser?.role}}</p>
@@ -14,3 +51,15 @@
     </div>
   </div>
 </nav>
+
+<ng-template #dropdown>
+  <div class="px-5 py-3 border-b border-gray-300">
+    <p class="font-semibold text-base tracking-wide">{{currentUser?.fullName}}</p>
+    <p class="font-medium text-sm tracking-wide">{{currentUser?.email}}</p>
+  </div>
+  <div class="px-5 py-2">
+    <a class="block py-2 px-4 no-underline rounded-lg hover:bg-slate-200 cursor-pointer font-medium text-sm">
+      <tui-svg new size="xxs" src="tuiIconUserCheckLarge"></tui-svg> &nbsp; View Profile
+    </a>
+  </div>
+</ng-template>

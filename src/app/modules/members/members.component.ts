@@ -100,7 +100,11 @@ export class MembersComponent implements OnDestroy {
   }
 
   openDeleteDialog(content: PolymorpheusContent<TuiDialogContext>, id: string): void {
-    
+    this.memberID = id;
+    this.dialogs.open(content, {
+      dismissible: true,
+      closeable: true,
+    }).pipe(takeUntil(this.destroy$)).subscribe();
   }
 
   closeDialog() {
@@ -181,6 +185,19 @@ export class MembersComponent implements OnDestroy {
       }
     })
   }
+
+  deleteMember() {
+    this.savingMember.next(true)
+    this.dialogSubs.push(this.memberService.deleteUser(this.memberID)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(val => {
+      if(val) {
+        this.savingMember.next(false);
+        this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
+      }
+    }))
+  }
+  
 
   ngOnDestroy(): void {
     this.destroy$.complete();
