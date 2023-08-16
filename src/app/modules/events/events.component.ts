@@ -7,7 +7,7 @@ import { EventModel } from 'src/@core/models/events.model';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import { MediaUploadService } from 'src/@core/core-service/media-upload.service';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
-import { TuiDay, TuiTime } from '@taiga-ui/cdk';
+import { TuiDay, TuiDayRange, TuiTime } from '@taiga-ui/cdk';
 
 @Component({
   selector: 'app-events',
@@ -32,6 +32,7 @@ export class EventsComponent implements OnDestroy {
   dialogSubs: Subscription[] = [];
   eventID: string | null = null;
   today: TuiDay
+  tomorrow: TuiDay
 
   constructor(
     private eventService: EventsService,
@@ -39,12 +40,14 @@ export class EventsComponent implements OnDestroy {
     private fb: FormBuilder,
     public media: MediaUploadService
   ) {
-    this.initEventForm();
-    this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
     let day = new Date().getDate()
+    let nextDay = new Date().getDate() + 1
     let month = new Date().getMonth()
     let year = new Date().getFullYear()
-    this.today = new TuiDay(year, month, day)
+    this.today = new TuiDay(year, month, day);
+    this.tomorrow = new TuiDay(year, month, nextDay)
+    this.initEventForm();
+    this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
     this.searchValue.valueChanges.pipe(
       debounceTime(400),
       distinctUntilChanged(),
@@ -59,13 +62,15 @@ export class EventsComponent implements OnDestroy {
       title: new FormControl(null, Validators.required),
       description: new FormControl(null, Validators.compose([
         Validators.required,
-        Validators.maxLength(100)
+        Validators.maxLength(200)
       ])),
-      startDate: new FormControl(null, Validators.required),
-      endDate: new FormControl(null, Validators.required),
+      location: new FormControl(null, Validators.required),
+      eventDays: new FormControl(
+        null,
+        Validators.required
+      ),
       featuredImage: new FormControl(null, Validators.required),
-      gallery: new FormControl(undefined),
-      streamUrl: new FormControl(null)
+      gallery: new FormControl(undefined)
     })
   }
 
@@ -206,37 +211,37 @@ export class EventsComponent implements OnDestroy {
 
   createEvent() {
     this.savingEvent.next(true)
-    let startDate: [TuiDay, TuiTime] = this.f['startDate']?.value;
-    let endDate: [TuiDay, TuiTime] = this.f['endDate']?.value;
+    let startDate: [TuiDay, TuiTime] = this.f['eventDays']?.value[0];
+    let endDate: [TuiDay, TuiTime] = this.f['eventDays']?.value[1];
     let today = new Date();
     const startDateTimestamp = new Date(
       startDate[0]?.year,
       startDate[0]?.month,
       startDate[0]?.day,
-      startDate[1]?.hours ? startDate[1]?.hours : today.getHours(),
-      startDate[1]?.minutes ? startDate[1]?.minutes : today.getMinutes(),
-      startDate[1]?.seconds ? startDate[1]?.seconds : today.getSeconds(),
-      startDate[1]?.ms ? startDate[1]?.ms : today.getMilliseconds()
+      startDate[1]?.hours ? startDate[1]?.hours : 9,
+      startDate[1]?.minutes ? startDate[1]?.minutes : 0,
+      startDate[1]?.seconds ? startDate[1]?.seconds : 0,
+      startDate[1]?.ms ? startDate[1]?.ms : 0
     ).getTime();
-
     const endDateTimestamp = new Date(
       endDate[0]?.year,
       endDate[0]?.month,
       endDate[0]?.day,
-      endDate[1]?.hours ? endDate[1]?.hours : today.getHours(),
-      endDate[1]?.minutes ? endDate[1]?.minutes : today.getMinutes(),
-      endDate[1]?.seconds ? endDate[1]?.seconds : today.getSeconds(),
-      endDate[1]?.ms ? endDate[1]?.ms : today.getMilliseconds()
+      endDate[1]?.hours ? endDate[1]?.hours : 17,
+      endDate[1]?.minutes ? endDate[1]?.minutes : 0,
+      endDate[1]?.seconds ? endDate[1]?.seconds : 0,
+      endDate[1]?.ms ? endDate[1]?.ms : 0
     ).getTime();
     const payload = Object.assign(this.eventForm.value, {startDate: startDateTimestamp}, {endDate: endDateTimestamp});
-    this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
-      if(val) {
-        this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
-        this.savingEvent.next(false);
-        this.dialogSubs.forEach(val => val.unsubscribe());
-        this.eventForm.reset();
-      }
-    })
+    console.log(payload)
+    // this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
+    //   if(val) {
+    //     this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
+    //     this.savingEvent.next(false);
+    //     this.dialogSubs.forEach(val => val.unsubscribe());
+    //     this.eventForm.reset();
+    //   }
+    // })
   }
 
   updateEvent() {

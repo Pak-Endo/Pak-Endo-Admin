@@ -147,110 +147,74 @@
     </ng-container>
 
     <!--Description-->
-    <label class="font-semibold text-base">Description</label>
-    <tui-text-area
-      formControlName="description"
-      [tuiTextfieldLabelOutside]="true"
-      [tuiTextfieldCleaner]="true"
-      [maxLength]="100"
-      class="mt-1"
-    >
-      Describe your event
-    </tui-text-area>
-    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-      validation: 'required',
-      message: 'Please provide a description for your event',
-      control: f['description']
-    }">
-    </ng-container>
-    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-      validation: 'maxlength',
-      message: 'Max character length allowed is 100 letters',
-      control: f['description']
-    }">
-    </ng-container>
-
-    <!--Dates-->
-    <div class="grid grid-cols-12 gap-3 mt-5">
-      <label class="font-semibold text-base col-span-12">Schedule event</label>
-      <div class="col-span-6">
-        <tui-input-date-time
-          timeMode="HH:MM"
-          formControlName="startDate"
-          [tuiTextfieldCleaner]="true"
-          [min]="today"
-        >
-          Choose a start date
-        </tui-input-date-time>
-        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-          validation: 'required',
-          message: 'Please provide a start date for the event',
-          control: f['startDate']
-        }">
-        </ng-container>
-      </div>
-      <div class="col-span-6">
-        <tui-input-date-time
-          timeMode="HH:MM"
-          formControlName="endDate"
-          [min]="f['startDate'].value"
-          [tuiTextfieldCleaner]="true"
-        >
-          Choose an end date
-        </tui-input-date-time>
-        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-          validation: 'required',
-          message: 'Please provide an end date for the event',
-          control: f['endDate']
-        }">
-        </ng-container>
-        <ng-container
-            *ngIf="f['endDate']?.errors?.['dateValidator']">
-            <span class="text-xs text-orange-600">Start Date cannot be greater than the end date</span>
-          </ng-container>
-      </div>
-    </div>
-    <span class="text-gray-500 text-xs">Note: The event will start at the exact time it was created if time is not provided</span>
-
-    <div class="mt-6 mb-5">
-      <label class="font-semibold text-base">Live Stream URL</label><sup>(optional)</sup>
-      <tui-input formControlName="streamUrl" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-        Provide a live stream URL from Youtube!
-        <input
-          tuiTextfield
-          type="text"
-          autocomplete="new-password"
-        />
-      </tui-input>
+    <div class="mb-3">
+      <label class="font-semibold text-base">Description</label>
+      <tui-text-area
+        formControlName="description"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+        [maxLength]="200"
+        class="mt-1"
+      >
+        Describe your event
+      </tui-text-area>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a description for your event',
+        control: f['description']
+      }">
+      </ng-container>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'maxlength',
+        message: 'Max character length allowed is 200 characters',
+        control: f['description']
+      }">
+      </ng-container>
     </div>
 
     <!--Featured Image-->
-    <label class="font-semibold text-base">Featured Image</label>
-    <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
-      <ng-container *ngIf="!f['featuredImage']?.value">
-        <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-          <div class="flex flex-col items-center justify-center pt-5 pb-6">
-            <tui-marker-icon
-              mode="link"
-              src="tuiIconUploadCloud"
-              class="mb-1"
-            ></tui-marker-icon>
-            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-          </div>
-          <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
-        </label>
-      </ng-container>
-      <ng-container *ngIf="f['featuredImage']?.value">
-        <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-          <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
-            <div class="relative w-28 h-28">
-              <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
+    <div class="my-3">
+      <label class="font-semibold text-base">Featured Image</label>
+      <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
+        <ng-container *ngIf="!f['featuredImage']?.value">
+          <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <tui-marker-icon
+                mode="link"
+                src="tuiIconUploadCloud"
+                class="mb-1"
+              ></tui-marker-icon>
+              <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
             </div>
-          </div>
-          <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
-        </label>
+            <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
+          </label>
+        </ng-container>
+        <ng-container *ngIf="f['featuredImage']?.value">
+          <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
+              <div class="relative w-28 h-28">
+                <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
+              </div>
+            </div>
+            <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
+          </label>
+        </ng-container>
+      </div>
+    </div>
+
+    <!--Dates-->
+    <div class="mt-">
+      <label class="font-semibold text-base col-span-12">Select event days</label>
+      <tui-input-date-range formControlName="eventDays">Choose dates</tui-input-date-range>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide days in which your event will take place',
+        control: f['eventDays']
+      }">
       </ng-container>
     </div>
+
+    <!--Set Agenda-->
 
     <!--Gallery Images-->
     <div class="mt-5">
@@ -287,6 +251,8 @@
         </ng-container>
       </div> 
     </div>
+
+    <!--SUBMIT BTNS-->
     <div class="flex justify-center gap-3 mt-5">
       <ng-container *ngIf="!eventID">
         <button

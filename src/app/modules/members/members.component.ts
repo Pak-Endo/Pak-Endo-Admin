@@ -23,7 +23,7 @@ export class MembersComponent implements OnDestroy {
   destroy$ = new Subject();
   memberID!: string | null;
   memberForm!: FormGroup;
-  prefixes: string[] = ['Mr.', 'Mrs.', 'Dr.', 'Prof. Dr.'];
+  prefixes: string[] = ['Dr.', 'Prof. Dr.'];
   genders: string[] = ['Male', 'Female', 'Other'];
   types: string[] = ['PES Executive Member', 'PES Honorary Member', 'International Executive Membership', 'Scientific Members', 'Scientific Executive Members'];
   dialogSubs: Subscription[] = [];
@@ -63,7 +63,7 @@ export class MembersComponent implements OnDestroy {
       ])],
       phoneNumber: [null, Validators.required],
       gender: [null, Validators.required],
-      status: [null, Validators.required],
+      status: [null],
       city: [null, Validators.required],
       type: [null, Validators.required]
     })
@@ -146,7 +146,7 @@ export class MembersComponent implements OnDestroy {
 
   createMember() {
     this.savingMember.next(true)
-    const payload = {...this.memberForm.value, password: '12345678'};
+    const payload = {...this.memberForm.value, password: '12345678', status: 'Approved'};
     let data: any = new Object(Type)
     for (const key in data) {
       if(data[key] == payload.type) {
@@ -183,7 +183,7 @@ export class MembersComponent implements OnDestroy {
         this.savingMember.next(false);
         this.memberID = null
       }
-    })
+    });
   }
 
   deleteMember() {
@@ -198,7 +198,6 @@ export class MembersComponent implements OnDestroy {
     }))
   }
   
-
   ngOnDestroy(): void {
     this.destroy$.complete();
     this.destroy$.unsubscribe();

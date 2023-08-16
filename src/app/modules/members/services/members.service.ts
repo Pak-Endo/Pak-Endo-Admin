@@ -76,4 +76,17 @@ export class MembersService extends ApiService<user> {
       }
     }))
   }
+
+  approveUser(memberID: string | null, userData: {type: string}): Observable<ApiResponse<any>> {
+    return this.put(`/auth/approveUser/${memberID}`, userData).pipe(shareReplay(), map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        return res.data
+      }
+      else {
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Approve member', TuiNotification.Error)
+        }
+      }
+    }))
+  }
 }

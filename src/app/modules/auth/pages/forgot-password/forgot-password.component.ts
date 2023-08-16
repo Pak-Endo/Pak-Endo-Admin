@@ -42,7 +42,7 @@ export class ForgotPasswordComponent implements OnDestroy {
     .pipe(takeUntil(this.destroy$)).subscribe(res => {
       if(res) {
         this.isSendingEmail.next(false)
-        this.notif.displayNotification(res?.data?.message, 'Forgot Password', TuiNotification.Success);
+        this.notif.displayNotification('An email has been sent to reset your password', 'Forgot Password', TuiNotification.Success);
       }
       else {
         this.isSendingEmail.next(false)

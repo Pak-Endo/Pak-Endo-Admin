@@ -34,12 +34,12 @@
         <thead class="text-xs text-white uppercase bg-gradient-to-r from-[#234976] to-[#0F9449]">
           <tr>
             <th class="pl-4 py-3 text-sm">Member ID</th>
+            <th class="px-2 py-3 text-sm">Prefix</th>
             <th class="px-2 py-3 text-sm">Fullname</th>
             <th class="px-2 py-3 text-sm">Email</th>
             <th class="px-2 py-3 text-sm">Phone Number</th>
             <th class="px-2 py-3 text-sm">City</th>
             <th class="px-2 py-3 text-sm">Status</th>
-            <th class="px-2 py-3 text-sm">Role</th>
             <th scope="col" class="px-2 py-3 text-sm">
               Actions
             </th>
@@ -57,6 +57,9 @@
                 <td class="pl-4 py-4 max-w-48">
                   {{user?.memberID}}
                 </td> 
+                <td class="px-2 py-4 capitalize">
+                  {{user?.prefix}}
+                </td>
                 <td class="px-2 py-4">
                   {{user?.fullName}}
                 </td>
@@ -72,10 +75,6 @@
                 <td class="px-2 py-4">
                   {{showStatus(user?.status)}}
                 </td>
-                <td class="px-2 py-4 capitalize">
-                  {{user?.role}}
-                </td>
-                
                 <td class="py-4 inline-flex gap-2">
                   <button
                     tuiIconButton
@@ -296,47 +295,49 @@
     </div>
 
     <!--Status-->
-    <div class="mt-7">
-      <label class="font-semibold text-base">Status</label>
-      <div
-        tuiGroup
-        class="group mt-1"
-        [collapsed]="true"
-        >
-          <tui-radio-block
-            contentAlign="right"
-            formControlName="status"
-            item="Approved"
-            size="l"
+    <ng-container *ngIf="memberID">
+      <div class="mt-7">
+        <label class="font-semibold text-base">Status</label>
+        <div
+          tuiGroup
+          class="group mt-1"
+          [collapsed]="true"
           >
-            Approved
-          </tui-radio-block>
-          <tui-radio-block
-            contentAlign="right"
-            formControlName="status"
-            item="Rejected"
-            size="l"
-          >
-            Rejected
-          </tui-radio-block>
-          <tui-radio-block
-            contentAlign="right"
-            formControlName="status"
-            item="Pending"
-            size="l"
-          >
-            Pending
-          </tui-radio-block>
-          <tui-radio-block
-            contentAlign="right"
-            formControlName="status"
-            item="Banned"
-            size="l"
-          >
-            Banned
-          </tui-radio-block>
+            <tui-radio-block
+              contentAlign="right"
+              formControlName="status"
+              item="Approved"
+              size="l"
+            >
+              Approved
+            </tui-radio-block>
+            <tui-radio-block
+              contentAlign="right"
+              formControlName="status"
+              item="Rejected"
+              size="l"
+            >
+              Rejected
+            </tui-radio-block>
+            <tui-radio-block
+              contentAlign="right"
+              formControlName="status"
+              item="Pending"
+              size="l"
+            >
+              Pending
+            </tui-radio-block>
+            <tui-radio-block
+              contentAlign="right"
+              formControlName="status"
+              item="Banned"
+              size="l"
+            >
+              Banned
+            </tui-radio-block>
+        </div>
       </div>
-    </div>
+    </ng-container>
     
     <div class="flex justify-center gap-3 mt-8">
       <ng-container *ngIf="!memberID">
