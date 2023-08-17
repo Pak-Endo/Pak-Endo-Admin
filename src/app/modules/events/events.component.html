@@ -127,134 +127,294 @@
   #template
   let-observer
 >
-  <h1 class="text-center text-3xl font-bold">{{eventID ? 'Edit': 'Create'}} Event</h1>
+  <h1 class="text-center text-2xl font-bold">{{eventID ? 'Edit': 'Create'}} Event</h1>
   <form [formGroup]="eventForm">
-    <!--Title-->
-    <label class="font-semibold text-base">Title</label>
-    <tui-input formControlName="title" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-      Give your event a title
-      <input
-        tuiTextfield
-        type="text"
-        autocomplete="new-password"
-      />
-    </tui-input>
-    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-      validation: 'required',
-      message: 'Please provide a title for your event',
-      control: f['title']
-    }">
-    </ng-container>
-
-    <!--Description-->
-    <div class="mb-3">
-      <label class="font-semibold text-base">Description</label>
-      <tui-text-area
-        formControlName="description"
-        [tuiTextfieldLabelOutside]="true"
-        [tuiTextfieldCleaner]="true"
-        [maxLength]="200"
-        class="mt-1"
+    <tui-stepper [activeItemIndex]="activeIndex" class="flex justify-center my-5">
+      <button
+        tuiStep
+        [stepState]="validateStepOne() == true ? 'pass': 'error'"
       >
-        Describe your event
-      </tui-text-area>
-      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-        validation: 'required',
-        message: 'Please provide a description for your event',
-        control: f['description']
-      }">
-      </ng-container>
-      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-        validation: 'maxlength',
-        message: 'Max character length allowed is 200 characters',
-        control: f['description']
-      }">
-      </ng-container>
-    </div>
+        Details
+      </button>
+      <button
+        tuiStep
+      >
+        Agenda
+      </button>
+      <button
+        tuiStep
+      >
+        Gallery
+      </button>
+    </tui-stepper>
 
-    <!--Featured Image-->
-    <div class="my-3">
-      <label class="font-semibold text-base">Featured Image</label>
-      <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
-        <ng-container *ngIf="!f['featuredImage']?.value">
-          <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-              <tui-marker-icon
-                mode="link"
-                src="tuiIconUploadCloud"
-                class="mb-1"
-              ></tui-marker-icon>
-              <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-            </div>
-            <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
-          </label>
+    <ng-container *ngIf="activeIndex == 0">
+      <h4 class="my-5 text-center text-lg">Provide details for your event</h4>
+      <!--Title-->
+      <div class="my-3">
+        <label class="font-semibold text-base">Title</label>
+        <tui-input formControlName="title" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+          e.g. Annual Union Meeting
+          <input
+            tuiTextfield
+            type="text"
+            autocomplete="new-password"
+          />
+        </tui-input>
+        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+          validation: 'required',
+          message: 'Please provide a title for your event',
+          control: f['title']
+        }">
         </ng-container>
-        <ng-container *ngIf="f['featuredImage']?.value">
-          <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
-              <div class="relative w-28 h-28">
-                <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
-              </div>
-            </div>
-            <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
-          </label>
+
+      </div>
+
+      <!--Description-->
+      <div class="mb-3">
+        <label class="font-semibold text-base">Description</label>
+        <tui-text-area
+          formControlName="description"
+          [tuiTextfieldLabelOutside]="true"
+          [tuiTextfieldCleaner]="true"
+          [maxLength]="200"
+          class="mt-1"
+        >
+          Describe your event
+        </tui-text-area>
+        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+          validation: 'required',
+          message: 'Please provide a description for your event',
+          control: f['description']
+        }">
+        </ng-container>
+        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+          validation: 'maxlength',
+          message: 'Max character length allowed is 200 characters',
+          control: f['description']
+        }">
         </ng-container>
       </div>
-    </div>
 
-    <!--Dates-->
-    <div class="mt-">
-      <label class="font-semibold text-base col-span-12">Select event days</label>
-      <tui-input-date-range formControlName="eventDays">Choose dates</tui-input-date-range>
-      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-        validation: 'required',
-        message: 'Please provide days in which your event will take place',
-        control: f['eventDays']
-      }">
-      </ng-container>
-    </div>
-
-    <!--Set Agenda-->
-
-    <!--Gallery Images-->
-    <div class="mt-5">
-      <label class="font-semibold text-base">Gallery Images</label><sup>(Optional)</sup>
-      <div (change)="uploadMultipleImages($event)" class="flex items-center justify-center w-full mt-1">
-        <ng-container *ngIf="multipleImages?.length == 0">
-          <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-              <tui-marker-icon
-                mode="link"
-                src="tuiIconUploadCloudLarge"
-                class="mb-1"
-              ></tui-marker-icon>
-              <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG or JPG</p>
-            </div>
-            <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
-          </label>
-        </ng-container>
-        <ng-container *ngIf="multipleImages.length > 0">
-          <label for="dropzone-file" class="flex flex-col justify-start w-full h-64 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
-              <ng-container *ngFor="let image of multipleImages; let j = index">
-                <div class="relative w-24 h-24">
-                  <div (click)="spliceImage(j, $event)" class="rounded-full h-5 w-5 bg-red-600 absolute -top-2 -right-1 flex flex-col items-center justify-center text-white font-semibold">
-                    x
-                  </div>
-                  <img [src]="image" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
+      <!--Featured Image-->
+      <div class="my-3">
+        <label class="font-semibold text-base">Featured Image</label>
+        <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
+          <ng-container *ngIf="!f['featuredImage']?.value">
+            <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <tui-marker-icon
+                  mode="link"
+                  src="tuiIconUploadCloud"
+                  class="mb-1"
+                ></tui-marker-icon>
+                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+              </div>
+              <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
+            </label>
+          </ng-container>
+          <ng-container *ngIf="f['featuredImage']?.value">
+            <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
+                <div class="relative w-28 h-28">
+                  <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
                 </div>
-              </ng-container>
-            </div>
-            <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
-          </label>
+              </div>
+              <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
+            </label>
+          </ng-container>
+        </div>
+      </div>
+
+      <!--Location-->
+      <div class="mt-2">
+        <label class="font-semibold text-base">Location</label>
+        <tui-input formControlName="city" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" tuiTextfieldIcon="tuiIconMapPinLarge">
+          e.g. Serena Hotel, Islamabad
+          <input
+            tuiTextfield
+            type="text"
+            autocomplete="new-password"
+          />
+        </tui-input>
+        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+          validation: 'required',
+          message: 'Please specify location for the event',
+          control: f['city']
+        }">
         </ng-container>
-      </div> 
-    </div>
+      </div>
+
+      <!--Type-->
+      <div class="my-4">
+        <label class="font-semibold text-base">Type</label>
+        <tui-select
+          formControlName="type"
+          [tuiTextfieldLabelOutside]="true"
+          class="mt-1"
+        >
+          e.g. Conference
+        <input
+          tuiTextfield
+        />
+          <tui-data-list-wrapper
+            *tuiDataList
+            [items]="eventTypes"
+          ></tui-data-list-wrapper>
+        </tui-select>
+      </div>
+
+      <!--Dates-->
+      <div class="my-4">
+        <label class="font-semibold text-base col-span-12">Select event days</label>
+        <tui-input-date-range formControlName="eventDays" class="mt-1" [min]="today">Choose dates</tui-input-date-range>
+        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+          validation: 'required',
+          message: 'Please provide days in which your event will take place',
+          control: f['eventDays']
+        }">
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="activeIndex == 1">
+      <h4 class="my-5 text-center text-lg">Create an agenda for your event</h4>
+      <ng-container *ngFor="let day of daysOfEvents; let index = index; let firstDay = first;">
+        <p class="font-bold text-xl bg-[#224C73] rounded-lg text-white px-3 py-2" [ngClass]="firstDay ? 'mb-8': 'my-8'">Day {{index + 1}}</p>
+        <!--Set Agenda-->
+        <div class="border-b border-gray-400 pb-5">
+          <ng-container formArrayName="agendas">
+            <ng-container *ngFor="let agent of agendas.controls; let i = index; let first = first; let last = last">
+              <div [formGroupName]="i" class="w-full">
+                <ng-container *ngIf="agent.get('day')!.value === index">
+                  <h1 class="my-3 text-xl font-bold"></h1>
+                  <!--Agenda title-->
+                  <div class="my-3">
+                    <label class="font-semibold text-base">Title</label>
+                    <tui-input formControlName="title" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+                      e.g. Adrenal Health and Disease.
+                      <input
+                        tuiTextfield
+                        type="text"
+                        autocomplete="new-password"
+                      />
+                    </tui-input>
+                  </div>
+                  <!--Time-->
+                  <div class="grid grid-cols-12 gap-3">
+                    <div class="col-span-6">
+                      <label class="font-semibold text-base">Start time</label>
+                      <tui-input-time
+                        formControlName="from"
+                        [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true"
+                      >
+                        e.g. 09:00
+                      </tui-input-time>
+                    </div>
+                    <div class="col-span-6">
+                      <label class="font-semibold text-base">End time</label>
+                      <tui-input-time
+                        formControlName="to"
+                        [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true"
+                      >
+                        e.g. 23:59
+                      </tui-input-time>
+                    </div>
+                  </div>
+                  <!--Venue-->
+                  <div class="my-3">
+                    <label class="font-semibold text-base">Venue</label>
+                    <tui-input formControlName="venue" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+                      e.g. SHAMADAN 3, Islamabad Serena hotel 
+                      <input
+                        tuiTextfield
+                        type="text"
+                        autocomplete="new-password"
+                      />
+                    </tui-input>
+                  </div>
+                  <!--Speaker-->
+                  <div class="my-3">
+                    <label class="font-semibold text-base">Speaker</label>
+                    <tui-input formControlName="speaker" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+                      e.g. J. Robert Oppenheimer
+                      <input
+                        tuiTextfield
+                        type="text"
+                        autocomplete="new-password"
+                      />
+                    </tui-input>
+                  </div>
+                  <div class="flex justify-end">
+                    <button
+                      tuiIconButton
+                      type="button"
+                      size="m"
+                      appearance="accent"
+                      icon="tuiIconXOctagonLarge"
+                      (click)="removeAgenda(i)"
+                    ></button>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </ng-container>
+          <div class="mb-5">
+            <button
+            tuiIconButton
+            type="button"
+            size="m"
+            class="mt-4 bg-[#224C73] text-white"
+            appearance="custom"
+            icon="tuiIconPlusLarge"
+            (click)="addAgenda(index)"
+          ></button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="activeIndex == 2">
+      <!--Gallery Images-->
+      <div class="mt-5">
+        <label class="font-semibold text-base">Gallery Images</label><sup>(Optional)</sup>
+        <div (change)="uploadMultipleImages($event)" class="flex items-center justify-center w-full mt-1">
+          <ng-container *ngIf="multipleImages?.length == 0">
+            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <tui-marker-icon
+                  mode="link"
+                  src="tuiIconUploadCloudLarge"
+                  class="mb-1"
+                ></tui-marker-icon>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG or JPG</p>
+              </div>
+              <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
+            </label>
+          </ng-container>
+          <ng-container *ngIf="multipleImages.length > 0">
+            <label for="dropzone-file" class="flex flex-col justify-start w-full h-64 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
+                <ng-container *ngFor="let image of multipleImages; let j = index">
+                  <div class="relative w-24 h-24">
+                    <div (click)="spliceImage(j, $event)" class="rounded-full h-5 w-5 bg-red-600 absolute -top-2 -right-1 flex flex-col items-center justify-center text-white font-semibold">
+                      x
+                    </div>
+                    <img [src]="image" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
+                  </div>
+                </ng-container>
+              </div>
+              <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
+            </label>
+          </ng-container>
+        </div> 
+      </div>
+    </ng-container>
 
     <!--SUBMIT BTNS-->
     <div class="flex justify-center gap-3 mt-5">
-      <ng-container *ngIf="!eventID">
+      <ng-container *ngIf="!eventID && activeIndex == 2">
         <button
           tuiButton
           [showLoader]="(savingEvent | async)!"
@@ -268,7 +428,7 @@
         </button>
       </ng-container>
 
-      <ng-container *ngIf="eventID">
+      <ng-container *ngIf="eventID && activeIndex == 2">
         <button
           tuiButton
           [showLoader]="(savingEvent | async)!"
@@ -282,15 +442,38 @@
         </button>
       </ng-container>
 
-      <button
-        tuiButton
-        icon="tuiIconCloseLarge"
-        appearance="secondary-destructive"
-        [disabled]="(savingEvent | async) == true"
-        (click)="closeDialog()"
-      >
-        Cancel
-      </button>
+      <ng-container *ngIf="activeIndex < 2">
+        <button
+          tuiButton
+          icon="tuiIconSkipForward"
+          appearance="custom"
+          class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
+          (click)="nextStep()"
+        >
+          Next
+        </button>
+      </ng-container>
+      <ng-container *ngIf="activeIndex == 0">
+        <button
+          tuiButton
+          icon="tuiIconCloseLarge"
+          appearance="secondary-destructive"
+          [disabled]="(savingEvent | async) == true"
+          (click)="closeDialog()"
+        >
+          Cancel
+        </button>
+      </ng-container>
+      <ng-container *ngIf="activeIndex > 0">
+        <button
+          tuiButton
+          icon="tuiIconSkipBack"
+          appearance="secondary-destructive"
+          (click)="prevStep()"
+        >
+          Back
+        </button>
+      </ng-container>
     </div>
   </form>
   <div *ngIf="(uploadingMultiple | async) == true" class="absolute right-3 bottom-6 z-50">

@@ -1,5 +1,5 @@
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventsService } from './services/events.service';
 import { Observable, Subject, Subscription, debounceTime, distinctUntilChanged, finalize, forkJoin, map, shareReplay, switchMap, takeUntil } from 'rxjs';
 import { TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
@@ -7,7 +7,7 @@ import { EventModel } from 'src/@core/models/events.model';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import { MediaUploadService } from 'src/@core/core-service/media-upload.service';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
-import { TuiDay, TuiDayRange, TuiTime } from '@taiga-ui/cdk';
+import { TuiDay, TuiTime } from '@taiga-ui/cdk';
 
 @Component({
   selector: 'app-events',
@@ -32,7 +32,10 @@ export class EventsComponent implements OnDestroy {
   dialogSubs: Subscription[] = [];
   eventID: string | null = null;
   today: TuiDay
-  tomorrow: TuiDay
+  tomorrow: TuiDay;
+  activeIndex: number = 0;
+  eventTypes = ['Conference', 'Workshop'];
+  daysOfEvents: any = [];
 
   constructor(
     private eventService: EventsService,
@@ -55,6 +58,7 @@ export class EventsComponent implements OnDestroy {
       switchMap((val: string) => this.events$ = this.eventService.getAllEvents(this.limit, this.page, val)),
       takeUntil(this.destroy$)
     ).subscribe();
+    this.setNoOfDaysForAgenda();
   }
 
   initEventForm() {
@@ -64,18 +68,59 @@ export class EventsComponent implements OnDestroy {
         Validators.required,
         Validators.maxLength(200)
       ])),
-      location: new FormControl(null, Validators.required),
       eventDays: new FormControl(
         null,
         Validators.required
       ),
+      city: new FormControl(null, Validators.required),
       featuredImage: new FormControl(null, Validators.required),
-      gallery: new FormControl(undefined)
+      gallery: new FormControl(undefined),
+      type: new FormControl(null, Validators.required),
+      agendas: this.fb.array(
+        [
+          this.fb.group({
+            title: [null, Validators.required],
+            day: [0, Validators.required],
+            from: [null, Validators.required],
+            to: [null, Validators.required],
+            venue: [null, Validators.required],
+            speaker: [null, Validators.required]
+          })
+        ]
+      )
     })
   }
 
   get f() {
     return this.eventForm.controls;
+  }
+
+  get agendas() {
+    return this.f['agendas'] as FormArray
+  }
+
+  addAgenda(day: number) {
+    const agendaForm = this.fb.group({
+      title: [null, Validators.required],
+      day: [day, Validators.required],
+      from: [null, Validators.required],
+      to: [null, Validators.required],
+      venue: [null, Validators.required],
+      speaker: [null, Validators.required]
+    })
+    this.agendas.push(agendaForm)
+  }
+
+  removeAgenda(index: number) {
+    this.agendas.removeAt(index);
+  }
+
+  setNoOfDaysForAgenda() {
+    this.f['eventDays']?.valueChanges
+    .pipe(takeUntil(this.destroy$)).subscribe(val => {
+      let diff = val.to.day - val.from.day + 1;
+      this.daysOfEvents = new Array(diff).fill(1)
+    })
   }
 
   goToPage(index: number): void {
@@ -207,6 +252,31 @@ export class EventsComponent implements OnDestroy {
       Date: new TuiDay(year, month, day),
       Time: new TuiTime(hours, minutes, seconds, ms)
     }
+  }
+
+  nextStep() {
+    // if(this.validateStepOne() == true) {
+    //   this.activeIndex++
+    // }
+    // else {
+    //   this.eventForm.markAllAsTouched()
+    // }
+    this.activeIndex++
+  }
+
+  prevStep() {
+    if(this.activeIndex > 0) {
+      this.activeIndex--
+    }
+  }
+
+  validateStepOne() {
+    return (
+      this.f['title']?.valid &&
+      this.f['description']?.valid &&
+      this.f['eventDays']?.valid &&
+      this.f['featuredImage']?.valid
+    )
   }
 
   createEvent() {

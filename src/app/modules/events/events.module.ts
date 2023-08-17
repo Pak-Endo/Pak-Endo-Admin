@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { EventsRoutingModule } from './events-routing.module';
 import { EventsComponent } from './events.component';
-import { TuiInputDateRangeModule, TuiInputFilesModule, TuiInputModule, TuiMarkerIconModule, TuiPaginationModule, TuiRatingModule, TuiTextAreaModule } from '@taiga-ui/kit';
+import { TuiInputTimeModule, TuiInputDateRangeModule, TuiInputFilesModule, TuiInputModule, TuiMarkerIconModule, TuiPaginationModule, TuiRatingModule, TuiTextAreaModule, TuiStepperModule, TuiDataListWrapperModule, TuiSelectModule } from '@taiga-ui/kit';
 import { TuiButtonModule, TuiExpandModule, TuiLabelModule, TuiLoaderModule, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LayoutComponent } from '../layout/layout.component';
@@ -18,7 +18,6 @@ import { LayoutComponent } from '../layout/layout.component';
     EventsRoutingModule,
     TuiTextAreaModule,
     TuiTextfieldControllerModule,
-    TuiInputDateRangeModule,
     TuiLabelModule,
     TuiInputFilesModule,
     TuiPaginationModule,
@@ -31,7 +30,12 @@ import { LayoutComponent } from '../layout/layout.component';
     LayoutComponent,
     TuiLoaderModule,
     TuiMarkerIconModule,
-    TuiExpandModule
+    TuiExpandModule,
+    TuiInputTimeModule,
+    TuiInputDateRangeModule,
+    TuiStepperModule,
+    TuiDataListWrapperModule,
+    TuiSelectModule
   ]
 })
 export class EventsModule { }
