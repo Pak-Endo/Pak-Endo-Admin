@@ -36,6 +36,7 @@ export class EventsComponent implements OnDestroy {
   activeIndex: number = 0;
   eventTypes = ['Conference', 'Workshop'];
   daysOfEvents: any = [];
+  daysOfEventsValue: any = [];
 
   constructor(
     private eventService: EventsService,
@@ -100,6 +101,7 @@ export class EventsComponent implements OnDestroy {
   }
 
   addAgenda(day: number) {
+    console.log(this.daysOfEventsValue)
     const agendaForm = this.fb.group({
       title: [null, Validators.required],
       day: [day, Validators.required],
@@ -120,6 +122,7 @@ export class EventsComponent implements OnDestroy {
     .pipe(takeUntil(this.destroy$)).subscribe(val => {
       let diff = val.to.day - val.from.day + 1;
       this.daysOfEvents = new Array(diff).fill(1)
+      this.daysOfEventsValue = [{...val.from}, {...val.to}]
     })
   }
 
@@ -262,6 +265,7 @@ export class EventsComponent implements OnDestroy {
     //   this.eventForm.markAllAsTouched()
     // }
     this.activeIndex++
+    
   }
 
   prevStep() {
