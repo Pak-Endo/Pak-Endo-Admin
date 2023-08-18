@@ -230,7 +230,7 @@
       <!--Location-->
       <div class="mt-2">
         <label class="font-semibold text-base">Location</label>
-        <tui-input formControlName="city" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" tuiTextfieldIcon="tuiIconMapPinLarge">
+        <tui-input formControlName="location" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" tuiTextfieldIcon="tuiIconMapPinLarge">
           e.g. Serena Hotel, Islamabad
           <input
             tuiTextfield
@@ -241,7 +241,7 @@
         <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
           validation: 'required',
           message: 'Please specify location for the event',
-          control: f['city']
+          control: f['location']
         }">
         </ng-container>
       </div>
