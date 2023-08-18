@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventsService } from './services/events.service';
-import { Observable, Subject, Subscription, debounceTime, distinctUntilChanged, finalize, forkJoin, map, shareReplay, switchMap, takeUntil } from 'rxjs';
+import { Observable, Subject, Subscription, debounceTime, distinctUntilChanged, finalize, forkJoin, map, shareReplay, switchMap, take, takeUntil } from 'rxjs';
 import { TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
 import { EventModel } from 'src/@core/models/events.model';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
@@ -80,7 +80,7 @@ export class EventsComponent implements OnDestroy {
       agendas: this.fb.array(
         [
           this.fb.group({
-            title: [null, Validators.required],
+            agendaTitle: [null, Validators.required],
             day: [0, Validators.required],
             from: [null, Validators.required],
             to: [null, Validators.required],
@@ -101,9 +101,8 @@ export class EventsComponent implements OnDestroy {
   }
 
   addAgenda(day: number) {
-    console.log(this.daysOfEventsValue)
     const agendaForm = this.fb.group({
-      title: [null, Validators.required],
+      agendaTitle: [null, Validators.required],
       day: [day, Validators.required],
       from: [null, Validators.required],
       to: [null, Validators.required],
@@ -120,9 +119,7 @@ export class EventsComponent implements OnDestroy {
   setNoOfDaysForAgenda() {
     this.f['eventDays']?.valueChanges
     .pipe(takeUntil(this.destroy$)).subscribe(val => {
-      let diff = val.to.day - val.from.day + 1;
-      this.daysOfEvents = new Array(diff).fill(1)
-      this.daysOfEventsValue = [{...val.from}, {...val.to}]
+      this.daysOfEventsValue = [{...val.from}, {...val.to}];
     })
   }
 
@@ -258,14 +255,42 @@ export class EventsComponent implements OnDestroy {
   }
 
   nextStep() {
-    // if(this.validateStepOne() == true) {
-    //   this.activeIndex++
-    // }
-    // else {
-    //   this.eventForm.markAllAsTouched()
-    // }
-    this.activeIndex++
-    
+    if(this.activeIndex == 0) {
+      if(this.validateStepOne() == true) {
+        let startDay = new TuiDay(this.daysOfEventsValue[0]?.year, this.daysOfEventsValue[0]?.month, this.daysOfEventsValue[0]?.day);
+        let endDay = new TuiDay(this.daysOfEventsValue[1]?.year, this.daysOfEventsValue[1]?.month, this.daysOfEventsValue[1]?.day);
+        let daysArr = []
+        while (startDay < endDay) {
+          if(startDay.monthSameOrBefore(endDay)) {
+            if(startDay.daysCount === startDay.day) {
+              startDay = new TuiDay(startDay?.year, startDay?.month + 1, 1);
+            }
+            else {
+              startDay = new TuiDay(startDay?.year, startDay?.month, startDay?.day + 1);
+            }
+          }
+          else {
+            startDay = new TuiDay(startDay?.year, startDay?.month + 1, 1);
+          }
+          if(startDay === endDay) {
+            break
+          }
+          daysArr.push({...startDay})
+        }
+        this.daysOfEventsValue.pop();
+        this.daysOfEvents = [...this.daysOfEventsValue, ...daysArr]
+        return this.activeIndex++
+      }
+      else {
+        return this.eventForm.markAllAsTouched()
+      }
+    }
+    if(this.activeIndex == 1) {
+      if(this.valdiateStepTwo() == false) {
+        return this.agendas.markAllAsTouched();
+      }
+      return this.activeIndex++
+    }
   }
 
   prevStep() {
@@ -274,39 +299,101 @@ export class EventsComponent implements OnDestroy {
     }
   }
 
+  mapAndGetMonths(value: number) {
+    let months = new Map([
+      [0, 'January'],
+      [1, 'February'],
+      [2, 'March'],
+      [3, 'April'],
+      [4, 'May'],
+      [5, 'June'],
+      [6, 'July'],
+      [7, 'August'],
+      [8, 'September'],
+      [9, 'October'],
+      [10, 'November'],
+      [11, 'December']
+    ])
+    if(months.has(value)) {
+      return months.get(value)
+    }
+    return null
+  }
+
   validateStepOne() {
     return (
       this.f['title']?.valid &&
       this.f['description']?.valid &&
       this.f['eventDays']?.valid &&
-      this.f['featuredImage']?.valid
+      this.f['featuredImage']?.valid &&
+      this.f['city']?.valid &&
+      this.f['type']?.valid
     )
+  }
+
+  valdiateStepTwo() {
+    if(this.agendas.value?.map((data: any) => data != null).includes(false)) {
+      return false
+    }
+    if(this.agendas.length < this.daysOfEvents.length) {
+      return false
+    }
+    if(this.getValidityForAgendas().includes(false)) {
+      return false
+    }
+    return true
+  }
+
+  getValidityForAgendas() {
+    return this.agendas.controls.map(value => {
+      if(
+        value.get('from')?.invalid ||
+        value.get('to')?.invalid ||
+        value.get('venue')?.invalid ||
+        value.get('speaker')?.invalid
+      ) {
+        return false
+      }
+      return true
+    })
   }
 
   createEvent() {
     this.savingEvent.next(true)
-    let startDate: [TuiDay, TuiTime] = this.f['eventDays']?.value[0];
-    let endDate: [TuiDay, TuiTime] = this.f['eventDays']?.value[1];
-    let today = new Date();
+    let startDate: TuiDay = this.f['eventDays']?.value?.from;
+    let endDate: TuiDay = this.f['eventDays']?.value?.to;
     const startDateTimestamp = new Date(
-      startDate[0]?.year,
-      startDate[0]?.month,
-      startDate[0]?.day,
-      startDate[1]?.hours ? startDate[1]?.hours : 9,
-      startDate[1]?.minutes ? startDate[1]?.minutes : 0,
-      startDate[1]?.seconds ? startDate[1]?.seconds : 0,
-      startDate[1]?.ms ? startDate[1]?.ms : 0
+      startDate?.year,
+      startDate?.month,
+      startDate?.day,
+      0,
+      0,
+      0,
+      0
     ).getTime();
     const endDateTimestamp = new Date(
-      endDate[0]?.year,
-      endDate[0]?.month,
-      endDate[0]?.day,
-      endDate[1]?.hours ? endDate[1]?.hours : 17,
-      endDate[1]?.minutes ? endDate[1]?.minutes : 0,
-      endDate[1]?.seconds ? endDate[1]?.seconds : 0,
-      endDate[1]?.ms ? endDate[1]?.ms : 0
+      endDate?.year,
+      endDate?.month,
+      endDate?.day,
+      23,
+      59,
+      59,
+      0
     ).getTime();
-    const payload = Object.assign(this.eventForm.value, {startDate: startDateTimestamp}, {endDate: endDateTimestamp});
+    let agendasWithDays = this.eventForm.value.agendas;
+    agendasWithDays = agendasWithDays.map((data: any) => {
+      let day = this.daysOfEvents[data.day];
+      day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
+      data.from = data.from.toString();
+      data.to = data.to.toString();
+      return {...data, day: day}
+    })
+    const payload = Object.assign(
+      this.eventForm.value,
+      {startDate: startDateTimestamp},
+      {endDate: endDateTimestamp},
+      {agendas: agendasWithDays}
+    );
     console.log(payload)
     // this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
     //   if(val) {

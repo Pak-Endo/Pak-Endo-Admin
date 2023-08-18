@@ -138,6 +138,7 @@
       </button>
       <button
         tuiStep
+        [stepState]="valdiateStepTwo() == true ? 'pass': 'error'"
       >
         Agenda
       </button>
@@ -280,7 +281,9 @@
     <ng-container *ngIf="activeIndex == 1">
       <h4 class="my-5 text-center text-lg">Create an agenda for your event</h4>
       <ng-container *ngFor="let day of daysOfEvents; let index = index; let firstDay = first;">
-        <p class="font-bold text-xl bg-[#224C73] rounded-lg text-white px-3 py-2" [ngClass]="firstDay ? 'mb-8': 'my-8'">Day {{index + 1}}</p>
+        <p class="font-bold text-xl bg-[#224C73] rounded-lg text-white px-3 py-2" [ngClass]="firstDay ? 'mb-8': 'my-8'">
+          Day {{index + 1}} - {{mapAndGetMonths(day?.month)}} {{day.day}}, {{day.year}}
+        </p>
         <!--Set Agenda-->
         <div class="border-b border-gray-400 pb-5">
           <ng-container formArrayName="agendas">
@@ -291,7 +294,7 @@
                   <!--Agenda title-->
                   <div class="my-3">
                     <label class="font-semibold text-base">Title</label>
-                    <tui-input formControlName="title" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+                    <tui-input formControlName="agendaTitle" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
                       e.g. Adrenal Health and Disease.
                       <input
                         tuiTextfield
@@ -299,6 +302,9 @@
                         autocomplete="new-password"
                       />
                     </tui-input>
+                    <span *ngIf="(agent.get('agendaTitle')!.invalid && agent.get('agendaTitle')!.touched)" class="text-xs text-red-500">
+                      Please provide a valid title for the agenda
+                    </span>
                   </div>
                   <!--Time-->
                   <div class="grid grid-cols-12 gap-3">
@@ -320,6 +326,9 @@
                         e.g. 23:59
                       </tui-input-time>
                     </div>
+                    <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="text-xs text-red-500 col-span-12">
+                      Please provide a valid timeline
+                    </span>
                   </div>
                   <!--Venue-->
                   <div class="my-3">
@@ -332,6 +341,9 @@
                         autocomplete="new-password"
                       />
                     </tui-input>
+                    <span *ngIf="(agent.get('venue')!.invalid && agent.get('venue')!.touched)" class="text-xs text-red-500">
+                      Please provide a venue for this event
+                    </span>
                   </div>
                   <!--Speaker-->
                   <div class="my-3">
@@ -344,6 +356,9 @@
                         autocomplete="new-password"
                       />
                     </tui-input>
+                    <span *ngIf="(agent.get('speaker')!.invalid && agent.get('speaker')!.touched)" class="text-xs text-red-500">
+                      Please specify the speaker for this event
+                    </span>
                   </div>
                   <div class="flex justify-end">
                     <button
