@@ -8,6 +8,7 @@ import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import { MediaUploadService } from 'src/@core/core-service/media-upload.service';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
 import { TuiDay, TuiDayRange, TuiTime } from '@taiga-ui/cdk';
+import {TuiCountryIsoCode} from '@taiga-ui/i18n';
 
 @Component({
   selector: 'app-events',
@@ -21,7 +22,7 @@ export class EventsComponent implements OnDestroy {
   page: number = 1;
   index: number = 0;
   destroy$ = new Subject();
-  rating = 2;
+  rating = 0;
   toggleExpand: boolean = true;
   eventForm!: FormGroup;
   readonly loadingFiles$ = new Subject<boolean>();
@@ -37,7 +38,14 @@ export class EventsComponent implements OnDestroy {
   eventTypes = ['Conference', 'Workshop'];
   daysOfEvents: any = [];
   daysOfEventsValue: any = [];
-
+  readonly countries: readonly TuiCountryIsoCode[] = [
+    TuiCountryIsoCode.PK,
+    TuiCountryIsoCode.US,
+    TuiCountryIsoCode.GB,
+    TuiCountryIsoCode.FR
+  ];
+  countryIsoCode = TuiCountryIsoCode.PK;
+  savingMember = new Subject<boolean>();
   constructor(
     private eventService: EventsService,
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
@@ -77,15 +85,18 @@ export class EventsComponent implements OnDestroy {
       featuredImage: new FormControl(null, Validators.required),
       gallery: new FormControl(undefined),
       type: new FormControl(null, Validators.required),
+      organizer: new FormControl(null, Validators.required),
+      organizerContact: new FormControl(null, Validators.required),
       agendas: this.fb.array(
         [
           this.fb.group({
+            _id: [undefined],
             agendaTitle: [null, Validators.required],
             day: [0, Validators.required],
             from: [null, Validators.required],
             to: [null, Validators.required],
             venue: [null, Validators.required],
-            speaker: [null, Validators.required]
+            speaker: [undefined]
           })
         ]
       )
@@ -102,12 +113,13 @@ export class EventsComponent implements OnDestroy {
 
   addAgenda(day: number) {
     const agendaForm = this.fb.group({
+      _id: [undefined],
       agendaTitle: [null, Validators.required],
       day: [day, Validators.required],
       from: [null, Validators.required],
       to: [null, Validators.required],
       venue: [null, Validators.required],
-      speaker: [null, Validators.required]
+      speaker: [undefined]
     })
     this.agendas.push(agendaForm)
   }
@@ -117,8 +129,8 @@ export class EventsComponent implements OnDestroy {
   }
 
   setNoOfDaysForAgenda() {
-    this.f['eventDays']?.valueChanges
-    .pipe(takeUntil(this.destroy$)).subscribe(val => {
+    this?.f['eventDays']?.valueChanges
+    ?.pipe(takeUntil(this.destroy$))?.subscribe(val => {
       this.daysOfEventsValue = [{...val.from}, {...val.to}];
     })
   }
@@ -148,13 +160,16 @@ export class EventsComponent implements OnDestroy {
 
   showAddorEditDialog(content: PolymorpheusContent<TuiDialogContext>, data?: EventModel | any): void {
     if(data) {
-      this.agendas.clear()
+      let agendaDays: any[] = [];
+      this.agendas.clear();
       this.eventID = data?._id;
       this.f['title'].setValue(data?.title)
       this.f['description'].setValue(data?.description)
       this.f['featuredImage'].setValue(data?.featuredImage)
       this.f['type'].setValue(data?.type)
       this.f['location'].setValue(data?.location)
+      this.f['organizerContact'].setValue(data?.organizerContact)
+      this.f['organizer'].setValue(data?.organizer)
       this.multipleImages = data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : []
       this.f['gallery'].setValue(data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : undefined);
       let convertedStartDate = this.convertTimestampToObject(data?.startDate)
@@ -165,21 +180,25 @@ export class EventsComponent implements OnDestroy {
         agenda.day = this.convertTimestampToObject(agenda.day)?.Date
         agenda.from = this.convertTimeStringToObject(agenda.from)
         agenda.to = this.convertTimeStringToObject(agenda.to)
-        this.daysOfEvents.push({...agenda.day})
+        agendaDays.push({...agenda.day})
         let formAgenda = this.fb.group({
+          _id: [agenda._id],
           agendaTitle: [agenda.agendaTitle, Validators.required],
           day: [agenda.day, Validators.required],
           from: [agenda.from, Validators.required],
           to: [agenda.to, Validators.required],
           venue: [agenda.venue, Validators.required],
-          speaker: [agenda.speaker, Validators.required]
+          speaker: [agenda.speaker]
         });
         this.agendas.push(formAgenda)
+        this.agendas.updateValueAndValidity();
       });
+      agendaDays = [...new Map(agendaDays?.map((data: any) => [data['day'], data])).values()]
+      this.daysOfEvents = agendaDays;
     }
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,
-      closeable: true,
+      closeable: false,
       size: 'fullscreen'
     }).pipe(takeUntil(this.destroy$)).subscribe());
   }
@@ -302,10 +321,6 @@ export class EventsComponent implements OnDestroy {
         }
         this.daysOfEventsValue.pop();
         this.daysOfEvents = [...this.daysOfEventsValue, ...daysArr]
-        // if(this.formAgenda.length > 0) {
-        //   debugger
-        //   this.agendas.
-        // }
         return this.activeIndex++
       }
       else {
@@ -376,8 +391,7 @@ export class EventsComponent implements OnDestroy {
       if(
         value.get('from')?.invalid ||
         value.get('to')?.invalid ||
-        value.get('venue')?.invalid ||
-        value.get('speaker')?.invalid
+        value.get('venue')?.invalid
       ) {
         return false
       }
@@ -393,9 +407,9 @@ export class EventsComponent implements OnDestroy {
       startDate?.year,
       startDate?.month,
       startDate?.day,
-      0,
-      0,
-      0,
+      23,
+      59,
+      59,
       0
     ).getTime();
     const endDateTimestamp = new Date(
@@ -421,48 +435,72 @@ export class EventsComponent implements OnDestroy {
       {endDate: endDateTimestamp},
       {agenda: agendasWithDays}
     );
-    console.log(payload)
     delete payload.eventDays
     delete payload.agendas
+    console.log(payload)
     this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
       if(val) {
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
         this.savingEvent.next(false);
         this.dialogSubs.forEach(val => val.unsubscribe());
+        this.activeIndex = 0;
         this.eventForm.reset();
+        this.eventID = null
       }
     })
   }
 
   updateEvent() {
     this.savingEvent.next(true)
-    let startDate: [TuiDay, TuiTime] = this.f['startDate']?.value;
-    let endDate: [TuiDay, TuiTime] = this.f['endDate']?.value;
+    let startDate: TuiDay = this.f['eventDays']?.value?.from;
+    let endDate: TuiDay = this.f['eventDays']?.value?.to;
     const startDateTimestamp = new Date(
-      startDate[0]?.year,
-      startDate[0]?.month,
-      startDate[0]?.day,
-      startDate[1]?.hours,
-      startDate[1]?.minutes,
-      startDate[1]?.seconds,
-      startDate[1]?.ms
+      startDate?.year,
+      startDate?.month,
+      startDate?.day,
+      23,
+      59,
+      59,
+      0
     ).getTime();
-
     const endDateTimestamp = new Date(
-      endDate[0]?.year,
-      endDate[0]?.month,
-      endDate[0]?.day,
-      endDate[1]?.hours,
-      endDate[1]?.minutes,
-      endDate[1]?.seconds,
-      endDate[1]?.ms
+      endDate?.year,
+      endDate?.month,
+      endDate?.day,
+      23,
+      59,
+      59,
+      0
     ).getTime();
-    const payload = Object.assign(this.eventForm.value, {startDate: startDateTimestamp}, {endDate: endDateTimestamp});
+    let agendasWithDays = this.eventForm.value.agendas;
+    agendasWithDays = agendasWithDays.map((data: any) => {
+      if(typeof data.day == 'number') {
+        let day = this.daysOfEvents[data.day];
+        day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
+        data.from = data.from.toString();
+        data.to = data.to.toString();
+        return {...data, day: day}
+      }
+
+      let day = new Date(data.day.year, data.day.month, data.day.day, 23, 59, 59, 0).getTime();
+      data.from = data.from.toString();
+      data.to = data.to.toString();
+      return {...data, day: day}
+    })
+    const payload = Object.assign(
+      this.eventForm.value,
+      {startDate: startDateTimestamp},
+      {endDate: endDateTimestamp},
+      {agenda: agendasWithDays}
+    );
+    delete payload.eventDays
+    delete payload.agendas
     this.eventService.updateEvent(payload, this.eventID).pipe(takeUntil(this.destroy$)).subscribe(val => {
       if(val) {
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
         this.savingEvent.next(false);
         this.dialogSubs.forEach(val => val.unsubscribe());
+        this.activeIndex = 0;
         this.eventForm.reset();
         this.eventID = null
       }

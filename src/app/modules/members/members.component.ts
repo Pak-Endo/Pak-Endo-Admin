@@ -5,9 +5,7 @@ import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import { Observable, Subject, Subscription, debounceTime, distinctUntilChanged, shareReplay, switchMap, takeUntil } from 'rxjs';
 import { MembersService } from './services/members.service';
 import {TuiCountryIsoCode} from '@taiga-ui/i18n'
-import { AuthService } from '../auth/services/auth.service';
-import { Type, User } from 'src/@core/models/user.model';
-import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
+import { Type } from 'src/@core/models/user.model';
 
 @Component({
   selector: 'app-members',

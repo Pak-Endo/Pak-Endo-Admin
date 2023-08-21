@@ -36,7 +36,7 @@
             <th class="pl-4 py-3 text-sm">Title</th>
             <th class="px-2 py-3 text-sm">Starts On</th>
             <th class="px-2 py-3 text-sm">Ends On</th>
-            <th class="px-2 py-3 text-sm">Stream URL</th>
+            <th class="px-2 py-3 text-sm">Location</th>
             <th class="px-2 py-3 text-sm">Status</th>
             <th class="px-2 py-3 text-sm">Rating</th>
             <th scope="col" class="px-2 py-3 text-sm">
@@ -60,20 +60,13 @@
                   </div>
                 </td> 
                 <td class="px-2 py-4">
-                  {{event?.startDate | date:'medium'}}
+                  {{event?.startDate | date:'mediumDate'}}
                 </td> 
                 <td class="px-2 py-4">
-                  {{event?.endDate | date:'medium'}}
+                  {{event?.endDate | date:'mediumDate'}}
                 </td> 
                 <td class="px-2 py-4">
-                  <ng-container *ngIf="event?.streamUrl && event?.streamUrl != ''; else noStream">
-                    <a [href]="event?.streamUrl" target="_blank" class="bg-red-500 text-white px-2 py-1 rounded-md">
-                      <tui-svg new size="xxs" src="tuiIconYoutube"></tui-svg>&nbsp; Visit
-                    </a>
-                  </ng-container>
-                  <ng-template #noStream>
-                    No stream available
-                  </ng-template>
+                    {{event?.location}}
                 </td> 
                 <td class="px-2 py-4 capitalize">
                   {{event?.eventStatus}}
@@ -82,6 +75,16 @@
                   <tui-rating [(ngModel)]="rating" class="text-yellow-600" disabled="true"></tui-rating>
                 </td>
                 <td class="py-4 inline-flex gap-2">
+                  <button
+                    tuiIconButton
+                    icon="tuiIconEye"
+                    type="submit"
+                    appearance="custom"
+                    size="s"
+                    class="bg-[#10914B] text-white"
+                    [routerLink]="['/event-details', event?._id]"
+                  >
+                  </button>
                   <button
                     tuiIconButton
                     icon="tuiIconEdit"
@@ -110,7 +113,7 @@
       </table>
       <div class="pt-10 pb-6">
         <tui-pagination
-          [length]="floorNumber(data?.totalCount / limit)"
+          [length]="floorNumber(data?.totalCount / limit) || 1"
           [index]="index"
           (indexChange)="goToPage($event)"
         ></tui-pagination>
@@ -138,14 +141,13 @@
       </button>
       <button
         tuiStep
-        [stepState]="valdiateStepTwo() == true ? 'pass': 'error'"
       >
         Agenda
       </button>
       <button
         tuiStep
       >
-        Gallery
+        Gallery & Contact Info
       </button>
     </tui-stepper>
 
@@ -289,7 +291,7 @@
           <ng-container formArrayName="agendas">
             <ng-container *ngFor="let agent of agendas.controls; let i = index; let first = first; let last = last">
               <div [formGroupName]="i" class="w-full">
-                <ng-container *ngIf="agent.get('day')!.value === index">
+                <ng-container *ngIf="agent.get('day')!.value === index || agent.get('day')!.value?.day == day?.day">
                   <h1 class="my-3 text-xl font-bold"></h1>
                   <!--Agenda title-->
                   <div class="my-3">
@@ -356,9 +358,6 @@
                         autocomplete="new-password"
                       />
                     </tui-input>
-                    <span *ngIf="(agent.get('speaker')!.invalid && agent.get('speaker')!.touched)" class="text-xs text-red-500">
-                      Please specify the speaker for this event
-                    </span>
                   </div>
                   <div class="flex justify-end">
                     <button
@@ -391,7 +390,7 @@
 
     <ng-container *ngIf="activeIndex == 2">
       <!--Gallery Images-->
-      <div class="mt-5">
+      <div class="my-5">
         <label class="font-semibold text-base">Gallery Images</label><sup>(Optional)</sup>
         <div (change)="uploadMultipleImages($event)" class="flex items-center justify-center w-full mt-1">
           <ng-container *ngIf="multipleImages?.length == 0">
@@ -424,6 +423,44 @@
             </label>
           </ng-container>
         </div> 
+      </div>
+      <!--Organizer-->
+      <div class="my-3">
+        <label class="font-semibold text-base">Organizer</label>
+        <tui-input formControlName="organizer" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+          e.g. Ahmed Khan
+          <input
+            tuiTextfield
+            type="text"
+            autocomplete="new-password"
+          />
+        </tui-input>
+        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+          validation: 'required',
+          message: 'Please specify an organizer for your event',
+          control: f['organizer']
+        }">
+        </ng-container>
+
+      </div>
+      <!--Contact-->
+      <div class="my-3">
+        <label class="font-semibold text-base">Phone Number</label>
+        <tui-input-phone-international
+          class="mt-1"
+          formControlName="organizerContact"
+          [countries]="countries"
+          [tuiTextfieldLabelOutside]="true"
+          [tuiTextfieldCleaner]="true"
+          [(countryIsoCode)]="countryIsoCode"
+        ></tui-input-phone-international>
+        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+          validation: 'organizerContact',
+          message: 'Please provide a phone number',
+          control: f['organizerContact']
+        }">
+        </ng-container>
+
       </div>
     </ng-container>
 
