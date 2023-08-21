@@ -293,6 +293,35 @@
               <div [formGroupName]="i" class="w-full">
                 <ng-container *ngIf="agent.get('day')!.value === index || agent.get('day')!.value?.day == day?.day">
                   <h1 class="my-3 text-xl font-bold"></h1>
+                  <!-- image -->
+                  <ng-container *ngIf="!agent.get('speakerImg')!.value">
+                    <div class="mb-7 flex flex-col items-center justify-center">
+                      <label [for]="'dropzone-file-doc-' + i" class="flex flex-col items-center justify-center w-28 h-28 border-2 border-gray-400 border-dashed rounded-full cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div class="flex flex-col items-center justify-center py-1">
+                          <tui-marker-icon
+                            mode="link"
+                            src="tuiIconUploadCloud"
+                            class="mb-1"
+                          ></tui-marker-icon>
+                        </div>
+                        <input [id]="'dropzone-file-doc-' + i"  type="file" accept="image/*" class="hidden" (change)="uploadSpeakerImage($event, i)" />
+                      </label>
+                      <p class="text-xs mt-1">Upload an image for the speaker <sup>(Optional)</sup></p>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="agent.get('speakerImg')!.value">
+                    <div class="mb-7 flex flex-col items-center justify-center">
+                      <label [for]="'dropzone-file-doc-' + i" class="flex flex-col items-center justify-center w-28 h-28 border-2 border-gray-400 border-dashed rounded-full cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div class="flex justify-start align-top flex-wrap">
+                          <div class="relative w-[6.5rem] h-[6.5rem]">
+                            <img [src]="agent.get('speakerImg')!.value" alt="img" width="40" height="40" class="rounded-full object-contain border border-gray-400 w-full h-full">
+                          </div>
+                        </div>
+                        <input [id]="'dropzone-file-doc-' + i" (change)="uploadSpeakerImage($event, i)"  type="file" accept="image/*" class="hidden" />
+                      </label>
+                      <p class="text-xs mt-1">Upload an image for the speaker <sup>(Optional)</sup></p>
+                    </div>
+                  </ng-container>
                   <!--Agenda title-->
                   <div class="my-3">
                     <label class="font-semibold text-base">Title</label>
@@ -358,6 +387,46 @@
                         autocomplete="new-password"
                       />
                     </tui-input>
+                  </div>
+                  <!--attachments-->
+                  <div *ngIf="eventID" class="my-3">
+                    <ng-container *ngIf="attachments.length > 0">
+                      <label class="font-semibold text-base">Attachments</label>
+                      <label [for]="'dropzone-file-all' + i" class="flex flex-col justify-start w-full h-44 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div class="flex justify-start align-top py-4 gap-5 flex-wrap ml-2">
+                          <ng-container *ngFor="let image of attachments; let j = index">
+                            <div class="relative w-32 h-32">
+                              <div (click)="spliceAttachment(j, $event)" [ngClass]="checkFileType(image.mimetype) == 'audio' ? '-top-2 left-[120px]' : '-top-2 -right-1'" class="rounded-full h-5 w-5 bg-red-600 flex flex-col items-center justify-center text-white font-semibold z-50 absolute">
+                                x
+                              </div>
+                              <img *ngIf="checkFileType(image.mimetype) == 'image'" [src]="image?.url" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
+                              <video *ngIf="checkFileType(image.mimetype) == 'video'" controls class="rounded-md object-contain border border-gray-400 w-full h-full">
+                                <source [src]="image.url" [type]="image.mimetype" />
+                              </video>
+                              <div *ngIf="checkFileType(image.mimetype) == 'audio'">
+                                <audio controls [src]="image.url" class="w-36"></audio>
+                              </div>
+                            </div>
+                          </ng-container>
+                        </div>
+                        <input [id]="'dropzone-file-all' + i" type="file" accept="audio/*, video/*, image/*" class="hidden" multiple="true" (change)="uploadAttachments($event, i)"/>
+                      </label>
+                    </ng-container>
+                    <ng-container *ngIf="attachments.length == 0">
+                      <label class="font-semibold text-base">Attachments</label>
+                      <label [for]="'dropzone-file-all' + i" class="flex flex-col justify-start w-full h-44 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                          <tui-marker-icon
+                            mode="link"
+                            src="tuiIconUploadCloudLarge"
+                            class="mb-1"
+                          ></tui-marker-icon>
+                          <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                        </div>
+                        <input [id]="'dropzone-file-all' + i" type="file" accept="audio/*, video/*, image/*" class="hidden" multiple="true" (change)="uploadAttachments($event, i)"/>
+                      </label>
+                    </ng-container>
+
                   </div>
                   <div class="flex justify-end">
                     <button

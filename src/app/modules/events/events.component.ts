@@ -27,6 +27,7 @@ export class EventsComponent implements OnDestroy {
   eventForm!: FormGroup;
   readonly loadingFiles$ = new Subject<boolean>();
   multipleImages: any[] = [];
+  attachments: any[] = [];
   uploadingMultiple = new Subject<boolean>();
   totalCount: number = 0;
   savingEvent = new Subject<boolean>();
@@ -96,7 +97,9 @@ export class EventsComponent implements OnDestroy {
             from: [null, Validators.required],
             to: [null, Validators.required],
             venue: [null, Validators.required],
-            speaker: [undefined]
+            speaker: [undefined],
+            speakerImg: [undefined],
+            attachments: [[]]
           })
         ]
       )
@@ -119,7 +122,9 @@ export class EventsComponent implements OnDestroy {
       from: [null, Validators.required],
       to: [null, Validators.required],
       venue: [null, Validators.required],
-      speaker: [undefined]
+      speaker: [undefined],
+      speakerImg: [undefined],
+      attachments: [[]]
     })
     this.agendas.push(agendaForm)
   }
@@ -188,7 +193,9 @@ export class EventsComponent implements OnDestroy {
           from: [agenda.from, Validators.required],
           to: [agenda.to, Validators.required],
           venue: [agenda.venue, Validators.required],
-          speaker: [agenda.speaker]
+          speaker: [agenda.speaker || null],
+          speakerImg: [agenda.speakerImg || null],
+          attachments: [agenda.attachments || []]
         });
         this.agendas.push(formAgenda)
         this.agendas.updateValueAndValidity();
@@ -209,6 +216,23 @@ export class EventsComponent implements OnDestroy {
       dismissible: true,
       closeable: true,
     }).pipe(takeUntil(this.destroy$)).subscribe()
+  }
+
+  uploadSpeakerImage(event: any, index: number) {
+    let file = event.target.files[0];
+    if(file && ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'].includes(file.type)) {
+      return this.media.uploadMedia('test', file).pipe(
+        map((res: ApiResponse<any>) => {
+          if(!res.hasErrors()) {
+            this.agendas.at(index)?.get('speakerImg')?.setValue(res?.data?.url)
+            return res.data?.url
+          }
+          return null;
+        }),
+        finalize(() => this.loadingFiles$.next(false))
+      ).pipe(takeUntil(this.destroy$)).subscribe()
+    }
+    return null
   }
   
   uploadFeaturedImage(event: any) {
@@ -253,6 +277,38 @@ export class EventsComponent implements OnDestroy {
     }
   }
 
+  uploadAttachments(event: any, index: number) {
+    let files = event.target.files;
+    if(files.length > 0) {
+      this.uploadingMultiple.next(true);
+      this.totalCount = files.length;
+      let mediaUpload: Array<Observable<any>> = [];
+      for (let i = 0; i < files.length; i++) {
+        mediaUpload.push(this.media.uploadMediaWithProgress('test', files[i], files.length));
+      }
+
+      if(mediaUpload.length > 0) {
+        forkJoin(mediaUpload).subscribe((values: any[]) => {
+          for (const value of values) {
+            this.attachments.push(value?.data);
+            this.agendas.at(index)?.get('attachments')?.setValue(this.attachments);
+          }
+          this.uploadingMultiple.next(false);
+        });
+      }
+    }
+  }
+
+  checkFileType(value: any) {
+    if(value.includes('image')) {
+      return 'image'
+    }
+    if(value.includes('audio')) {
+      return 'audio'
+    }
+    return 'video'
+  }
+
   closeDialog() {
     this.dialogSubs.forEach(val => val.unsubscribe());
     this.eventForm.reset();
@@ -263,6 +319,13 @@ export class EventsComponent implements OnDestroy {
     event.stopImmediatePropagation();
     this.multipleImages.splice(index, 1);
     this.f['gallery']?.setValue({mediaUrl: this.multipleImages})
+  }
+
+  spliceAttachment(index: number, event: any) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    this.attachments.splice(index, 1);
+    this.agendas.at(index)?.get('attachments')?.setValue(this.attachments);
   }
 
   toggle() {
