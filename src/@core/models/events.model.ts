@@ -7,8 +7,12 @@ export interface EventModel {
   featuredImage: string;
   gallery: Gallery;
   deletedCheck: boolean;
-  eventStatus: EventStatus
-  streamUrl: string;
+  eventStatus: EventStatus;
+  agenda: AgendaInterface;
+  location: string;
+  organizer: string;
+  organizerContact: string;
+  type: string
 }
 
 export interface EventData {
@@ -26,4 +30,16 @@ export enum EventStatus {
   ONGOING = 'ongoing',
   UPCOMING = 'upcoming',
   FINSIHED = 'finished'
+}
+export interface AgendaInterface {
+  _id: string;
+  day: number;
+  agendaTitle: string;
+  from: string;
+  to: string;
+  venue: string;
+  streamUrl?: string;
+  speaker?: string,
+  speakerImg?: string;
+  attachments?: any[];
 }

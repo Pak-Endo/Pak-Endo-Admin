@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { EventDetailsRoutingModule } from './event-details-routing.module';
 import { EventDetailsComponent } from './event-details.component';
 import { LayoutComponent } from '../layout/layout.component';
+import { TuiScrollbarModule, TuiSvgModule } from '@taiga-ui/core';
+import { TuiCarouselModule, TuiTabsModule } from '@taiga-ui/kit';
 
 
 @NgModule({
@@ -13,7 +15,11 @@ import { LayoutComponent } from '../layout/layout.component';
   imports: [
     CommonModule,
     EventDetailsRoutingModule,
-    LayoutComponent
+    LayoutComponent,
+    TuiSvgModule,
+    TuiTabsModule,
+    TuiScrollbarModule,
+    TuiCarouselModule
   ]
 })
 export class EventDetailsModule { }

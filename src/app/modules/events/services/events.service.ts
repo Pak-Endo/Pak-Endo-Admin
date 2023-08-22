@@ -78,4 +78,17 @@ export class EventsService extends ApiService<event> {
       }
     }))
   }
+  
+  getEventByID(eventID: string): Observable<ApiResponse<any>> {
+    return this.get(`/events/getEventByID/${eventID}`).pipe(map((res: ApiResponse<any>) => {
+      if(!res.hasErrors()) {
+        return res.data
+      }
+      else {
+        if (res.errors[0].code && ![401, 403].includes(res.errors[0].code)) {
+          return this.notif.displayNotification(res?.errors[0]?.error?.message, 'Fetch Event', TuiNotification.Error)
+        }
+      }
+    }))
+  }
 }

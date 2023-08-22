@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TuiMarkerIconModule } from '@taiga-ui/kit';
 import { TuiSvgModule } from '@taiga-ui/core';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 
