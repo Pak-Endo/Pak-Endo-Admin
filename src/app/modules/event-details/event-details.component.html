@@ -76,11 +76,13 @@
       [draggable]="true"
       [itemsCount]="3"
       [(index)]="index"
+      class="my-5"
     >
       <ng-container *ngFor="let item of event?.gallery[0]?.mediaUrl; let index = index">
         <img
           *tuiItem
           alt="carousel_item"
+          class="object-contain w-60 h-60 rounded-lg border border-gray-300"
           draggable="false"
           [src]="item"
           [class.item_active]="index === index + 1"
