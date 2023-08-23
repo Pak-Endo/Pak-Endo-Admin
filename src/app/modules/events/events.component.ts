@@ -17,6 +17,7 @@ import {TuiCountryIsoCode} from '@taiga-ui/i18n';
 })
 export class EventsComponent implements OnDestroy {
   searchValue: FormControl = new FormControl();
+  open = false;
   events$: Observable<any>;
   limit: number = 8;
   page: number = 1;
@@ -25,6 +26,7 @@ export class EventsComponent implements OnDestroy {
   rating = 0;
   toggleExpand: boolean = true;
   eventForm!: FormGroup;
+  filterForm!: FormGroup;
   readonly loadingFiles$ = new Subject<boolean>();
   multipleImages: any[] = [];
   attachments: any[] = [];
@@ -47,12 +49,14 @@ export class EventsComponent implements OnDestroy {
   ];
   countryIsoCode = TuiCountryIsoCode.PK;
   savingMember = new Subject<boolean>();
+
   constructor(
     private eventService: EventsService,
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     private fb: FormBuilder,
     public media: MediaUploadService
   ) {
+    this.initFilterForm();
     let day = new Date().getDate()
     let nextDay = new Date().getDate() + 1
     let month = new Date().getMonth()
@@ -103,6 +107,16 @@ export class EventsComponent implements OnDestroy {
           })
         ]
       )
+    })
+  }
+
+  initFilterForm() {
+    this.filterForm = this.fb.group({
+      location: new FormControl(null),
+      type: new FormControl(null),
+      startDate: new FormControl(null),
+      endDate: new FormControl(null),
+      speaker: new FormControl(null)
     })
   }
 
@@ -580,6 +594,10 @@ export class EventsComponent implements OnDestroy {
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
       }
     }))
+  }
+
+  openAdvancedFilters() {
+    this.open = !this.open
   }
 
   ngOnDestroy(): void {
