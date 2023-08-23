@@ -49,6 +49,7 @@ export class EventsComponent implements OnDestroy {
   ];
   countryIsoCode = TuiCountryIsoCode.PK;
   savingMember = new Subject<boolean>();
+  isFilterActive = new Subject<boolean>();
 
   constructor(
     private eventService: EventsService,
@@ -64,12 +65,12 @@ export class EventsComponent implements OnDestroy {
     this.today = new TuiDay(year, month, day);
     this.tomorrow = new TuiDay(year, month, nextDay)
     this.initEventForm();
-    this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
+    this.events$ = this.eventService.getAllEvents(this.limit, this.page, {title: this.searchValue?.value || null});
     this.searchValue.valueChanges.pipe(
       debounceTime(400),
       distinctUntilChanged(),
       shareReplay(),
-      switchMap((val: string) => this.events$ = this.eventService.getAllEvents(this.limit, this.page, val)),
+      switchMap((val: string) => this.events$ = this.eventService.getAllEvents(this.limit, this.page, {title: val})),
       takeUntil(this.destroy$)
     ).subscribe();
     this.setNoOfDaysForAgenda();
@@ -150,7 +151,7 @@ export class EventsComponent implements OnDestroy {
   setNoOfDaysForAgenda() {
     this?.f['eventDays']?.valueChanges
     ?.pipe(takeUntil(this.destroy$))?.subscribe(val => {
-      this.daysOfEventsValue = [{...val.from}, {...val.to}];
+      this.daysOfEventsValue = [{...val?.from}, {...val?.to}];
     })
   }
 
@@ -371,6 +372,19 @@ export class EventsComponent implements OnDestroy {
     const [hours, minutes] = timeString.split(':').map(Number)
     let time: TuiTime = new TuiTime(hours, minutes)
     return time
+  }
+
+  convertDateObjToTimestmp(date: any) {
+    const dateTimeStamp = new Date(
+      date?.year,
+      date?.month,
+      date?.day,
+      23,
+      59,
+      59,
+      0
+    ).getTime();
+    return dateTimeStamp
   }
 
   nextStep() {
@@ -596,8 +610,25 @@ export class EventsComponent implements OnDestroy {
     }))
   }
 
-  openAdvancedFilters() {
-    this.open = !this.open
+  applyAdvancedFilters() {
+    this.isFilterActive.next(true)
+    let payload = {...this.filterForm.value};
+    if(payload.startDate) {
+      let startDateTimestamp = this.convertDateObjToTimestmp(payload.startDate);
+      payload = {...payload, startDate: startDateTimestamp}
+    }
+    if(payload.endDate) {
+      let endDateTimestamp = this.convertDateObjToTimestmp(payload.endDate)
+      payload = {...payload, endDate: endDateTimestamp}
+    }
+    this.events$ = this.eventService.getAllEvents(this.limit, this.page, payload);
+    this.open = false
+  }
+
+  resetFilters() {
+    this.events$ = this.eventService.getAllEvents(this.limit, this.page);
+    this.isFilterActive.next(false);
+    this.filterForm.reset();
   }
 
   ngOnDestroy(): void {

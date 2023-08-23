@@ -9,6 +9,15 @@ import { EventData, EventModel } from 'src/@core/models/events.model';
 
 type event = EventModel | EventData | any
 
+interface QueryParamsForEvents {
+  title?: string,
+  location?: string,
+  type?: string,
+  startDate?: number,
+  endDate?: number,
+  speaker?: string
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,14 +27,31 @@ export class EventsService extends ApiService<event> {
     super(http)
   }
 
-  getAllEvents(limit: number, page: number, title: string): Observable<ApiResponse<event>> {
+  getAllEvents(limit: number, page: number, payload?: QueryParamsForEvents): Observable<ApiResponse<event>> {
     page--;
     let params: any = {
       limit: limit,
-      offset: page ? limit * page : 0,
-      title: title ? title : ' '
+      offset: page ? limit * page : 0
     }
-    return this.get(`/events/getllEvents`, params).pipe(shareReplay(), map((res: ApiResponse<any>) => {
+    if(payload?.title) {
+      params = {...params, title: payload?.title}
+    }
+    if(payload?.location) {
+      params = {...params, location: payload?.location}
+    }
+    if(payload?.type) {
+      params = {...params, type: payload?.type}
+    }
+    if(payload?.startDate) {
+      params = {...params, startDate: payload?.startDate}
+    }
+    if(payload?.endDate) {
+      params = {...params, endDate: payload?.endDate}
+    }
+    if(payload?.speaker) {
+      params = {...params, speaker: payload?.speaker}
+    }
+    return this.get(`/events/getAllEvents`, params).pipe(shareReplay(), map((res: ApiResponse<any>) => {
       if(!res.hasErrors()) {
         return res.data
       }

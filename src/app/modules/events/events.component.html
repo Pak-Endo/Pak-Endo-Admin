@@ -16,6 +16,7 @@
       </tui-input>
       <tui-hosted-dropdown
         tuiDropdownAlign="center"
+        [tuiDropdownMaxHeight]="800"
         [content]="dropdownContent"
         [(open)]="open"
         class="absolute top-3 right-3"
@@ -27,10 +28,22 @@
           appearance="custom"
           icon="tuiIconSlidersLarge"
           [pseudoActive]="open || null"
-          class="text-gray-500 bg-white rounded-full hover:bg-gray-100"
+          class="text-gray-500 bg-white rounded-full"
+          [ngClass]="(isFilterActive | async) == true ? 'bg-blue-500 text-white': 'bg-white text-gray-500'"
         >
         </button>
       </tui-hosted-dropdown>
+    </div>
+    <div *ngIf="(isFilterActive | async) == true" class="w-[70%] flex justify-end">
+      <button
+        tuiButton
+        type="submit"
+        appearance="accent"
+        (click)="resetFilters()"
+        class="my-1"
+      >
+        Reset Filters
+      </button>
     </div>
     <div class="w-1/5 flex justify-end">
       <button
@@ -687,29 +700,23 @@
       <div class="grid grid-cols-12 gap-2 my-4">
         <div class="col-span-6">
           <label class="mb-1 block">Start Date</label>
-          <tui-input
+          <tui-input-date
             formControlName="startDate"
+            tuiTextfieldSize="l"
             [tuiTextfieldCleaner]="true"
           >
-            <p>Filter by Start Date</p>
-            <input
-              tuiTextfield
-              placeholder="Type here..."
-            />
-          </tui-input>
+            Choose a start date
+          </tui-input-date>
         </div>
         <div class="col-span-6">
           <label class="mb-1 block">End Date</label>
-          <tui-input
+          <tui-input-date
             formControlName="endDate"
             [tuiTextfieldCleaner]="true"
+            tuiTextfieldSize="l"
           >
-            <p>Filter by End Date</p>
-            <input
-              tuiTextfield
-              placeholder="Type here..."
-            />
-          </tui-input>
+            Choose an end date
+          </tui-input-date>
         </div>
       </div>
       <div class="my-4">
@@ -731,6 +738,7 @@
           type="button"
           appearance="primary"
           size="m"
+          (click)="applyAdvancedFilters()"
         >
           Apply
         </button>
