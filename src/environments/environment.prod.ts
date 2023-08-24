@@ -4,7 +4,7 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000/api'
+  apiUrl: 'http://quaidtech.ddns.net:8200/api'
 };
 
 /*
