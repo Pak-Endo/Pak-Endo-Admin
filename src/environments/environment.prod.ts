@@ -4,11 +4,10 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'http://quaidtech.ddns.net:8200/api'
+  apiUrl: 'http://localhost:3000/api'
 };
 
 /*
-http://quaidtech.ddns.net:8200/api
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
  *
