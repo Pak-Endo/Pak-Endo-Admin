@@ -13,6 +13,7 @@ export interface EventModel {
   organizer: string;
   organizerContact: string;
   type: string
+  rating: number
 }
 
 export interface EventData {

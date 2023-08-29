@@ -23,7 +23,7 @@ export class MembersComponent implements OnDestroy {
   memberForm!: FormGroup;
   prefixes: string[] = ['Dr.', 'Prof. Dr.'];
   genders: string[] = ['Male', 'Female', 'Other'];
-  types: string[] = ['PES Executive Member', 'PES Honorary Member', 'International Executive Membership', 'Scientific Members', 'Scientific Executive Members'];
+  types: string[] = ['PES Executive Member', 'PES Honorary Member', 'International Executive Membership', 'Scientific Members', 'Scientific Executive Members', 'Non-Member'];
   dialogSubs: Subscription[] = [];
   readonly countries: readonly TuiCountryIsoCode[] = [
     TuiCountryIsoCode.PK,

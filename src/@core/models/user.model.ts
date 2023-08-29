@@ -41,5 +41,6 @@ export enum Type {
   H = 'PES Honorary Member',
   I = 'International Executive Membership',
   S = 'Scientific Members',
-  SE = 'Scientific Executive Members'
+  SE = 'Scientific Executive Members',
+  N = 'Non-Member'
 }

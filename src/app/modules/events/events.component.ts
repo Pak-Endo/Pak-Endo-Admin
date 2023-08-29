@@ -88,6 +88,7 @@ export class EventsComponent implements OnDestroy {
         Validators.required
       ),
       location: new FormControl(null, Validators.required),
+      openForPublic: new FormControl(false),
       featuredImage: new FormControl(null, Validators.required),
       gallery: new FormControl(undefined),
       type: new FormControl(null, Validators.required),
@@ -524,11 +525,11 @@ export class EventsComponent implements OnDestroy {
       this.eventForm.value,
       {startDate: startDateTimestamp},
       {endDate: endDateTimestamp},
-      {agenda: agendasWithDays}
+      {agenda: agendasWithDays},
+      {rating: 0}
     );
     delete payload.eventDays
     delete payload.agendas
-    console.log(payload)
     this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
       if(val) {
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
