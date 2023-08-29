@@ -747,6 +747,7 @@
           type="button"
           appearance="primary"
           size="m"
+          [disabled]="checkIfFilterFormHasValue() == true"
           (click)="applyAdvancedFilters()"
         >
           Apply

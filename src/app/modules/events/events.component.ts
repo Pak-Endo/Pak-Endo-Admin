@@ -349,7 +349,7 @@ export class EventsComponent implements OnDestroy {
   }
 
   floorNumber(value: number) {
-    return value >= this.limit ? Math.floor(value) : Math.ceil(value)
+    return value >= this.limit ? Math.floor(value) : Math.floor(value)
   }
 
   convertTimestampToObject(timestamp: number) {
@@ -611,8 +611,16 @@ export class EventsComponent implements OnDestroy {
     }))
   }
 
+  checkIfFilterFormHasValue() {
+    return !(this.filterForm.get('location')?.value ||
+    this.filterForm.get('speaker')?.value ||
+    this.filterForm.get('endDate')?.value ||
+    this.filterForm.get('startDate')?.value ||
+    this.filterForm.get('type')?.value)
+  }
+
   applyAdvancedFilters() {
-    this.isFilterActive.next(true)
+    this.isFilterActive.next(true);
     let payload = {...this.filterForm.value};
     if(payload.startDate) {
       let startDateTimestamp = this.convertDateObjToTimestmp(payload.startDate);
