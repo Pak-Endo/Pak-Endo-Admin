@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GuiGridModule } from '@generic-ui/ngx-grid';
 
 import { MembersRoutingModule } from './members-routing.module';
 import { MembersComponent } from './members.component';
@@ -28,7 +29,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     TuiSelectModule,
     TuiInputPhoneInternationalModule,
     TuiRadioBlockModule,
-    TuiGroupModule
+    TuiGroupModule,
+    GuiGridModule
   ]
 })
 export class MembersModule { }

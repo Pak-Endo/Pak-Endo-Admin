@@ -1,7 +1,7 @@
 <app-layout>
   <h1 class="text-2xl font-bold">Members</h1>
-  <div class="flex justify-between mt-5 w-full">
-    <div class="w-2/5 float-left">
+  <!-- <div class="flex justify-between mt-5 w-full"> -->
+    <!-- <div class="w-2/5 float-left">
       <tui-input
         tuiTextfieldIconLeft="tuiIconSearchLarge"
         [formControl]="searchValue"
@@ -14,8 +14,8 @@
           placeholder="Type to start searching..."
         />
       </tui-input>
-    </div>
-    <div class="w-1/5 flex justify-end">
+    </div> -->
+    <div class="flex justify-end">
       <button
         tuiButton
         icon="tuiIconPlusLarge"
@@ -27,93 +27,88 @@
         Add member
       </button>
     </div>
-  </div>
-  <ng-container *ngIf="(members$ | async) as data; else loading">
-    <div class="relative overflow-x-auto rounded-lg shadow-lg mb-7 mt-2">
-      <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-white uppercase bg-gradient-to-r from-[#234976] to-[#0F9449]">
-          <tr>
-            <th class="pl-4 py-3 text-sm">Member ID</th>
-            <th class="px-2 py-3 text-sm">Role</th>
-            <th class="px-2 py-3 text-sm">Fullname</th>
-            <th class="px-2 py-3 text-sm">Email</th>
-            <th class="px-2 py-3 text-sm">Phone Number</th>
-            <th class="px-2 py-3 text-sm">City</th>
-            <th class="px-2 py-3 text-sm">Status</th>
-            <th scope="col" class="px-2 py-3 text-sm">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <ng-container *ngIf="data?.users?.length == 0; else showEvents">
-            <th colspan="12" role="row" class="px-5 py-10 text-lg text-center">
-              No members available
-            </th>
-          </ng-container>
-          <ng-template #showEvents>
-            <ng-container *ngFor="let user of data?.users; let i = index; let first = first; let last = last; trackBy: trackByFn">
-              <tr class="bg-white border-b border-gray-300 text-gray-600">
-                <td class="pl-4 py-4 max-w-48">
-                  {{user?.memberID}}
-                </td> 
-                <td class="px-2 py-4 capitalize">
-                  {{user?.role}}
-                </td>
-                <td class="px-2 py-4">
-                  {{user?.fullName}}
-                </td>
-                <td class="px-2 py-4">
-                  {{user?.email}}
-                </td>
-                <td class="px-2 py-4">
-                  {{user?.phoneNumber ? user?.phoneNumber : 'No phone number provided'}}
-                </td>
-                <td class="px-2 py-4">
-                  {{user?.city}}
-                </td>
-                <td class="px-2 py-4">
-                  {{showStatus(user?.status)}}
-                </td>
-                <td class="py-4 inline-flex gap-2">
-                  <button
-                    tuiIconButton
-                    icon="tuiIconEdit"
-                    type="submit"
-                    appearance="custom"
-                    size="s"
-                    class="bg-[#1F566E] text-white"
-                    (click)="showAddorEditDialog(template, user)"
-                  >
-                  </button>
-                  <button
-                    tuiIconButton
-                    icon="tuiIconTrash2"
-                    type="submit"
-                    appearance="custom"
-                    size="s"
-                    class="bg-red-500 text-white"
-                    (click)="openDeleteDialog(deleteTemplate, user._id)"
-                  >
-                  </button>
-                </td> 
-              </tr>
-            </ng-container>
-          </ng-template>
-        </tbody>
-      </table>
-      <div class="pt-10 pb-6">
-        <tui-pagination
-          [length]="floorNumber(data?.totalCount / limit)"
-          [index]="index"
-          (indexChange)="goToPage($event)"
-        ></tui-pagination>
-      </div>
-    </div>
-  </ng-container>
-  <ng-template #loading>
+  <!-- </div> -->
+  <!-- <ng-container *ngIf="(members$ | async) as source;"> -->
+    <gui-grid
+      [source]="source"
+      [loading]="loading"
+      [autoResizeWidth]="true"
+      [sorting]="true"
+      [searching]="searching"
+      [paging]="paging"
+      [verticalGrid]="false"
+      [horizontalGrid]="false"
+      [theme]="'Material'"
+      class="overflow-x-auto shadow-lg mb-7 mt-2 w-full"
+    >
+      <!--Member ID-->
+      <gui-grid-column header="Member ID" field="memberID">
+        <ng-template let-value="value" let-item="item">
+          {{item?.memberID}}
+        </ng-template>
+      </gui-grid-column>
+      <!--Full name-->
+      <gui-grid-column header="Full name" field="fullName">
+        <ng-template let-value="value" let-item="item">
+          {{item?.fullName}}
+        </ng-template>
+      </gui-grid-column>
+      <!--Phone No-->
+      <gui-grid-column header="Phone No." field="phoneNumber">
+        <ng-template let-value="value" let-item="item">
+          {{item?.phoneNumber}}
+        </ng-template>
+      </gui-grid-column>
+      <!--Email-->
+      <gui-grid-column header="Email" field="email">
+        <ng-template let-value="value" let-item="item">
+          {{item?.email}}
+        </ng-template>
+      </gui-grid-column>
+      <!--City-->
+      <gui-grid-column header="City" field="city">
+        <ng-template let-value="value" let-item="item">
+          {{item?.city}}
+        </ng-template>
+      </gui-grid-column>
+      <!--City-->
+      <gui-grid-column header="Status" field="status">
+        <ng-template let-value="value" let-item="item">
+          {{item?.status}}
+        </ng-template>
+      </gui-grid-column>
+      <!--Actions-->
+      <gui-grid-column header="Actions" [sorting]="false">
+        <ng-template let-value="value" let-item="item">
+          <td class="py-4 inline-flex gap-2">
+            <button
+              tuiIconButton
+              icon="tuiIconEdit"
+              type="submit"
+              appearance="custom"
+              size="s"
+              class="bg-[#1F566E] text-white"
+              (click)="showAddorEditDialog(template, item)"
+            >
+            </button>
+            <button
+              tuiIconButton
+              icon="tuiIconTrash2"
+              type="submit"
+              appearance="custom"
+              size="s"
+              class="bg-red-500 text-white"
+              (click)="openDeleteDialog(deleteTemplate, item._id)"
+            >
+            </button>
+          </td> 
+        </ng-template>
+      </gui-grid-column>
+    </gui-grid>
+  <!-- </ng-container> -->
+  <!-- <ng-template #loading>
     <tui-loader class="mt-14" [overlay]="false" size="xl" [inheritColor]="false"></tui-loader>
-  </ng-template>
+  </ng-template> -->
 </app-layout>
 
 <ng-template #template let-observer>
@@ -401,3 +396,87 @@
     </button>
   </div>
 </ng-template>
+
+<!--
+  <div class="relative overflow-x-auto rounded-lg shadow-lg mb-7 mt-2">
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-white uppercase bg-gradient-to-r from-[#234976] to-[#0F9449]">
+          <tr>
+            <th class="pl-4 py-3 text-sm">Member ID</th>
+            <!-- <th class="px-2 py-3 text-sm">Role</th>
+            <th class="px-2 py-3 text-sm">Fullname</th>
+            <th class="px-2 py-3 text-sm">Email</th>
+            <th class="px-2 py-3 text-sm">Phone Number</th>
+            <th class="px-2 py-3 text-sm">City</th>
+            <th class="px-2 py-3 text-sm">Status</th>
+            <th scope="col" class="px-2 py-3 text-sm">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="data?.users?.length == 0; else showEvents">
+            <th colspan="12" role="row" class="px-5 py-10 text-lg text-center">
+              No members available
+            </th>
+          </ng-container>
+          <ng-template #showEvents>
+            <ng-container *ngFor="let user of data?.users; let i = index; let first = first; let last = last; trackBy: trackByFn">
+              <tr class="bg-white border-b border-gray-300 text-gray-600">
+                <td class="pl-4 py-4 max-w-48">
+                  {{user?.memberID}}
+                </td> 
+                <!-- <td class="px-2 py-4 capitalize">
+                  {{user?.role}}
+                </td>
+                <td class="px-2 py-4">
+                  {{user?.fullName}}
+                </td>
+                <td class="px-2 py-4">
+                  {{user?.email}}
+                </td>
+                <td class="px-2 py-4">
+                  {{user?.phoneNumber ? user?.phoneNumber : 'No phone number provided'}}
+                </td>
+                <td class="px-2 py-4">
+                  {{user?.city}}
+                </td>
+                <td class="px-2 py-4">
+                  {{showStatus(user?.status)}}
+                </td>
+                <td class="py-4 inline-flex gap-2">
+                  <button
+                    tuiIconButton
+                    icon="tuiIconEdit"
+                    type="submit"
+                    appearance="custom"
+                    size="s"
+                    class="bg-[#1F566E] text-white"
+                    (click)="showAddorEditDialog(template, user)"
+                  >
+                  </button>
+                  <button
+                    tuiIconButton
+                    icon="tuiIconTrash2"
+                    type="submit"
+                    appearance="custom"
+                    size="s"
+                    class="bg-red-500 text-white"
+                    (click)="openDeleteDialog(deleteTemplate, user._id)"
+                  >
+                  </button>
+                </td> 
+              </tr>
+            </ng-container>
+          </ng-template>
+        </tbody>
+      </table>
+      <div class="pt-10 pb-6">
+        <tui-pagination
+          [length]="floorNumber(data?.totalCount / limit)"
+          [index]="index"
+          (indexChange)="goToPage($event)"
+        ></tui-pagination>
+      </div>
+    </div>
+-->

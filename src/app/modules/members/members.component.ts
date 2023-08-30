@@ -2,10 +2,11 @@ import { Component, Inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
-import { Observable, Subject, Subscription, debounceTime, distinctUntilChanged, shareReplay, switchMap, takeUntil } from 'rxjs';
+import { Subject, Subscription, debounceTime, distinctUntilChanged, shareReplay, switchMap, takeUntil } from 'rxjs';
 import { MembersService } from './services/members.service';
 import {TuiCountryIsoCode} from '@taiga-ui/i18n'
 import { Type } from 'src/@core/models/user.model';
+import { GuiColumn, GuiPaging, GuiPagingDisplay, GuiSearching } from '@generic-ui/ngx-grid';
 
 @Component({
   selector: 'app-members',
@@ -14,10 +15,9 @@ import { Type } from 'src/@core/models/user.model';
 })
 export class MembersComponent implements OnDestroy {
   searchValue: FormControl = new FormControl();
-  limit: number = 8;
+  limit: number = 1000;
   page: number = 1;
   index: number = 0;
-  members$: Observable<any>;
   destroy$ = new Subject();
   memberID!: string | null;
   memberForm!: FormGroup;
@@ -33,6 +33,47 @@ export class MembersComponent implements OnDestroy {
   ];
   countryIsoCode = TuiCountryIsoCode.PK;
   savingMember = new Subject<boolean>();
+  source: Array<any> = [];
+  loading = true;
+  columns: Array<GuiColumn> = [
+    {
+      header:'Member ID',
+      field: 'memberID'
+    },
+    {
+      header:'Fullname',
+      field: 'fullName'
+    },
+    {
+      header:'Phone No.',
+      field: 'phoneNumber'
+    },
+    {
+      header:'Email',
+      field: 'email'
+    },
+    {
+      header:'City',
+      field: 'city'
+    },
+    {
+      header:'Status',
+      field: 'status'
+    }
+  ];
+  searching: GuiSearching = {
+    enabled: true,
+    highlighting: true,
+    placeholder: 'Search member data'
+  };
+  paging: GuiPaging = {
+		enabled: true,
+		page: 1,
+		pageSize: 5,
+		pageSizes: [5, 15, 30],
+		pagerBottom: true,
+		display: GuiPagingDisplay.BASIC
+	};
 
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
@@ -40,14 +81,26 @@ export class MembersComponent implements OnDestroy {
     private fb: FormBuilder
   ) {
     this.initMemberForm();
-    this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
+    this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ')
+    .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+      this.source = data?.users?.map((value: any) => {
+        return {
+          ...value,
+          status: this.showStatus(value?.status)
+        }
+      });
+      this.loading = false;
+    })
     this.searchValue.valueChanges.pipe(
       debounceTime(400),
       distinctUntilChanged(),
       shareReplay(),
-      switchMap((val: string) => this.members$ = this.memberService.getAllMembers(this.limit, this.page, val)),
+      switchMap((val: string) => this.memberService.getAllMembers(this.limit, this.page, val)),
       takeUntil(this.destroy$)
-    ).subscribe();
+    ).subscribe((data: any) => {
+      this.source = data?.users;
+      this.loading = false;
+    });
   }
 
   initMemberForm() {
@@ -116,8 +169,16 @@ export class MembersComponent implements OnDestroy {
 
   goToPage(index: number): void {
     this.index = index;
-    this.page = index + 1;
-    this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
+    this.page = index;
+    this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ')
+    .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+      this.source = data?.users?.map((value: any) => {
+        return {
+          ...value,
+          status: this.showStatus(value?.status)
+        }
+      });
+    });
   }
 
   floorNumber(value: number) {
@@ -155,7 +216,15 @@ export class MembersComponent implements OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe((res: any) => {
       if(res) {
-        this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
+        this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ')
+        .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+          this.source = data?.users?.map((value: any) => {
+            return {
+              ...value,
+              status: this.showStatus(value?.status)
+            }
+          });
+        });
         this.dialogSubs.forEach(val => val.unsubscribe());
         this.memberForm.reset();
         this.savingMember.next(false)
@@ -175,7 +244,16 @@ export class MembersComponent implements OnDestroy {
     this.memberService.updateUser(payload, this.memberID).pipe(takeUntil(this.destroy$))
     .subscribe((res: any) => {
       if(res) {
-        this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
+        this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ')
+        .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+          this.source = data?.users?.map((value: any) => {
+            return {
+              ...value,
+              status: this.showStatus(value?.status)
+            }
+          });
+          this.loading = false;
+        });
         this.dialogSubs.forEach(val => val.unsubscribe());
         this.memberForm.reset();
         this.savingMember.next(false);
@@ -191,7 +269,16 @@ export class MembersComponent implements OnDestroy {
     .subscribe(val => {
       if(val) {
         this.savingMember.next(false);
-        this.members$ = this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ');
+        this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ')
+        .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+          this.source = data?.users?.map((value: any) => {
+            return {
+              ...value,
+              status: this.showStatus(value?.status)
+            }
+          });
+          this.loading = false;
+        });
       }
     }))
   }
