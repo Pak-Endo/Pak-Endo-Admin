@@ -1,7 +1,7 @@
 <app-layout>
   <h1 class="text-2xl font-bold">Members</h1>
-  <!-- <div class="flex justify-between mt-5 w-full"> -->
-    <!-- <div class="w-2/5 float-left">
+  <!-- <div class="flex justify-between w-full mt-5"> -->
+    <!-- <div class="float-left w-2/5">
       <tui-input
         tuiTextfieldIconLeft="tuiIconSearchLarge"
         [formControl]="searchValue"
@@ -39,7 +39,7 @@
       [verticalGrid]="false"
       [horizontalGrid]="false"
       [theme]="'Material'"
-      class="overflow-x-auto shadow-lg mb-7 mt-2 w-full"
+      class="w-full mt-2 overflow-x-auto shadow-lg mb-7"
     >
       <!--Member ID-->
       <gui-grid-column header="Member ID" field="memberID">
@@ -80,7 +80,7 @@
       <!--Actions-->
       <gui-grid-column header="Actions" [sorting]="false">
         <ng-template let-value="value" let-item="item">
-          <td class="py-4 inline-flex gap-2">
+          <td class="inline-flex gap-2 py-4">
             <button
               tuiIconButton
               icon="tuiIconEdit"
@@ -97,11 +97,11 @@
               type="submit"
               appearance="custom"
               size="s"
-              class="bg-red-500 text-white"
+              class="text-white bg-red-500"
               (click)="openDeleteDialog(deleteTemplate, item._id)"
             >
             </button>
-          </td> 
+          </td>
         </ng-template>
       </gui-grid-column>
     </gui-grid>
@@ -112,12 +112,12 @@
 </app-layout>
 
 <ng-template #template let-observer>
-  <h1 class="text-center text-3xl font-bold">{{memberID ? 'Edit': 'Add new'}} Member</h1>
+  <h1 class="text-3xl font-bold text-center">{{memberID ? 'Edit': 'Add new'}} Member</h1>
   <form [formGroup]="memberForm">
     <div class="grid grid-cols-12 gap-3 mt-10 mb-5">
       <div class="col-span-2">
         <!--Prefix-->
-        <label class="font-semibold text-base">Prefix</label>
+        <label class="text-base font-semibold">Prefix</label>
         <tui-select
           tuiTextfieldSize="l"
           formControlName="prefix"
@@ -141,7 +141,7 @@
       </div>
       <div class="col-span-5">
         <!--Firstname-->
-        <label class="font-semibold text-base">Firstname</label>
+        <label class="text-base font-semibold">Firstname</label>
         <tui-input formControlName="firstName" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1">
           Member first name
           <input
@@ -159,7 +159,7 @@
       </div>
       <div class="col-span-5">
         <!--Firstname-->
-        <label class="font-semibold text-base">Lastname</label>
+        <label class="text-base font-semibold">Lastname</label>
         <tui-input formControlName="lastName" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1">
           Member last name
           <input
@@ -177,7 +177,7 @@
       </div>
     </div>
     <!--Email-->
-    <label class="font-semibold text-base">Email</label>
+    <label class="text-base font-semibold">Email</label>
     <tui-input formControlName="email" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" tuiTextfieldIcon="tuiIconMailLarge">
       Email address
       <input
@@ -201,7 +201,7 @@
 
     <!--City-->
     <div class="mt-7">
-      <label class="font-semibold text-base">City</label>
+      <label class="text-base font-semibold">City</label>
       <tui-input formControlName="city" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" tuiTextfieldIcon="tuiIconMapPinLarge">
         City
         <input
@@ -220,7 +220,7 @@
 
     <!--Phone Number-->
     <div class="mt-7">
-      <label class="font-semibold text-base">Phone Number</label>
+      <label class="text-base font-semibold">Phone Number</label>
       <tui-input-phone-international
         class="mt-1"
         formControlName="phoneNumber"
@@ -239,7 +239,7 @@
 
     <!--Gender-->
     <div class="mt-7">
-      <label class="font-semibold text-base">Gender</label>
+      <label class="text-base font-semibold">Gender</label>
       <tui-select
         tuiTextfieldSize="l"
         formControlName="gender"
@@ -265,7 +265,7 @@
 
     <!--Type-->
     <div class="mt-7">
-      <label class="font-semibold text-base">Membership Type</label>
+      <label class="text-base font-semibold">Membership Type</label>
       <tui-select
         tuiTextfieldSize="l"
         formControlName="type"
@@ -292,10 +292,10 @@
     <!--Status-->
     <ng-container *ngIf="memberID">
       <div class="mt-7">
-        <label class="font-semibold text-base">Status</label>
+        <label class="text-base font-semibold">Status</label>
         <div
           tuiGroup
-          class="group mt-1"
+          class="mt-1 group"
           [collapsed]="true"
           >
             <tui-radio-block
@@ -333,7 +333,7 @@
         </div>
       </div>
     </ng-container>
-    
+
     <div class="flex justify-center gap-3 mt-8">
       <ng-container *ngIf="!memberID">
         <button
@@ -385,10 +385,10 @@
 </ng-template>
 
 <ng-template #deleteTemplate let-observer>
-  <h1 class="font-bold text-2xl text-center border-b border-gray-400 pb-3">Remove Member</h1>
-  <h1 class="font-bold text-xl text-center py-3">Are you sure you want to delete this member?</h1>
+  <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Remove Member</h1>
+  <h1 class="py-3 text-xl font-bold text-center">Are you sure you want to delete this member?</h1>
   <div class="flex justify-center gap-3 mt-5">
-    <button [showLoader]="(savingMember | async) == true" tuiButton appearance="custom" icon="tuiIconTrashLarge" class="bg-red-500 text-white" (click)="deleteMember(); observer.complete()">
+    <button [showLoader]="(savingMember | async) == true" tuiButton appearance="custom" icon="tuiIconTrashLarge" class="text-white bg-red-500" (click)="deleteMember(); observer.complete()">
       Delete
     </button>
     <button tuiButton appearance="secondary-destructive" icon="tuiIconCloseLarge" (click)="observer.complete()">
@@ -398,11 +398,11 @@
 </ng-template>
 
 <!--
-  <div class="relative overflow-x-auto rounded-lg shadow-lg mb-7 mt-2">
+  <div class="relative mt-2 overflow-x-auto rounded-lg shadow-lg mb-7">
       <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-white uppercase bg-gradient-to-r from-[#234976] to-[#0F9449]">
           <tr>
-            <th class="pl-4 py-3 text-sm">Member ID</th>
+            <th class="py-3 pl-4 text-sm">Member ID</th>
             <!-- <th class="px-2 py-3 text-sm">Role</th>
             <th class="px-2 py-3 text-sm">Fullname</th>
             <th class="px-2 py-3 text-sm">Email</th>
@@ -422,10 +422,10 @@
           </ng-container>
           <ng-template #showEvents>
             <ng-container *ngFor="let user of data?.users; let i = index; let first = first; let last = last; trackBy: trackByFn">
-              <tr class="bg-white border-b border-gray-300 text-gray-600">
-                <td class="pl-4 py-4 max-w-48">
+              <tr class="text-gray-600 bg-white border-b border-gray-300">
+                <td class="py-4 pl-4 max-w-48">
                   {{user?.memberID}}
-                </td> 
+                </td>
                 <!-- <td class="px-2 py-4 capitalize">
                   {{user?.role}}
                 </td>
@@ -444,7 +444,7 @@
                 <td class="px-2 py-4">
                   {{showStatus(user?.status)}}
                 </td>
-                <td class="py-4 inline-flex gap-2">
+                <td class="inline-flex gap-2 py-4">
                   <button
                     tuiIconButton
                     icon="tuiIconEdit"
@@ -461,11 +461,11 @@
                     type="submit"
                     appearance="custom"
                     size="s"
-                    class="bg-red-500 text-white"
+                    class="text-white bg-red-500"
                     (click)="openDeleteDialog(deleteTemplate, user._id)"
                   >
                   </button>
-                </td> 
+                </td>
               </tr>
             </ng-container>
           </ng-template>
