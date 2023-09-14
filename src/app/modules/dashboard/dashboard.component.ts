@@ -13,7 +13,7 @@ export class DashboardComponent implements OnDestroy {
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin],
-    height: '500px',
+    height: '550px',
     headerToolbar: {
       left: 'prev,next',
       center: 'title',
