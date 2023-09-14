@@ -159,7 +159,19 @@ export class EventsComponent implements OnDestroy {
   goToPage(index: number): void {
     this.index = index;
     this.page = index + 1;
-    this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
+    let payload = {...this.filterForm.value};
+    if(payload.startDate) {
+      let startDateTimestamp = this.convertDateObjToTimestmp(payload.startDate);
+      payload = {...payload, startDate: startDateTimestamp}
+    }
+    if(payload.endDate) {
+      let endDateTimestamp = this.convertDateObjToTimestmp(payload.endDate)
+      payload = {...payload, endDate: endDateTimestamp}
+    }
+    if(this.searchValue?.value) {
+      payload = {...payload, title: this.searchValue?.value }
+    }
+    this.events$ = this.eventService.getAllEvents(this.limit, this.page, payload);
   }
 
   trackByFn(item: any, index: number): string {
