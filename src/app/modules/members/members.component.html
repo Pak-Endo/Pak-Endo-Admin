@@ -83,8 +83,18 @@
           <td class="inline-flex gap-2 py-4">
             <button
               tuiIconButton
+              icon="tuiIconCheckSquare"
+              type="button"
+              appearance="custom"
+              size="s"
+              class="text-white bg-green-600"
+              (click)="sendMemberForApproval(approveTemplate, item)"
+            >
+            </button>
+            <button
+              tuiIconButton
               icon="tuiIconEdit"
-              type="submit"
+              type="button"
               appearance="custom"
               size="s"
               class="bg-[#1F566E] text-white"
@@ -94,7 +104,7 @@
             <button
               tuiIconButton
               icon="tuiIconTrash2"
-              type="submit"
+              type="button"
               appearance="custom"
               size="s"
               class="text-white bg-red-500"
@@ -366,7 +376,7 @@
         icon="tuiIconCloseLarge"
         appearance="secondary-destructive"
         [disabled]="(savingMember | async) == true"
-        (click)="closeDialog()"
+        (click)="closeDialog($event)"
       >
         Cancel
       </button>
@@ -397,13 +407,62 @@
   </div>
 </ng-template>
 
+<ng-template #approveTemplate let-observer>
+  <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Approve User</h1>
+  <div class="mt-7">
+    <label class="text-base font-semibold">Please specify a membership type for this user</label>
+    <tui-select
+      tuiTextfieldSize="l"
+      [formControl]="approveMembertype"
+      class="mt-1"
+    >
+      Specify membership type
+      <input
+        tuiTextfield
+        placeholder="Select type"
+      />
+      <tui-data-list-wrapper
+        *tuiDataList
+        [items]="types"
+      ></tui-data-list-wrapper>
+    </tui-select>
+    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+      validation: 'required',
+      message: 'Please specify a membership type',
+      control: approveMembertype
+    }">
+    </ng-container>
+  </div>
+  <div class="flex justify-center gap-3 mt-5">
+    <button
+      [showLoader]="(savingMember | async) == true"
+      tuiButton
+      appearance="custom"
+      icon="tuiIconCheckLarge"
+      class="text-white bg-[#234A76]"
+      [disabled]="approveMembertype.invalid"
+      (click)="approveMember()"
+    >
+      Approve
+    </button>
+    <button
+      tuiButton
+      appearance="secondary-destructive"
+      icon="tuiIconCloseLarge"
+      (click)="observer.complete(); approveMembertype.reset()"
+    >
+      Cancel
+    </button>
+  </div>
+</ng-template>
+
 <!--
   <div class="relative mt-2 overflow-x-auto rounded-lg shadow-lg mb-7">
       <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-white uppercase bg-gradient-to-r from-[#234976] to-[#0F9449]">
           <tr>
             <th class="py-3 pl-4 text-sm">Member ID</th>
-            <!-- <th class="px-2 py-3 text-sm">Role</th>
+             <th class="px-2 py-3 text-sm">Role</th>
             <th class="px-2 py-3 text-sm">Fullname</th>
             <th class="px-2 py-3 text-sm">Email</th>
             <th class="px-2 py-3 text-sm">Phone Number</th>

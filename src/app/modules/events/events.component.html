@@ -1,7 +1,7 @@
 <app-layout>
   <h1 class="text-2xl font-bold">Events</h1>
-  <div class="flex justify-between mt-5 w-full">
-    <div class="w-2/5 float-left relative">
+  <div class="flex justify-between w-full mt-5">
+    <div class="relative float-left w-2/5">
       <tui-input
         tuiTextfieldIconLeft="tuiIconSearchLarge"
         [formControl]="searchValue"
@@ -45,7 +45,7 @@
         Reset Filters
       </button>
     </div>
-    <div class="w-1/5 flex justify-end">
+    <div class="flex justify-end w-1/5">
       <button
         tuiButton
         icon="tuiIconPlusLarge"
@@ -59,11 +59,11 @@
     </div>
   </div>
   <ng-container *ngIf="(events$ | async) as data; else loading">
-    <div class="relative overflow-x-auto rounded-lg shadow-lg mb-7 mt-2">
+    <div class="relative mt-2 overflow-x-auto rounded-lg shadow-lg mb-7">
       <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-white uppercase bg-gradient-to-r from-[#234976] to-[#0F9449]">
           <tr>
-            <th class="pl-4 py-3 text-sm">Title</th>
+            <th class="py-3 pl-4 text-sm">Title</th>
             <th class="px-2 py-3 text-sm">Starts On</th>
             <th class="px-2 py-3 text-sm">Ends On</th>
             <th class="px-2 py-3 text-sm">Location</th>
@@ -82,29 +82,29 @@
           </ng-container>
           <ng-template #showEvents>
             <ng-container *ngFor="let event of data?.events; let i = index; let first = first; let last = last; trackBy: trackByFn">
-              <tr class="bg-white border-b border-gray-300 text-gray-600">
-                <td class="pl-4 py-4 max-w-48">
-                  <div class="flex gap-2 items-center">
+              <tr class="text-gray-600 bg-white border-b border-gray-300">
+                <td class="py-4 pl-4 max-w-48">
+                  <div class="flex items-center gap-2">
                     <img [src]="event?.featuredImage" alt="featured" class="w-12 h-12 rounded-md">
                     <span>{{event?.title}}</span>
                   </div>
-                </td> 
+                </td>
                 <td class="px-2 py-4">
                   {{event?.startDate | date:'mediumDate'}}
-                </td> 
+                </td>
                 <td class="px-2 py-4">
                   {{event?.endDate | date:'mediumDate'}}
-                </td> 
+                </td>
                 <td class="px-2 py-4">
                     {{event?.location}}
-                </td> 
+                </td>
                 <td class="px-2 py-4 capitalize">
                   {{event?.eventStatus}}
-                </td> 
+                </td>
                 <td class="py-4">
                   <tui-rating [(ngModel)]="rating" class="text-yellow-600" disabled="true"></tui-rating>
                 </td>
-                <td class="py-4 inline-flex gap-2">
+                <td class="inline-flex gap-2 py-4">
                   <button
                     tuiIconButton
                     icon="tuiIconEye"
@@ -131,11 +131,11 @@
                     type="submit"
                     appearance="custom"
                     size="s"
-                    class="bg-red-500 text-white"
+                    class="text-white bg-red-500"
                     (click)="openDeleteDialog(deleteTemplate, event?._id)"
                   >
                   </button>
-                </td> 
+                </td>
               </tr>
             </ng-container>
           </ng-template>
@@ -160,7 +160,7 @@
   #template
   let-observer
 >
-  <h1 class="text-center text-2xl font-bold">{{eventID ? 'Edit': 'Create'}} Event</h1>
+  <h1 class="text-2xl font-bold text-center">{{eventID ? 'Edit': 'Create'}} Event</h1>
   <form [formGroup]="eventForm">
     <tui-stepper [activeItemIndex]="activeIndex" class="flex justify-center my-5">
       <button
@@ -182,10 +182,10 @@
     </tui-stepper>
 
     <ng-container *ngIf="activeIndex == 0">
-      <h4 class="my-5 text-center text-lg">Provide details for your event</h4>
+      <h4 class="my-5 text-lg text-center">Provide details for your event</h4>
       <!--Title-->
       <div class="my-3">
-        <label class="font-semibold text-base">Title</label>
+        <label class="text-base font-semibold">Title</label>
         <tui-input formControlName="title" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
           e.g. Annual Union Meeting
           <input
@@ -205,7 +205,7 @@
 
       <!--Description-->
       <div class="mb-3">
-        <label class="font-semibold text-base">Description</label>
+        <label class="text-base font-semibold">Description</label>
         <tui-text-area
           formControlName="description"
           [tuiTextfieldLabelOutside]="true"
@@ -231,7 +231,7 @@
 
       <!--Featured Image-->
       <div class="my-3">
-        <label class="font-semibold text-base">Featured Image</label>
+        <label class="text-base font-semibold">Featured Image</label>
         <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
           <ng-container *ngIf="!f['featuredImage']?.value">
             <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
@@ -248,9 +248,9 @@
           </ng-container>
           <ng-container *ngIf="f['featuredImage']?.value">
             <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-              <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
+              <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
                 <div class="relative w-28 h-28">
-                  <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
+                  <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
                 </div>
               </div>
               <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
@@ -261,7 +261,7 @@
 
       <!--Location-->
       <div class="mt-2">
-        <label class="font-semibold text-base">Location</label>
+        <label class="text-base font-semibold">Location</label>
         <tui-input formControlName="location" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" tuiTextfieldIcon="tuiIconMapPinLarge">
           e.g. Serena Hotel, Islamabad
           <input
@@ -280,7 +280,7 @@
 
       <!--Type-->
       <div class="my-4">
-        <label class="font-semibold text-base">Type</label>
+        <label class="text-base font-semibold">Type</label>
         <tui-select
           formControlName="type"
           [tuiTextfieldLabelOutside]="true"
@@ -299,7 +299,7 @@
 
       <!--Dates-->
       <div class="my-4">
-        <label class="font-semibold text-base col-span-12">Select event days</label>
+        <label class="col-span-12 text-base font-semibold">Select event days</label>
         <tui-input-date-range formControlName="eventDays" class="mt-1" [min]="today">Choose dates</tui-input-date-range>
         <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
           validation: 'required',
@@ -311,13 +311,13 @@
     </ng-container>
 
     <ng-container *ngIf="activeIndex == 1">
-      <h4 class="my-5 text-center text-lg">Create an agenda for your event</h4>
+      <h4 class="my-5 text-lg text-center">Create an agenda for your event</h4>
       <ng-container *ngFor="let day of daysOfEvents; let index = index; let firstDay = first;">
         <p class="font-bold text-xl bg-[#224C73] rounded-lg text-white px-3 py-2" [ngClass]="firstDay ? 'mb-8': 'my-8'">
           Day {{index + 1}} - {{mapAndGetMonths(day?.month)}} {{day.day}}, {{day.year}}
         </p>
         <!--Set Agenda-->
-        <div class="border-b border-gray-400 pb-5">
+        <div class="pb-5 border-b border-gray-400">
           <ng-container formArrayName="agendas">
             <ng-container *ngFor="let agent of agendas.controls; let i = index; let first = first; let last = last">
               <div [formGroupName]="i" class="w-full">
@@ -325,8 +325,8 @@
                   <h1 class="my-3 text-xl font-bold"></h1>
                   <!-- image -->
                   <ng-container *ngIf="!agent.get('speakerImg')!.value">
-                    <div class="mb-7 flex flex-col items-center justify-center">
-                      <label [for]="'dropzone-file-doc-' + i" class="flex flex-col items-center justify-center w-28 h-28 border-2 border-gray-400 border-dashed rounded-full cursor-pointer bg-gray-50 hover:bg-gray-100">
+                    <div class="flex flex-col items-center justify-center mb-7">
+                      <label [for]="'dropzone-file-doc-' + i" class="flex flex-col items-center justify-center border-2 border-gray-400 border-dashed rounded-full cursor-pointer w-28 h-28 bg-gray-50 hover:bg-gray-100">
                         <div class="flex flex-col items-center justify-center py-1">
                           <tui-marker-icon
                             mode="link"
@@ -336,25 +336,25 @@
                         </div>
                         <input [id]="'dropzone-file-doc-' + i"  type="file" accept="image/*" class="hidden" (change)="uploadSpeakerImage($event, i)" />
                       </label>
-                      <p class="text-xs mt-1">Upload an image for the speaker <sup>(Optional)</sup></p>
+                      <p class="mt-1 text-xs">Upload an image for the speaker <sup>(Optional)</sup></p>
                     </div>
                   </ng-container>
                   <ng-container *ngIf="agent.get('speakerImg')!.value">
-                    <div class="mb-7 flex flex-col items-center justify-center">
-                      <label [for]="'dropzone-file-doc-' + i" class="flex flex-col items-center justify-center w-28 h-28 border-2 border-gray-400 border-dashed rounded-full cursor-pointer bg-gray-50 hover:bg-gray-100">
-                        <div class="flex justify-start align-top flex-wrap">
+                    <div class="flex flex-col items-center justify-center mb-7">
+                      <label [for]="'dropzone-file-doc-' + i" class="flex flex-col items-center justify-center border-2 border-gray-400 border-dashed rounded-full cursor-pointer w-28 h-28 bg-gray-50 hover:bg-gray-100">
+                        <div class="flex flex-wrap justify-start align-top">
                           <div class="relative w-[6.5rem] h-[6.5rem]">
-                            <img [src]="agent.get('speakerImg')!.value" alt="img" width="40" height="40" class="rounded-full object-contain border border-gray-400 w-full h-full">
+                            <img [src]="agent.get('speakerImg')!.value" alt="img" width="40" height="40" class="object-contain w-full h-full border border-gray-400 rounded-full">
                           </div>
                         </div>
                         <input [id]="'dropzone-file-doc-' + i" (change)="uploadSpeakerImage($event, i)"  type="file" accept="image/*" class="hidden" />
                       </label>
-                      <p class="text-xs mt-1">Upload an image for the speaker <sup>(Optional)</sup></p>
+                      <p class="mt-1 text-xs">Upload an image for the speaker <sup>(Optional)</sup></p>
                     </div>
                   </ng-container>
                   <!--Agenda title-->
                   <div class="my-3">
-                    <label class="font-semibold text-base">Title</label>
+                    <label class="text-base font-semibold">Title</label>
                     <tui-input formControlName="agendaTitle" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
                       e.g. Adrenal Health and Disease.
                       <input
@@ -370,7 +370,7 @@
                   <!--Time-->
                   <div class="grid grid-cols-12 gap-3">
                     <div class="col-span-6">
-                      <label class="font-semibold text-base">Start time</label>
+                      <label class="text-base font-semibold">Start time</label>
                       <tui-input-time
                         formControlName="from"
                         [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true"
@@ -379,7 +379,7 @@
                       </tui-input-time>
                     </div>
                     <div class="col-span-6">
-                      <label class="font-semibold text-base">End time</label>
+                      <label class="text-base font-semibold">End time</label>
                       <tui-input-time
                         formControlName="to"
                         [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true"
@@ -387,15 +387,15 @@
                         e.g. 23:59
                       </tui-input-time>
                     </div>
-                    <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="text-xs text-red-500 col-span-12">
+                    <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="col-span-12 text-xs text-red-500">
                       Please provide a valid timeline
                     </span>
                   </div>
                   <!--Venue-->
                   <div class="my-3">
-                    <label class="font-semibold text-base">Venue</label>
+                    <label class="text-base font-semibold">Venue</label>
                     <tui-input formControlName="venue" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-                      e.g. SHAMADAN 3, Islamabad Serena hotel 
+                      e.g. SHAMADAN 3, Islamabad Serena hotel
                       <input
                         tuiTextfield
                         type="text"
@@ -408,7 +408,7 @@
                   </div>
                   <!--Speaker-->
                   <div class="my-3">
-                    <label class="font-semibold text-base">Speaker</label>
+                    <label class="text-base font-semibold">Speaker</label>
                     <tui-input formControlName="speaker" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
                       e.g. J. Robert Oppenheimer
                       <input
@@ -421,16 +421,16 @@
                   <!--attachments-->
                   <div *ngIf="eventID" class="my-3">
                     <ng-container *ngIf="attachments.length > 0">
-                      <label class="font-semibold text-base">Attachments</label>
-                      <label [for]="'dropzone-file-all' + i" class="flex flex-col justify-start w-full h-44 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                        <div class="flex justify-start align-top py-4 gap-5 flex-wrap ml-2">
+                      <label class="text-base font-semibold">Attachments</label>
+                      <label [for]="'dropzone-file-all' + i" class="flex flex-col justify-start w-full border-2 border-gray-400 border-dashed rounded-lg cursor-pointer h-44 bg-gray-50 hover:bg-gray-100">
+                        <div class="flex flex-wrap justify-start gap-5 py-4 ml-2 align-top">
                           <ng-container *ngFor="let image of attachments; let j = index">
                             <div class="relative w-32 h-32">
-                              <div (click)="spliceAttachment(j, $event)" [ngClass]="checkFileType(image.mimetype) == 'audio' ? '-top-2 left-[120px]' : '-top-2 -right-1'" class="rounded-full h-5 w-5 bg-red-600 flex flex-col items-center justify-center text-white font-semibold z-50 absolute">
+                              <div (click)="spliceAttachment(j, $event)" [ngClass]="checkFileType(image.mimetype) == 'audio' ? '-top-2 left-[120px]' : '-top-2 -right-1'" class="absolute z-50 flex flex-col items-center justify-center w-5 h-5 font-semibold text-white bg-red-600 rounded-full">
                                 x
                               </div>
-                              <img *ngIf="checkFileType(image.mimetype) == 'image'" [src]="image?.url" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
-                              <video *ngIf="checkFileType(image.mimetype) == 'video'" controls class="rounded-md object-contain border border-gray-400 w-full h-full">
+                              <img *ngIf="checkFileType(image.mimetype) == 'image'" [src]="image?.url" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
+                              <video *ngIf="checkFileType(image.mimetype) == 'video'" controls class="object-contain w-full h-full border border-gray-400 rounded-md">
                                 <source [src]="image.url" [type]="image.mimetype" />
                               </video>
                               <div *ngIf="checkFileType(image.mimetype) == 'audio'">
@@ -443,8 +443,8 @@
                       </label>
                     </ng-container>
                     <ng-container *ngIf="attachments.length == 0">
-                      <label class="font-semibold text-base">Attachments</label>
-                      <label [for]="'dropzone-file-all' + i" class="flex flex-col justify-start w-full h-44 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <label class="text-base font-semibold">Attachments</label>
+                      <label [for]="'dropzone-file-all' + i" class="flex flex-col justify-start w-full border-2 border-gray-400 border-dashed rounded-lg cursor-pointer h-44 bg-gray-50 hover:bg-gray-100">
                         <div class="flex flex-col items-center justify-center pt-5 pb-6">
                           <tui-marker-icon
                             mode="link"
@@ -490,7 +490,7 @@
     <ng-container *ngIf="activeIndex == 2">
       <!--Gallery Images-->
       <div class="my-5">
-        <label class="font-semibold text-base">Gallery Images</label><sup>(Optional)</sup>
+        <label class="text-base font-semibold">Gallery Images</label><sup>(Optional)</sup>
         <div (change)="uploadMultipleImages($event)" class="flex items-center justify-center w-full mt-1">
           <ng-container *ngIf="multipleImages?.length == 0">
             <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
@@ -508,24 +508,24 @@
           </ng-container>
           <ng-container *ngIf="multipleImages.length > 0">
             <label for="dropzone-file" class="flex flex-col justify-start w-full h-64 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-              <div class="flex justify-start align-top py-4 gap-2 flex-wrap ml-2">
+              <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
                 <ng-container *ngFor="let image of multipleImages; let j = index">
                   <div class="relative w-24 h-24">
-                    <div (click)="spliceImage(j, $event)" class="rounded-full h-5 w-5 bg-red-600 absolute -top-2 -right-1 flex flex-col items-center justify-center text-white font-semibold">
+                    <div (click)="spliceImage(j, $event)" class="absolute flex flex-col items-center justify-center w-5 h-5 font-semibold text-white bg-red-600 rounded-full -top-2 -right-1">
                       x
                     </div>
-                    <img [src]="image" alt="img" width="100" height="100" class="rounded-md object-contain border border-gray-400 w-full h-full">
+                    <img [src]="image" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
                   </div>
                 </ng-container>
               </div>
               <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
             </label>
           </ng-container>
-        </div> 
+        </div>
       </div>
       <!--Organizer-->
       <div class="my-3">
-        <label class="font-semibold text-base">Organizer</label>
+        <label class="text-base font-semibold">Organizer</label>
         <tui-input formControlName="organizer" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
           e.g. Ahmed Khan
           <input
@@ -544,7 +544,7 @@
       </div>
       <!--Contact-->
       <div class="my-3">
-        <label class="font-semibold text-base">Phone Number</label>
+        <label class="text-base font-semibold">Phone Number</label>
         <tui-input-phone-international
           class="mt-1"
           formControlName="organizerContact"
@@ -619,7 +619,7 @@
           icon="tuiIconCloseLarge"
           appearance="secondary-destructive"
           [disabled]="(savingEvent | async) == true"
-          (click)="closeDialog()"
+          (click)="closeDialog($event)"
         >
           Cancel
         </button>
@@ -636,13 +636,13 @@
       </ng-container>
     </div>
   </form>
-  <div *ngIf="(uploadingMultiple | async) == true" class="absolute right-3 bottom-6 z-50">
+  <div *ngIf="(uploadingMultiple | async) == true" class="absolute z-50 right-3 bottom-6">
     <button (click)="toggle()" class="px-10 py-3 rounded-tr-md rounded-tl-md bg-[#234B76] text-white font-semibold">Media upload progress</button>
-    <tui-expand [expanded]="toggleExpand" class="border border-gray-400 rounded-br-md rounded-bl-md h-18 shadow-md drop-shadow-md bg-white">
+    <tui-expand [expanded]="toggleExpand" class="bg-white border border-gray-400 shadow-md rounded-br-md rounded-bl-md h-18 drop-shadow-md">
       <ng-template tuiExpandContent>
-        <div class="flex gap-2 justify-center">
+        <div class="flex justify-center gap-2">
           <tui-loader [showLoader]="true" size="s">
-            <div class="h-6 w-6"></div>
+            <div class="w-6 h-6"></div>
           </tui-loader>
           <p class="py-5">Uploading {{(media.uploadCount | async)}} of {{totalCount}}...</p>
         </div>
@@ -652,10 +652,10 @@
 </ng-template>
 
 <ng-template #deleteTemplate let-observer>
-  <h1 class="font-bold text-2xl text-center border-b border-gray-400 pb-3">Delete Event</h1>
-  <h1 class="font-bold text-xl text-center py-3">Are you sure you want to delete this event?</h1>
+  <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Delete Event</h1>
+  <h1 class="py-3 text-xl font-bold text-center">Are you sure you want to delete this event?</h1>
   <div class="flex justify-center gap-3 mt-5">
-    <button [showLoader]="(savingEvent | async) == true" tuiButton appearance="custom" icon="tuiIconTrashLarge" class="bg-red-500 text-white" (click)="deleteEvent(); observer.complete()">
+    <button [showLoader]="(savingEvent | async) == true" tuiButton appearance="custom" icon="tuiIconTrashLarge" class="text-white bg-red-500" (click)="deleteEvent(); observer.complete()">
       Delete
     </button>
     <button tuiButton appearance="secondary-destructive" icon="tuiIconCloseLarge" (click)="observer.complete()">
@@ -675,12 +675,12 @@
 </ng-template>
 
 <ng-template #dropdownContent>
-  <div class="dropdown w-160 px-5 py-2">
+  <div class="px-5 py-2 dropdown w-160">
     <form [formGroup]="filterForm">
-      <h2 class="font-semibold text-lg my-2">Advanced Filters</h2>
+      <h2 class="my-2 text-lg font-semibold">Advanced Filters</h2>
       <div class="grid grid-cols-12 gap-2 my-4">
         <div class="col-span-6">
-          <label class="mb-1 block">Location</label>
+          <label class="block mb-1">Location</label>
           <tui-input
             formControlName="location"
             [tuiTextfieldCleaner]="true"
@@ -693,7 +693,7 @@
           </tui-input>
         </div>
         <div class="col-span-6">
-          <label class="mb-1 block">Type</label>
+          <label class="block mb-1">Type</label>
           <tui-input
             formControlName="type"
             [tuiTextfieldCleaner]="true"
@@ -708,7 +708,7 @@
       </div>
       <div class="grid grid-cols-12 gap-2 my-4">
         <div class="col-span-6">
-          <label class="mb-1 block">Start Date</label>
+          <label class="block mb-1">Start Date</label>
           <tui-input-date
             formControlName="startDate"
             tuiTextfieldSize="l"
@@ -718,7 +718,7 @@
           </tui-input-date>
         </div>
         <div class="col-span-6">
-          <label class="mb-1 block">End Date</label>
+          <label class="block mb-1">End Date</label>
           <tui-input-date
             formControlName="endDate"
             [tuiTextfieldCleaner]="true"
@@ -729,7 +729,7 @@
         </div>
       </div>
       <div class="my-4">
-        <label class="mb-1 block">Speaker</label>
+        <label class="block mb-1">Speaker</label>
         <tui-input
           formControlName="speaker"
           [tuiTextfieldCleaner]="true"

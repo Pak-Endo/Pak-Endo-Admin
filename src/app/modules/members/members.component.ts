@@ -33,6 +33,7 @@ export class MembersComponent implements OnDestroy {
   ];
   countryIsoCode = TuiCountryIsoCode.PK;
   savingMember = new Subject<boolean>();
+  approveMembertype = new FormControl<any>(null, Validators.required)
   source: Array<any> = [];
   loading = true;
   columns: Array<GuiColumn> = [
@@ -133,7 +134,7 @@ export class MembersComponent implements OnDestroy {
       this.f['phoneNumber'].setValue(data?.phoneNumber)
       this.f['city'].setValue(data?.city)
       this.f['gender'].setValue(data?.gender)
-      this.f['status'].setValue(this.showStatus(data?.status))
+      this.f['status'].setValue(data?.status)
       this.f['email'].setValue(data?.email);
       let statuses: any = new Object(Type)
       for (const key in statuses) {
@@ -147,7 +148,45 @@ export class MembersComponent implements OnDestroy {
       dismissible: false,
       closeable: true,
       size: 'fullscreen'
-    }).pipe(takeUntil(this.destroy$)).subscribe());
+    }).subscribe());
+  }
+
+  sendMemberForApproval(content: PolymorpheusContent<TuiDialogContext>, data?: any): void {
+    this.memberID = data?._id;
+    this.dialogSubs.push(this.dialogs.open(content, {
+      dismissible: true,
+      closeable: true,
+    }).subscribe());
+  }
+
+  approveMember() {
+    this.savingMember.next(true)
+    const payload = {type: this.approveMembertype.value}
+    let data: any = new Object(Type)
+    for (const key in data) {
+      if(data[key] == payload.type) {
+        payload.type = key
+      }
+    }
+    this.memberService.approveUser(this.memberID, payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
+      if(val) {
+        this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ')
+        .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+          this.source = data?.users?.map((value: any) => {
+            return {
+              ...value,
+              status: this.showStatus(value?.status)
+            }
+          });
+        });
+        this.dialogSubs.forEach(val => val.unsubscribe());
+        this.approveMembertype.reset();
+        this.savingMember.next(false)
+      }
+      else {
+        this.savingMember.next(false)
+      }
+    })
   }
 
   openDeleteDialog(content: PolymorpheusContent<TuiDialogContext>, id: string): void {
@@ -158,7 +197,9 @@ export class MembersComponent implements OnDestroy {
     }).pipe(takeUntil(this.destroy$)).subscribe();
   }
 
-  closeDialog() {
+  closeDialog(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
     this.dialogSubs.forEach(val => val.unsubscribe());
     this.memberForm.reset();
   }
@@ -282,7 +323,7 @@ export class MembersComponent implements OnDestroy {
       }
     }))
   }
-  
+
   ngOnDestroy(): void {
     this.destroy$.complete();
     this.destroy$.unsubscribe();
