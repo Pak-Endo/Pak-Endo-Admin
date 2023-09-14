@@ -25,11 +25,11 @@ export class DashboardComponent implements OnDestroy {
     dayMaxEvents: 3,
     // displayEventEnd: true
   };
-  limit: number = 20;
+  limit: number = 100;
   offset: number = 0;
   dashboardStats: Observable<any> = of(null);
   destroy$ = new Subject();
-  
+
   constructor(private dashboard: DashboardService) {
     this.dashboardStats = this.dashboard.getDashboardStatistics();
     this.dashboard.getCalendarEvents(this.limit, this.offset)
@@ -51,6 +51,14 @@ export class DashboardComponent implements OnDestroy {
               end: item.endDate,
               backgroundColor: '#f4c430',
               borderColor: '#f4c430',
+            }
+          case 'finished':
+            return {
+              title: item.title,
+              start: item.startDate,
+              end: item.endDate,
+              backgroundColor: '#3B444B',
+              borderColor: '#3B444B',
             }
           default:
             return {
