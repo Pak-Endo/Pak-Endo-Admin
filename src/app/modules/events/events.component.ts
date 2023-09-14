@@ -250,7 +250,7 @@ export class EventsComponent implements OnDestroy {
     }
     return null
   }
-  
+
   uploadFeaturedImage(event: any) {
     let file = event.target.files[0];
     if(file && ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'].includes(file.type)) {
@@ -325,7 +325,9 @@ export class EventsComponent implements OnDestroy {
     return 'video'
   }
 
-  closeDialog() {
+  closeDialog(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
     this.dialogSubs.forEach(val => val.unsubscribe());
     this.eventForm.reset();
   }
@@ -349,7 +351,7 @@ export class EventsComponent implements OnDestroy {
   }
 
   floorNumber(value: number) {
-    return value >= this.limit ? Math.floor(value) : Math.floor(value)
+    return Math.ceil(value)
   }
 
   convertTimestampToObject(timestamp: number) {
@@ -362,7 +364,7 @@ export class EventsComponent implements OnDestroy {
     const minutes = dateObject.getMinutes();
     const seconds = dateObject.getSeconds();
     const ms = dateObject.getMilliseconds();
-  
+
     return {
       Date: new TuiDay(year, month, day),
       Time: new TuiTime(hours, minutes, seconds, ms)
