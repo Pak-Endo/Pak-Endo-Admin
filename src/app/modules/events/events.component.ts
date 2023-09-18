@@ -231,6 +231,7 @@ export class EventsComponent implements OnDestroy {
       agendaDays = [...new Map(agendaDays?.map((data: any) => [data['day'], data])).values()]
       this.daysOfEvents = agendaDays;
     }
+    this.eventID = null;
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,
       closeable: false,
@@ -340,6 +341,7 @@ export class EventsComponent implements OnDestroy {
   closeDialog(event: any) {
     event.preventDefault();
     event.stopPropagation();
+    this.eventID = null;
     this.dialogSubs.forEach(val => val.unsubscribe());
     this.eventForm.reset();
   }
@@ -621,6 +623,7 @@ export class EventsComponent implements OnDestroy {
       if(val) {
         this.savingEvent.next(false);
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
+        this.eventID = null;
       }
     }))
   }
