@@ -231,7 +231,6 @@ export class EventsComponent implements OnDestroy {
       agendaDays = [...new Map(agendaDays?.map((data: any) => [data['day'], data])).values()]
       this.daysOfEvents = agendaDays;
     }
-    this.eventID = null;
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,
       closeable: false,

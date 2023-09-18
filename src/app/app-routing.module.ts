@@ -32,6 +32,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./modules/event-details/event-details.module').then(m => m.EventDetailsModule)
   },
+  {
+    path: 'profile/:id',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./modules/profile/profile.module').then(m => m.ProfileModule)
+  },
 ];
 
 @NgModule({
