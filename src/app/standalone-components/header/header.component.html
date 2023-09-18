@@ -58,7 +58,7 @@
     <p class="font-medium text-sm tracking-wide">{{currentUser?.email}}</p>
   </div>
   <div class="px-5 py-2">
-    <a [routerLink]="['/profile', currentUser?.id]" routerLinkActive="router-link-active"  class="block py-2 px-4 no-underline rounded-lg hover:bg-slate-200 cursor-pointer font-medium text-sm">
+    <a (click)="toggle(false)" [routerLink]="['/profile', currentUser?.id]" routerLinkActive="router-link-active"  class="block py-2 px-4 no-underline rounded-lg hover:bg-slate-200 cursor-pointer font-medium text-sm">
       <tui-svg new size="xxs" src="tuiIconUserCheckLarge"></tui-svg> &nbsp; View Profile
     </a>
   </div>

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { getItem, setItem, StorageItem } from '../../../../@core/utils/local-storage.utils';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, exhaustMap, finalize, map, tap } from 'rxjs/operators';
+import { catchError, exhaustMap, finalize, map, shareReplay, tap } from 'rxjs/operators';
 import { RegisterModel } from '../../../../@core/models/register.model';
 import { AuthCredentials } from '../../../../@core/models/auth-credentials.model';
 import { ApiResponse } from '../../../../@core/models/core-response-model/response.model'
@@ -148,6 +148,10 @@ export class AuthService extends ApiService<AuthApiData> {
       }),
       finalize(() => this.isLoadingSubject.next(false))
     );
+  }
+
+  public getUserByID(userID: string): Observable<ApiResponse<any>> {
+    return this.get(`/user/getUserById/${userID}`).pipe(shareReplay())
   }
 
   public updateUser(user:User) {
