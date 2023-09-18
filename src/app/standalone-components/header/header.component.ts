@@ -7,11 +7,22 @@ import {TuiTabBarModule} from '@taiga-ui/addon-mobile';
 import {TuiHostedDropdownModule, TuiNotificationModule, TuiSvgModule} from '@taiga-ui/core';
 import {TuiSidebarModule} from '@taiga-ui/addon-mobile';
 import {TuiActiveZoneModule} from '@taiga-ui/cdk';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, TuiAvatarModule, TuiTabBarModule, TuiHostedDropdownModule, TuiSvgModule, TuiSidebarModule, TuiActiveZoneModule, TuiNotificationModule],
+  imports: [
+    CommonModule,
+    TuiAvatarModule,
+    TuiTabBarModule,
+    TuiHostedDropdownModule,
+    TuiSvgModule,
+    TuiSidebarModule,
+    TuiActiveZoneModule,
+    TuiNotificationModule,
+    RouterModule
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
