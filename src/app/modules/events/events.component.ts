@@ -81,7 +81,7 @@ export class EventsComponent implements OnDestroy {
       title: new FormControl(null, Validators.required),
       description: new FormControl(null, Validators.compose([
         Validators.required,
-        Validators.maxLength(200)
+        Validators.maxLength(500)
       ])),
       eventDays: new FormControl(
         null,

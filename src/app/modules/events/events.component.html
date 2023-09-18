@@ -210,7 +210,7 @@
           formControlName="description"
           [tuiTextfieldLabelOutside]="true"
           [tuiTextfieldCleaner]="true"
-          [maxLength]="200"
+          [maxLength]="500"
           class="mt-1"
         >
           Describe your event
@@ -223,7 +223,7 @@
         </ng-container>
         <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
           validation: 'maxlength',
-          message: 'Max character length allowed is 200 characters',
+          message: 'Max character length allowed is 500 characters',
           control: f['description']
         }">
         </ng-container>
