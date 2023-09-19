@@ -21,7 +21,7 @@ export class EventDetailsComponent implements OnDestroy {
       switchMap((id: string) => this.events.getEventByID(id)),
       takeUntil(this.destroy$)
     ).subscribe((val: any) => {
-      this.event = val
+      this.event = val;
     });
   }
 

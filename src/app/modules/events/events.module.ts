@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 
 import { EventsRoutingModule } from './events-routing.module';
 import { EventsComponent } from './events.component';
-import { TuiInputTimeModule, TuiInputDateRangeModule, TuiInputFilesModule, TuiInputModule, TuiMarkerIconModule, TuiPaginationModule, TuiRatingModule, TuiTextAreaModule, TuiStepperModule, TuiDataListWrapperModule, TuiSelectModule, TuiInputPhoneInternationalModule, TuiInputDateModule, TuiCheckboxLabeledModule } from '@taiga-ui/kit';
+import { TuiInputTimeModule, TuiInputDateRangeModule, TuiInputFilesModule, TuiInputModule, TuiMarkerIconModule, TuiPaginationModule, TuiRatingModule, TuiTextAreaModule, TuiStepperModule, TuiDataListWrapperModule, TuiSelectModule, TuiInputPhoneInternationalModule, TuiInputDateModule, TuiCheckboxLabeledModule, TuiInputNumberModule } from '@taiga-ui/kit';
 import { TuiButtonModule, TuiExpandModule, TuiHostedDropdownModule, TuiLabelModule, TuiLoaderModule, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LayoutComponent } from '../layout/layout.component';
+import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
 
 
 @NgModule({
@@ -39,7 +40,9 @@ import { LayoutComponent } from '../layout/layout.component';
     TuiInputPhoneInternationalModule,
     TuiHostedDropdownModule,
     TuiInputDateModule,
-    TuiCheckboxLabeledModule
+    TuiCheckboxLabeledModule,
+    TuiInputNumberModule,
+    TuiCurrencyPipeModule
   ]
 })
 export class EventsModule { }
