@@ -346,7 +346,36 @@ export class EventsComponent implements OnDestroy {
     event.stopPropagation();
     this.eventID = null;
     this.dialogSubs.forEach(val => val.unsubscribe());
-    this.eventForm.reset();
+    this.eventForm.setValue(
+      {
+        title: null,
+        description: null,
+        eventDays: null,
+        location: null,
+        openForPublic: true,
+        featuredImage: null,
+        gallery: null,
+        type: null,
+        organizer: null,
+        organizerContact: null,
+        fees: null,
+        agendas: [
+          {
+            _id: null,
+            agendaTitle: null,
+            day: 0,
+            from: null,
+            to: null ,
+            venue: null,
+            speaker: null,
+            speakerImg: null,
+            attachments: [[]]
+          }
+        ]
+      }
+    );
+    this.agendas.removeAt(0);
+    this.addAgenda(0)
     this.activeIndex = 0;
     this.eventID = null;
   }
@@ -450,8 +479,13 @@ export class EventsComponent implements OnDestroy {
     }
     if(this.activeIndex == 1) {
       if(this.valdiateStepTwo() == false) {
+        this.agendas.controls.map(value => {
+          console.log(value)
+        })
+        debugger
         return this.agendas.markAllAsTouched();
       }
+      debugger
       return this.activeIndex++
     }
   }
@@ -496,12 +530,15 @@ export class EventsComponent implements OnDestroy {
 
   valdiateStepTwo() {
     if(this.agendas.value?.map((data: any) => data != null).includes(false)) {
+      debugger
       return false
     }
     if(this.agendas.length < this.daysOfEvents.length) {
+      debugger
       return false
     }
     if(this.getValidityForAgendas().includes(false)) {
+      debugger
       return false
     }
     return true
