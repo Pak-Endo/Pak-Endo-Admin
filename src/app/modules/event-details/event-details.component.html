@@ -53,11 +53,23 @@
       </div>
       <!--Timeline-->
       <tui-scrollbar class="max-h-140 overflow-y-scroll overflow-x-hidden" *ngIf="activeItemIndex == 0">
+        <div class="flex justify-center gap-x-4">
+          <tui-tabs tuiMobileTabs [(activeItemIndex)]="activeItemIndexDates" class="mb-5 mt-2">
+            <ng-container *ngFor="let date of getObjectKeys(agendaByDay); let i = index">
+              <button
+                tuiTab
+                (click)="activeItemIndexDates = i"
+                class="font-medium"
+              >
+                {{date}}
+              </button>
+            </ng-container>
+          </tui-tabs>
+        </div>
         <div class="timeline">
-          <ng-container *ngFor="let agent of event?.agenda; let i = index; let even = even; let odd = odd">
+          <ng-container *ngFor="let agent of getObjectValues(agendaByDay, activeItemIndexDates); let i = index; let even = even; let odd = odd">
             <div class="container" [ngClass]="odd ? 'left': 'right'">
               <div class="content">
-                <h2><span class="font-semibold">{{agent.day | date: 'mediumDate'}}</span>&nbsp; - &nbsp;{{agent.from}} - {{agent.to}}</h2>
                 <ng-container *ngIf="!agent.agendaTitle.toLowerCase().includes('break')">
                   <p class="mt-2"><span class="font-semibold">Topic</span>:&nbsp; {{agent.agendaTitle}}</p>
                 </ng-container>
