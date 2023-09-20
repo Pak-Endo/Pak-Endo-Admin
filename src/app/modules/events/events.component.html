@@ -34,11 +34,12 @@
         </button>
       </tui-hosted-dropdown>
     </div>
-    <div *ngIf="(isFilterActive | async) == true" class="w-[70%] flex justify-end">
+    <div *ngIf="(isFilterActive | async) == true" class="w-[86%] flex justify-end">
       <button
         tuiButton
         type="submit"
         appearance="accent"
+        size="m"
         (click)="resetFilters()"
         class="my-1"
       >
@@ -50,6 +51,7 @@
         tuiButton
         icon="tuiIconPlusLarge"
         type="submit"
+        size="m"
         appearance="custom"
         (click)="showAddorEditDialog(template)"
         class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
@@ -753,6 +755,16 @@
             placeholder="Type here..."
           />
         </tui-input>
+      </div>
+      <div class="my-4">
+        <label class="mb-2 block">Event Status</label>
+        <tui-filter
+          formControlName="status"
+          (toggledItem)="filterToggleStatus($event)"
+          size="m"
+          [items]="items"
+          class="capitalize mt-2"
+        ></tui-filter>
       </div>
       <div class="my-4">
         <button

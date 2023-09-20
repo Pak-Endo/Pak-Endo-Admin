@@ -15,7 +15,8 @@ interface QueryParamsForEvents {
   type?: string,
   startDate?: number,
   endDate?: number,
-  speaker?: string
+  speaker?: string,
+  status?: string
 }
 
 @Injectable({
@@ -50,6 +51,9 @@ export class EventsService extends ApiService<event> {
     }
     if(payload?.speaker) {
       params = {...params, speaker: payload?.speaker}
+    }
+    if(payload?.status) {
+      params = {...params, status: payload?.status}
     }
     return this.get(`/events/getAllEvents`, params).pipe(shareReplay(), map((res: ApiResponse<any>) => {
       if(!res.hasErrors()) {
