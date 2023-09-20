@@ -51,6 +51,11 @@ export class EventsComponent implements OnDestroy {
   savingMember = new Subject<boolean>();
   isFilterActive = new Subject<boolean>();
   @ViewChild('agendaDiv') agendaDiv!: ElementRef;
+  items = [
+    'upcoming',
+    'ongoing',
+    'finished'
+  ]
 
   constructor(
     private eventService: EventsService,
@@ -120,8 +125,14 @@ export class EventsComponent implements OnDestroy {
       type: new FormControl(null),
       startDate: new FormControl(null),
       endDate: new FormControl(null),
-      speaker: new FormControl(null)
+      speaker: new FormControl(null),
+      status: new FormControl(null)
     })
+  }
+
+  filterToggleStatus(event: any) {
+    this.filterForm?.get('status')?.reset();
+    this.filterForm?.get('status')?.setValue(event);
   }
 
   get f() {
@@ -683,7 +694,8 @@ export class EventsComponent implements OnDestroy {
     this.filterForm.get('speaker')?.value ||
     this.filterForm.get('endDate')?.value ||
     this.filterForm.get('startDate')?.value ||
-    this.filterForm.get('type')?.value)
+    this.filterForm.get('type')?.value || 
+    this.filterForm.get('status')?.value)
   }
 
   applyAdvancedFilters() {
@@ -696,6 +708,10 @@ export class EventsComponent implements OnDestroy {
     if(payload.endDate) {
       let endDateTimestamp = this.convertDateObjToTimestmp(payload.endDate)
       payload = {...payload, endDate: endDateTimestamp}
+    }
+    if(payload.status) {
+      let newStatus = this.filterForm?.get('status')?.value?.pop()
+      payload = {...payload, status: newStatus}
     }
     this.events$ = this.eventService.getAllEvents(this.limit, this.page, payload);
     this.open = false
