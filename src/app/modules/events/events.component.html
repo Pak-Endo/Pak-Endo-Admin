@@ -162,7 +162,7 @@
 >
   <h1 class="text-2xl font-bold text-center">{{eventID ? 'Edit': 'Create'}} Event</h1>
   <form [formGroup]="eventForm">
-    <tui-stepper [activeItemIndex]="activeIndex" class="flex justify-center my-5">
+    <tui-stepper #agendaDiv [activeItemIndex]="activeIndex" class="flex justify-center my-5">
       <button
         tuiStep
         [stepState]="validateStepOne() == true ? 'pass': 'error'"
@@ -308,6 +308,18 @@
         }">
         </ng-container>
       </div>
+
+      <!--Fees-->
+      <div class="my-4">
+        <label class="text-base font-semibold">Event Fees</label>
+        <tui-input-number
+          formControlName="fees"
+          [tuiTextfieldPrefix]="'PKR ' | tuiCurrency"
+          [tuiTextfieldLabelOutside]="true"
+        >
+          e.g. 1000
+        </tui-input-number>
+      </div>
     </ng-container>
 
     <ng-container *ngIf="activeIndex == 1">
@@ -352,6 +364,21 @@
                       <p class="mt-1 text-xs">Upload an image for the speaker <sup>(Optional)</sup></p>
                     </div>
                   </ng-container>
+                  <!--Hall-->
+                  <div class="my-3">
+                    <label class="text-base font-semibold">Hall</label>
+                    <tui-input formControlName="venue" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+                      e.g. SHAMADAN 3, Islamabad Serena hotel
+                      <input
+                        tuiTextfield
+                        type="text"
+                        autocomplete="new-password"
+                      />
+                    </tui-input>
+                    <span *ngIf="(agent.get('venue')!.invalid && agent.get('venue')!.touched)" class="text-xs text-red-500">
+                      Please provide a venue for this event
+                    </span>
+                  </div>
                   <!--Agenda title-->
                   <div class="my-3">
                     <label class="text-base font-semibold">Title</label>
@@ -389,21 +416,6 @@
                     </div>
                     <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="col-span-12 text-xs text-red-500">
                       Please provide a valid timeline
-                    </span>
-                  </div>
-                  <!--Venue-->
-                  <div class="my-3">
-                    <label class="text-base font-semibold">Venue</label>
-                    <tui-input formControlName="venue" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-                      e.g. SHAMADAN 3, Islamabad Serena hotel
-                      <input
-                        tuiTextfield
-                        type="text"
-                        autocomplete="new-password"
-                      />
-                    </tui-input>
-                    <span *ngIf="(agent.get('venue')!.invalid && agent.get('venue')!.touched)" class="text-xs text-red-500">
-                      Please provide a venue for this event
                     </span>
                   </div>
                   <!--Speaker-->
@@ -523,11 +535,11 @@
           </ng-container>
         </div>
       </div>
-      <!--Organizer-->
+      <!--Sponsor-->
       <div class="my-3">
-        <label class="text-base font-semibold">Organizer</label>
+        <label class="text-base font-semibold">Sponsor</label>
         <tui-input formControlName="organizer" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-          e.g. Ahmed Khan
+          e.g. Quaid Technologies
           <input
             tuiTextfield
             type="text"
@@ -613,11 +625,12 @@
           Next
         </button>
       </ng-container>
-      <ng-container *ngIf="activeIndex == 0">
+      <ng-container *ngIf="!eventID">
         <button
           tuiButton
           icon="tuiIconCloseLarge"
-          appearance="secondary-destructive"
+          appearance="accent"
+          class="mt-1"
           [disabled]="(savingEvent | async) == true"
           (click)="closeDialog($event)"
         >

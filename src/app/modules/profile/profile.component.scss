@@ -1,0 +1,9 @@
+.border-gradient {
+  border: 10px solid;
+  border-image-slice: 1;
+  border-width: 3px;
+}
+
+.border-gradient-theme {
+  border-image-source: linear-gradient(to left, #128B4F, #234A75);
+}
