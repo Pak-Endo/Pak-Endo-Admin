@@ -82,6 +82,7 @@
         <ng-template let-value="value" let-item="item">
           <td class="inline-flex gap-2 py-4">
             <button
+              *ngIf="item?.status !== 'Approved'"
               tuiIconButton
               icon="tuiIconCheckSquare"
               type="button"
