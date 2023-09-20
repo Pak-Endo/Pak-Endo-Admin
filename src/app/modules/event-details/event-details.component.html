@@ -71,13 +71,17 @@
             <div class="container" [ngClass]="odd ? 'left': 'right'">
               <div class="content">
                 <ng-container *ngIf="!agent.agendaTitle.toLowerCase().includes('break')">
-                  <p class="mt-2"><span class="font-semibold">Topic</span>:&nbsp; {{agent.agendaTitle}}</p>
+                  <p class="mt-2"><span class="font-semibold">Topic</span>: &nbsp; {{agent.agendaTitle}}</p>
                 </ng-container>
                 <ng-container *ngIf="agent.agendaTitle.toLowerCase().includes('break')">
                   <p class="mt-2">{{agent.agendaTitle}}</p>
                 </ng-container>
-                <p><span class="font-semibold">Speaker</span>:&nbsp; {{agent.speaker ? agent.speaker : 'No speaker'}}</p>
-                <p><span class="font-semibold">Venue</span>:&nbsp; {{agent.venue}}</p>
+                <p><span class="font-semibold">Speaker</span>: &nbsp; {{agent.speaker ? agent.speaker : 'No speaker'}}</p>
+                <p><span class="font-semibold">Hall</span>: &nbsp; {{agent.venue}}</p>
+                <p>
+                  <span class="font-semibold">From</span> &nbsp; {{agent.from}} &nbsp;
+                  <span class="font-semibold">to</span> &nbsp; {{agent.to}}
+                </p>
               </div>
             </div>
           </ng-container>
