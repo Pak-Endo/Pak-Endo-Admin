@@ -202,6 +202,7 @@ export class MembersComponent implements OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     this.dialogSubs.forEach(val => val.unsubscribe());
+    this.memberID = null
     this.memberForm.reset();
   }
 
