@@ -181,6 +181,10 @@ export class EventsComponent implements OnDestroy {
       let endDateTimestamp = this.convertDateObjToTimestmp(payload.endDate)
       payload = {...payload, endDate: endDateTimestamp}
     }
+    if(payload.status) {
+      let newStatus = this.filterForm?.get('status')?.value?.pop()
+      payload = {...payload, status: newStatus}
+    }
     if(this.searchValue?.value) {
       payload = {...payload, title: this.searchValue?.value }
     }
