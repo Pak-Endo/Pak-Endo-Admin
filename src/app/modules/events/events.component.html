@@ -432,6 +432,21 @@
                       />
                     </tui-input>
                   </div>
+                   <!--Stream Url-->
+                   <div class="my-3">
+                    <label class="text-base font-semibold">Stream Url</label>
+                    <tui-input formControlName="streamUrl" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+                      https://youtube.com
+                      <input
+                        tuiTextfield
+                        type="text"
+                        autocomplete="new-password"
+                      />
+                    </tui-input>
+                    <span *ngIf="(agent.get('agendaTitle')!.invalid && agent.get('agendaTitle')!.touched)" class="text-xs text-red-500">
+                      Please provide a valid title for the agenda
+                    </span>
+                  </div>
                   <!--attachments-->
                   <div *ngIf="eventID" class="my-3">
                     <ng-container *ngIf="attachments.length > 0">
