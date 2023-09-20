@@ -387,6 +387,7 @@ export class EventsComponent implements OnDestroy {
             venue: null,
             speaker: null,
             speakerImg: null,
+            streamUrl: null,
             attachments: [[]]
           }
         ]
