@@ -110,6 +110,7 @@ export class EventsComponent implements OnDestroy {
             from: [null, Validators.required],
             to: [null, Validators.required],
             venue: [null, Validators.required],
+            streamUrl: [null],
             speaker: [undefined],
             speakerImg: [undefined],
             attachments: [[]]
@@ -151,6 +152,7 @@ export class EventsComponent implements OnDestroy {
       from: [null, Validators.required],
       to: [null, Validators.required],
       venue: [null, Validators.required],
+      streamUrl: [null],
       speaker: [undefined],
       speakerImg: [undefined],
       attachments: [[]]
@@ -241,6 +243,7 @@ export class EventsComponent implements OnDestroy {
           to: [agenda.to, Validators.required],
           venue: [agenda.venue, Validators.required],
           speaker: [agenda.speaker || null],
+          streamUrl: [agenda.streamUrl || null],
           speakerImg: [agenda.speakerImg || null],
           attachments: [agenda.attachments || []]
         });
@@ -497,10 +500,10 @@ export class EventsComponent implements OnDestroy {
         this.agendas.controls.map(value => {
           console.log(value)
         })
-        debugger
+        
         return this.agendas.markAllAsTouched();
       }
-      debugger
+      
       return this.activeIndex++
     }
   }
@@ -545,15 +548,15 @@ export class EventsComponent implements OnDestroy {
 
   valdiateStepTwo() {
     if(this.agendas.value?.map((data: any) => data != null).includes(false)) {
-      debugger
+      
       return false
     }
     if(this.agendas.length < this.daysOfEvents.length) {
-      debugger
+      
       return false
     }
     if(this.getValidityForAgendas().includes(false)) {
-      debugger
+      
       return false
     }
     return true
