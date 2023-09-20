@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventsService } from './services/events.service';
 import { Observable, Subject, Subscription, debounceTime, distinctUntilChanged, finalize, forkJoin, map, shareReplay, switchMap, take, takeUntil } from 'rxjs';
@@ -50,6 +50,7 @@ export class EventsComponent implements OnDestroy {
   countryIsoCode = TuiCountryIsoCode.PK;
   savingMember = new Subject<boolean>();
   isFilterActive = new Subject<boolean>();
+  @ViewChild('agendaDiv') agendaDiv!: ElementRef;
 
   constructor(
     private eventService: EventsService,
@@ -88,12 +89,13 @@ export class EventsComponent implements OnDestroy {
         Validators.required
       ),
       location: new FormControl(null, Validators.required),
-      openForPublic: new FormControl(false),
+      openForPublic: new FormControl(true),
       featuredImage: new FormControl(null, Validators.required),
       gallery: new FormControl(undefined),
       type: new FormControl(null, Validators.required),
       organizer: new FormControl(null, Validators.required),
       organizerContact: new FormControl(null, Validators.required),
+      fees: new FormControl(null, Validators.required),
       agendas: this.fb.array(
         [
           this.fb.group({
@@ -197,12 +199,14 @@ export class EventsComponent implements OnDestroy {
       this.agendas.clear();
       this.eventID = data?._id;
       this.f['title'].setValue(data?.title)
+      this.f['fees'].setValue(data?.fees)
       this.f['description'].setValue(data?.description)
       this.f['featuredImage'].setValue(data?.featuredImage)
       this.f['type'].setValue(data?.type)
       this.f['location'].setValue(data?.location)
       this.f['organizerContact'].setValue(data?.organizerContact)
-      this.f['organizer'].setValue(data?.organizer)
+      this.f['organizer'].setValue(data?.organizer);
+      this.f['openForPublic']?.setValue(data?.openForPublic || true)
       this.multipleImages = data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : []
       this.f['gallery'].setValue(data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : undefined);
       let convertedStartDate = this.convertTimestampToObject(data?.startDate)
@@ -231,7 +235,6 @@ export class EventsComponent implements OnDestroy {
       agendaDays = [...new Map(agendaDays?.map((data: any) => [data['day'], data])).values()]
       this.daysOfEvents = agendaDays;
     }
-    this.eventID = null;
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,
       closeable: false,
@@ -344,6 +347,8 @@ export class EventsComponent implements OnDestroy {
     this.eventID = null;
     this.dialogSubs.forEach(val => val.unsubscribe());
     this.eventForm.reset();
+    this.activeIndex = 0;
+    this.eventID = null;
   }
 
   spliceImage(index: number, event: any) {
@@ -369,26 +374,30 @@ export class EventsComponent implements OnDestroy {
   }
 
   convertTimestampToObject(timestamp: number) {
-    const dateObject = new Date(timestamp);
-
-    const year = dateObject.getFullYear();
-    const month = dateObject.getMonth();
-    const day = dateObject.getDate();
-    const hours = dateObject.getHours();
-    const minutes = dateObject.getMinutes();
-    const seconds = dateObject.getSeconds();
-    const ms = dateObject.getMilliseconds();
-
-    return {
-      Date: new TuiDay(year, month, day),
-      Time: new TuiTime(hours, minutes, seconds, ms)
+    if(typeof timestamp != 'object') {
+      const dateObject = new Date(timestamp);
+      const year = dateObject.getFullYear();
+      const month = dateObject.getMonth();
+      const day = dateObject.getDate();
+      const hours = dateObject.getHours();
+      const minutes = dateObject.getMinutes();
+      const seconds = dateObject.getSeconds();
+      const ms = dateObject.getMilliseconds();
+      return {
+        Date: new TuiDay(year, month, day),
+        Time: new TuiTime(hours, minutes, seconds, ms)
+      }
     }
+    return timestamp
   }
 
   convertTimeStringToObject(timeString: string) {
-    const [hours, minutes] = timeString.split(':').map(Number)
-    let time: TuiTime = new TuiTime(hours, minutes)
-    return time
+    if(typeof timeString == 'string') {
+      const [hours, minutes] = timeString.split(':').map(Number)
+      let time: TuiTime = new TuiTime(hours, minutes)
+      return time
+    }
+    return timeString
   }
 
   convertDateObjToTimestmp(date: any) {
@@ -407,6 +416,10 @@ export class EventsComponent implements OnDestroy {
   nextStep() {
     if(this.activeIndex == 0) {
       if(this.validateStepOne() == true) {
+        Array.from(document.getElementsByClassName('t-dialog ng-tns-c1-0 ng-trigger ng-trigger-tuiParentAnimation ng-star-inserted'))?.forEach(value => {
+          value.scrollTo(0, 0)
+        })
+        this.daysOfEventsValue = [{...this.f['eventDays']?.value?.from}, {...this.f['eventDays']?.value?.to}];
         let startDay = new TuiDay(this.daysOfEventsValue[0]?.year, this.daysOfEventsValue[0]?.month, this.daysOfEventsValue[0]?.day);
         let endDay = new TuiDay(this.daysOfEventsValue[1]?.year, this.daysOfEventsValue[1]?.month, this.daysOfEventsValue[1]?.day);
         let daysArr = []

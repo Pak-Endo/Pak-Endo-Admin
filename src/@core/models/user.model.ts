@@ -12,6 +12,9 @@ export class User {
   status!: Status;
   role!: UserRole;
   deletedCheck!: boolean;
+  city!: string;
+  favorites!: any[];
+  interested!: any[];
 }
 export class UserList {
   users!: User[];

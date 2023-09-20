@@ -1,0 +1,121 @@
+<app-layout>
+  <h1 class="text-2xl font-bold">Profile</h1>
+  <div class="bg-white shadow-lg drop-shadow-lg mt-5 border-gradient border-gradient-theme">
+    <div *ngIf="(isEdit | async) == false" class="mx-8 py-8">
+      <div class="flex justify-between border-b border-[#234A75] pb-5">
+        <p class="text-xl font-semibold">
+          {{userData?.fullName}}
+        </p>
+        <button (click)="isEdit.next(true)" tuiButton iconRight="tuiIconEdit" size="s" appearance="custom" class="text-white bg-[#234A76]">
+          Edit
+        </button>
+      </div>
+      <p class="text-base font-semibold mt-5">
+        <tui-svg new src="tuiIconMailLarge"></tui-svg> &nbsp;&nbsp;&nbsp;&nbsp; {{userData?.email}}
+      </p>
+      <p class="text-base font-semibold mt-5">
+        <tui-svg new src="tuiIconUserLarge"></tui-svg> &nbsp;&nbsp;&nbsp;&nbsp; {{userData?.gender}}
+      </p>
+      <p class="text-base font-semibold mt-5">
+        <tui-svg new src="tuiIconHashLarge"></tui-svg> &nbsp;&nbsp;&nbsp;&nbsp; {{userData?.memberID}}
+      </p>
+      <p class="text-base font-semibold mt-5">
+        <tui-svg new src="tuiIconPhoneLarge"></tui-svg> &nbsp;&nbsp;&nbsp;&nbsp; {{userData?.phoneNumber || 'Not provided'}}
+      </p>
+      <p class="text-base font-semibold mt-5">
+        <tui-svg new src="tuiIconMapPinLarge"></tui-svg> &nbsp;&nbsp;&nbsp;&nbsp; {{userData?.city}}
+      </p>
+    </div>
+    <div *ngIf="(isEdit | async) == true" class="mx-8 py-8" [formGroup]="profileForm">
+      <div class="flex justify-between border-b border-[#234A75] pb-5">
+        <p class="text-xl font-semibold">
+          {{userData?.fullName}}
+        </p>
+        <button (click)="isEdit.next(false)" tuiButton iconRight="tuiIconCheck" size="s" appearance="custom" class="text-white bg-[#138552]">
+          Save
+        </button>
+      </div>
+      <div class="text-base font-semibold mt-8 flex justify-start gap-x-4">
+        <tui-svg new src="tuiIconMailLarge" class="mt-3"></tui-svg>
+        <tui-input
+          formControlName="email"
+          tuiTextfieldSize="m"
+          [tuiTextfieldLabelOutside]="true"
+          class="w-1/2"
+        >
+          <input
+            autocomplete="email"
+            tuiTextfield
+            type="email"
+          />
+        </tui-input>
+      </div>
+
+      <div class="text-base font-semibold mt-5 flex justify-start gap-x-4">
+        <tui-svg new src="tuiIconUserLarge" class="mt-3"></tui-svg>
+        <tui-input
+          formControlName="gender"
+          tuiTextfieldSize="m"
+          [tuiTextfieldLabelOutside]="true"
+          class="w-1/2"
+        >
+          <input
+            autocomplete="new-password"
+            tuiTextfield
+            type="text"
+          />
+        </tui-input>
+      </div>
+
+      <div class="text-base font-semibold mt-5 flex justify-start gap-x-4">
+        <tui-svg new src="tuiIconPhoneLarge" class="mt-3"></tui-svg>
+        <tui-input
+          formControlName="phoneNumber"
+          tuiTextfieldSize="m"
+          [tuiTextfieldLabelOutside]="true"
+          class="w-1/2"
+        >
+          <input
+            autocomplete="new-password"
+            tuiTextfield
+            type="text"
+          />
+        </tui-input>
+      </div>
+
+      <div class="text-base font-semibold mt-5 flex justify-start gap-x-4">
+        <tui-svg new src="tuiIconMapPinLarge" class="mt-3"></tui-svg>
+        <tui-input
+          formControlName="city"
+          tuiTextfieldSize="m"
+          [tuiTextfieldLabelOutside]="true"
+          class="w-1/2"
+        >
+          <input
+            autocomplete="new-password"
+            tuiTextfield
+            type="text"
+          />
+        </tui-input>
+      </div>
+    </div>
+  </div>
+</app-layout>
+
+<!--
+  <div class="text-base font-semibold mt-8 flex justify-start gap-x-4">
+        <tui-svg new src="tuiIconMailLarge" class="mt-3"></tui-svg>
+        <tui-input
+          formControlName="email"
+          tuiTextfieldSize="m"
+          [tuiTextfieldLabelOutside]="true"
+          class="w-1/2"
+        >
+          <input
+            autocomplete="email"
+            tuiTextfield
+            type="email"
+          />
+        </tui-input>
+      </div>
+-->
