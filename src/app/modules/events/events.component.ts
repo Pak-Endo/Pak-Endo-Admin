@@ -388,6 +388,7 @@ export class EventsComponent implements OnDestroy {
             venue: null,
             speaker: null,
             speakerImg: null,
+            streamUrl: null,
             attachments: [[]]
           }
         ]
@@ -498,10 +499,6 @@ export class EventsComponent implements OnDestroy {
     }
     if(this.activeIndex == 1) {
       if(this.valdiateStepTwo() == false) {
-        this.agendas.controls.map(value => {
-          console.log(value)
-        })
-        
         return this.agendas.markAllAsTouched();
       }
       
@@ -549,15 +546,12 @@ export class EventsComponent implements OnDestroy {
 
   valdiateStepTwo() {
     if(this.agendas.value?.map((data: any) => data != null).includes(false)) {
-      
       return false
     }
     if(this.agendas.length < this.daysOfEvents.length) {
-      
       return false
     }
     if(this.getValidityForAgendas().includes(false)) {
-      
       return false
     }
     return true
