@@ -170,6 +170,7 @@ export class MembersComponent implements OnDestroy {
     }
     this.memberService.approveUser(this.memberID, payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
       if(val) {
+        this.memberID = null
         this.memberService.getAllMembers(this.limit, this.page, this.searchValue?.value || ' ')
         .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
           this.source = data?.users?.map((value: any) => {
@@ -245,8 +246,9 @@ export class MembersComponent implements OnDestroy {
   }
 
   createMember() {
-    this.savingMember.next(true)
-    const payload = {...this.memberForm.value, password: '12345678', status: 'Approved'};
+    this.savingMember.next(true);
+    let newPassword = this.memberForm.value?.firstName.toLowerCase() + '-' + this.memberForm.value?.lastName.toLowerCase() + '@' + Math.round(Math.random() * (100 - 1) + 1);
+    const payload = {...this.memberForm.value, password: newPassword , status: 'Approved'};
     let data: any = new Object(Type)
     for (const key in data) {
       if(data[key] == payload.type) {
@@ -269,6 +271,7 @@ export class MembersComponent implements OnDestroy {
         this.dialogSubs.forEach(val => val.unsubscribe());
         this.memberForm.reset();
         this.savingMember.next(false)
+        this.memberID = null
       }
     })
   }
@@ -319,6 +322,7 @@ export class MembersComponent implements OnDestroy {
             }
           });
           this.loading = false;
+          this.memberID = null
         });
       }
     }))
