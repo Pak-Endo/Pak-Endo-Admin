@@ -9,11 +9,18 @@ import { MediaUploadService } from 'src/@core/core-service/media-upload.service'
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
 import { TuiDay, TuiDayRange, TuiTime } from '@taiga-ui/cdk';
 import {TuiCountryIsoCode} from '@taiga-ui/i18n';
+import {tuiCreateTimePeriods, tuiInputTimeOptionsProvider} from '@taiga-ui/kit';
 
 @Component({
   selector: 'app-events',
   templateUrl: './events.component.html',
-  styleUrls: ['./events.component.scss']
+  styleUrls: ['./events.component.scss'],
+  providers: [
+    tuiInputTimeOptionsProvider({
+      mode: 'HH:MM',
+      maxValues: {HH: 11, MM: 59, SS: 59, MS: 999}
+    }),
+  ],
 })
 export class EventsComponent implements OnDestroy {
   searchValue: FormControl = new FormControl();
@@ -55,7 +62,7 @@ export class EventsComponent implements OnDestroy {
     'upcoming',
     'ongoing',
     'finished'
-  ]
+  ];
 
   constructor(
     private eventService: EventsService,
@@ -80,6 +87,19 @@ export class EventsComponent implements OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe();
     this.setNoOfDaysForAgenda();
+  }
+
+  getPostfix(index: number, isFromField: boolean): string {
+    const isPmFrom = this.agendas.at(index)?.get('isPmFrom')?.value;
+    const isPmTo = this.agendas.at(index)?.get('isPmTo')?.value;
+  
+    if (isFromField && isPmFrom) {
+      return 'PM';
+    } else if (!isFromField && isPmTo) {
+      return 'PM';
+    } else {
+      return 'AM';
+    }
   }
 
   initEventForm() {
@@ -109,6 +129,8 @@ export class EventsComponent implements OnDestroy {
             day: [0, Validators.required],
             from: [null, Validators.required],
             to: [null, Validators.required],
+            isPmFrom: [false],
+            isPmTo: [false],
             venue: [null, Validators.required],
             streamUrl: [null],
             speaker: [undefined],
@@ -151,6 +173,8 @@ export class EventsComponent implements OnDestroy {
       day: [day, Validators.required],
       from: [null, Validators.required],
       to: [null, Validators.required],
+      isPmFrom: [false],
+      isPmTo: [false],
       venue: [null, Validators.required],
       streamUrl: [null],
       speaker: [undefined],
@@ -224,7 +248,7 @@ export class EventsComponent implements OnDestroy {
       this.f['organizerContact'].setValue(data?.organizerContact)
       this.f['organizer'].setValue(data?.organizer);
       this.f['openForPublic']?.setValue(data?.openForPublic || true)
-      this.multipleImages = data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : []
+      this.multipleImages = data?.gallery?.mediaUrl !== null ? data?.gallery?.mediaUrl : []
       this.f['gallery'].setValue(data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : undefined);
       let convertedStartDate = this.convertTimestampToObject(data?.startDate)
       let convertedEndDate = this.convertTimestampToObject(data?.endDate)
@@ -383,7 +407,9 @@ export class EventsComponent implements OnDestroy {
             agendaTitle: null,
             day: 0,
             from: null,
-            to: null ,
+            to: null,
+            isPmFrom: false,
+            isPmTo: false,
             venue: null,
             speaker: null,
             speakerImg: null,
@@ -737,3 +763,29 @@ export class EventsComponent implements OnDestroy {
     this.dialogSubs.forEach(val => val.unsubscribe());
   }
 }
+
+/**
+ * function generateUniqueID(speakerName) {
+  // Function to generate a random string of characters
+  function generateRandomString(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters.charAt(randomIndex);
+    }
+    return result;
+  }
+
+  // Extract the initials from the speaker's name
+  const initials = speakerName.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
+
+  // Generate a random string of 8 characters
+  const randomString = generateRandomString(8);
+
+  // Combine initials and random string to create a unique ID
+  const uniqueID = initials + randomString;
+
+  return uniqueID;
+}
+ */

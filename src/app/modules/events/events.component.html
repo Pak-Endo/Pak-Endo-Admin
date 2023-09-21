@@ -402,19 +402,35 @@
                       <label class="text-base font-semibold">Start time</label>
                       <tui-input-time
                         formControlName="from"
-                        [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true"
+                        [tuiTextfieldLabelOutside]="true"
+                        [tuiTextfieldCleaner]="true"
+                        [tuiTextfieldPostfix]="getPostfix(i, true)"
                       >
                         e.g. 09:00
                       </tui-input-time>
+                      <tui-toggle
+                        formControlName="isPmFrom"
+                        class="my-1.5"
+                        size="l"
+                      ></tui-toggle>
+                      <span class="text-xxs text-gray-400 ml-2">Toggle to switch between AM and PM</span>
                     </div>
                     <div class="col-span-6">
                       <label class="text-base font-semibold">End time</label>
                       <tui-input-time
                         formControlName="to"
-                        [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true"
+                        [tuiTextfieldLabelOutside]="true"
+                        [tuiTextfieldCleaner]="true"
+                        [tuiTextfieldPostfix]="getPostfix(i, false)"
                       >
-                        e.g. 23:59
+                        e.g. 02:00
                       </tui-input-time>
+                      <tui-toggle
+                        formControlName="isPmTo"
+                        class="my-1.5"
+                        size="l"
+                      ></tui-toggle>
+                      <span class="text-xxs text-gray-400 ml-2">Toggle to switch between AM and PM</span>
                     </div>
                     <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="col-span-12 text-xs text-red-500">
                       Please provide a valid timeline
