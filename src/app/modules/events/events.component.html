@@ -164,106 +164,87 @@
 >
   <h1 class="text-2xl font-bold text-center">{{eventID ? 'Edit': 'Create'}} Event</h1>
   <form [formGroup]="eventForm">
-    <tui-stepper #agendaDiv [activeItemIndex]="activeIndex" class="flex justify-center my-5">
-      <button
-        tuiStep
-        [stepState]="validateStepOne() == true ? 'pass': 'error'"
+    <h4 class="mt-2 mb-3 text-lg text-center">Provide details for your event</h4>
+    <!--Title-->
+    <div class="my-3">
+      <label class="text-base font-semibold">Title</label>
+      <tui-input formControlName="title" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+        e.g. Annual Union Meeting
+        <input
+          tuiTextfield
+          type="text"
+          autocomplete="new-password"
+        />
+      </tui-input>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a title for your event',
+        control: f['title']
+      }">
+      </ng-container>
+
+    </div>
+
+    <!--Description-->
+    <div class="mb-3">
+      <label class="text-base font-semibold">Description</label>
+      <tui-text-area
+        formControlName="description"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+        [maxLength]="500"
+        class="mt-1"
       >
-        Details
-      </button>
-      <button
-        tuiStep
-      >
-        Agenda
-      </button>
-      <button
-        tuiStep
-      >
-        Gallery & Contact Info
-      </button>
-    </tui-stepper>
+        Describe your event
+      </tui-text-area>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a description for your event',
+        control: f['description']
+      }">
+      </ng-container>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'maxlength',
+        message: 'Max character length allowed is 500 characters',
+        control: f['description']
+      }">
+      </ng-container>
+    </div>
 
-    <ng-container *ngIf="activeIndex == 0">
-      <h4 class="my-5 text-lg text-center">Provide details for your event</h4>
-      <!--Title-->
-      <div class="my-3">
-        <label class="text-base font-semibold">Title</label>
-        <tui-input formControlName="title" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-          e.g. Annual Union Meeting
-          <input
-            tuiTextfield
-            type="text"
-            autocomplete="new-password"
-          />
-        </tui-input>
-        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-          validation: 'required',
-          message: 'Please provide a title for your event',
-          control: f['title']
-        }">
+    <!--Featured Image-->
+    <div class="my-3">
+      <label class="text-base font-semibold">Featured Image</label>
+      <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
+        <ng-container *ngIf="!f['featuredImage']?.value">
+          <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <tui-marker-icon
+                mode="link"
+                src="tuiIconUploadCloud"
+                class="mb-1"
+              ></tui-marker-icon>
+              <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+            </div>
+            <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
+          </label>
         </ng-container>
-
-      </div>
-
-      <!--Description-->
-      <div class="mb-3">
-        <label class="text-base font-semibold">Description</label>
-        <tui-text-area
-          formControlName="description"
-          [tuiTextfieldLabelOutside]="true"
-          [tuiTextfieldCleaner]="true"
-          [maxLength]="500"
-          class="mt-1"
-        >
-          Describe your event
-        </tui-text-area>
-        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-          validation: 'required',
-          message: 'Please provide a description for your event',
-          control: f['description']
-        }">
-        </ng-container>
-        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-          validation: 'maxlength',
-          message: 'Max character length allowed is 500 characters',
-          control: f['description']
-        }">
-        </ng-container>
-      </div>
-
-      <!--Featured Image-->
-      <div class="my-3">
-        <label class="text-base font-semibold">Featured Image</label>
-        <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
-          <ng-container *ngIf="!f['featuredImage']?.value">
-            <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-              <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                <tui-marker-icon
-                  mode="link"
-                  src="tuiIconUploadCloud"
-                  class="mb-1"
-                ></tui-marker-icon>
-                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+        <ng-container *ngIf="f['featuredImage']?.value">
+          <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
+              <div class="relative w-28 h-28">
+                <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
               </div>
-              <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
-            </label>
-          </ng-container>
-          <ng-container *ngIf="f['featuredImage']?.value">
-            <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-              <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
-                <div class="relative w-28 h-28">
-                  <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
-                </div>
-              </div>
-              <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
-            </label>
-          </ng-container>
-        </div>
+            </div>
+            <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
+          </label>
+        </ng-container>
       </div>
+    </div>
 
+    <div class="grid grid-cols-12 gap-3 w-full">
       <!--Location-->
-      <div class="mt-2">
-        <label class="text-base font-semibold">Location & Venue</label>
+      <div class="my-4 col-span-6">
+        <label class="text-base font-semibold">Venue</label>
         <tui-input formControlName="location" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" tuiTextfieldIcon="tuiIconMapPinLarge">
           e.g. Serena Hotel, Islamabad
           <input
@@ -279,9 +260,8 @@
         }">
         </ng-container>
       </div>
-
       <!--Type-->
-      <div class="my-4">
+      <div class="my-4 col-span-6">
         <label class="text-base font-semibold">Type</label>
         <tui-select
           formControlName="type"
@@ -298,31 +278,116 @@
           ></tui-data-list-wrapper>
         </tui-select>
       </div>
+    </div>
 
-      <!--Dates-->
-      <div class="my-4">
-        <label class="col-span-12 text-base font-semibold">Select event days</label>
-        <tui-input-date-range formControlName="eventDays" class="mt-1" [min]="today">Choose dates</tui-input-date-range>
-        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-          validation: 'required',
-          message: 'Please provide days in which your event will take place',
-          control: f['eventDays']
-        }">
+    <!--Dates-->
+    <div class="my-4">
+      <label class="col-span-12 text-base font-semibold">Select event days</label>
+      <tui-input-date-range formControlName="eventDays" class="mt-1" [min]="today">Choose dates</tui-input-date-range>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide days in which your event will take place',
+        control: f['eventDays']
+      }">
+      </ng-container>
+    </div>
+
+    <!--Fees-->
+    <div class="my-4">
+      <label class="text-base font-semibold">Event Fees</label>
+      <tui-input-number
+        formControlName="fees"
+        [tuiTextfieldPrefix]="'PKR ' | tuiCurrency"
+        [tuiTextfieldLabelOutside]="true"
+      >
+        e.g. 1000
+      </tui-input-number>
+    </div>
+
+    <!--Gallery Images-->
+    <div class="my-5">
+      <label class="text-base font-semibold">Gallery Images</label><sup>(Optional)</sup>
+      <div (change)="uploadMultipleImages($event)" class="flex items-center justify-center w-full mt-1">
+        <ng-container *ngIf="multipleImages?.length == 0">
+          <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-50 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <tui-marker-icon
+                mode="link"
+                src="tuiIconUploadCloudLarge"
+                class="mb-1"
+              ></tui-marker-icon>
+              <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG or JPG</p>
+            </div>
+            <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
+          </label>
+        </ng-container>
+        <ng-container *ngIf="multipleImages.length > 0">
+          <label for="dropzone-file" class="flex flex-col justify-start w-full h-50 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
+              <ng-container *ngFor="let image of multipleImages; let j = index">
+                <div class="relative w-24 h-24">
+                  <div (click)="spliceImage(j, $event)" class="absolute flex flex-col items-center justify-center w-5 h-5 font-semibold text-white bg-red-600 rounded-full -top-2 -right-1">
+                    x
+                  </div>
+                  <img [src]="image" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
+                </div>
+              </ng-container>
+            </div>
+            <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
+          </label>
         </ng-container>
       </div>
+    </div>
 
-      <!--Fees-->
-      <div class="my-4">
-        <label class="text-base font-semibold">Event Fees</label>
-        <tui-input-number
-          formControlName="fees"
-          [tuiTextfieldPrefix]="'PKR ' | tuiCurrency"
-          [tuiTextfieldLabelOutside]="true"
-        >
-          e.g. 1000
-        </tui-input-number>
-      </div>
-    </ng-container>
+    <!--Sponsor-->
+    <div class="my-3">
+      <label class="text-base font-semibold">Grand Sponsor</label>
+      <tui-input formControlName="organizer" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+        e.g. Quaid Technologies
+        <input
+          tuiTextfield
+          type="text"
+          autocomplete="new-password"
+        />
+      </tui-input>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please specify a grand sponsor for your event',
+        control: f['organizer']
+      }">
+      </ng-container>
+    </div>
+
+    <!--Contact-->
+    <div class="my-3">
+      <label class="text-base font-semibold">Sponsor Contact</label>
+      <tui-input-phone-international
+        class="mt-1"
+        formControlName="organizerContact"
+        [countries]="countries"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+        [(countryIsoCode)]="countryIsoCode"
+      ></tui-input-phone-international>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'organizerContact',
+        message: 'Please provide a phone number',
+        control: f['organizerContact']
+      }">
+      </ng-container>
+
+    </div>
+
+    <!--Public Open?-->
+    <div class="mt-5">
+      <tui-checkbox-labeled
+        formControlName="openForPublic"
+        size="l"
+      >
+        Open For Public?
+      </tui-checkbox-labeled>
+    </div>
 
     <ng-container *ngIf="activeIndex == 1">
       <h4 class="my-5 text-lg text-center">Create an agenda for your event</h4>
@@ -532,108 +597,22 @@
       </ng-container>
     </ng-container>
 
-    <ng-container *ngIf="activeIndex == 2">
-      <!--Gallery Images-->
-      <div class="my-5">
-        <label class="text-base font-semibold">Gallery Images</label><sup>(Optional)</sup>
-        <div (change)="uploadMultipleImages($event)" class="flex items-center justify-center w-full mt-1">
-          <ng-container *ngIf="multipleImages?.length == 0">
-            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-              <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                <tui-marker-icon
-                  mode="link"
-                  src="tuiIconUploadCloudLarge"
-                  class="mb-1"
-                ></tui-marker-icon>
-                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG or JPG</p>
-              </div>
-              <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
-            </label>
-          </ng-container>
-          <ng-container *ngIf="multipleImages.length > 0">
-            <label for="dropzone-file" class="flex flex-col justify-start w-full h-64 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-              <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
-                <ng-container *ngFor="let image of multipleImages; let j = index">
-                  <div class="relative w-24 h-24">
-                    <div (click)="spliceImage(j, $event)" class="absolute flex flex-col items-center justify-center w-5 h-5 font-semibold text-white bg-red-600 rounded-full -top-2 -right-1">
-                      x
-                    </div>
-                    <img [src]="image" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
-                  </div>
-                </ng-container>
-              </div>
-              <input id="dropzone-file" type="file" accept="image/*" class="hidden" multiple="true" />
-            </label>
-          </ng-container>
-        </div>
-      </div>
-      <!--Sponsor-->
-      <div class="my-3">
-        <label class="text-base font-semibold">Sponsor</label>
-        <tui-input formControlName="organizer" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-          e.g. Quaid Technologies
-          <input
-            tuiTextfield
-            type="text"
-            autocomplete="new-password"
-          />
-        </tui-input>
-        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-          validation: 'required',
-          message: 'Please specify an organizer for your event',
-          control: f['organizer']
-        }">
-        </ng-container>
-
-      </div>
-      <!--Contact-->
-      <div class="my-3">
-        <label class="text-base font-semibold">Phone Number</label>
-        <tui-input-phone-international
-          class="mt-1"
-          formControlName="organizerContact"
-          [countries]="countries"
-          [tuiTextfieldLabelOutside]="true"
-          [tuiTextfieldCleaner]="true"
-          [(countryIsoCode)]="countryIsoCode"
-        ></tui-input-phone-international>
-        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-          validation: 'organizerContact',
-          message: 'Please provide a phone number',
-          control: f['organizerContact']
-        }">
-        </ng-container>
-
-      </div>
-      <!--Public Open?-->
-      <div class="mt-5">
-        <tui-checkbox-labeled
-          formControlName="openForPublic"
-          size="l"
-        >
-          Open For Public?
-        </tui-checkbox-labeled>
-      </div>
-    </ng-container>
-
     <!--SUBMIT BTNS-->
-    <div class="flex justify-center gap-3 mt-5">
-      <ng-container *ngIf="!eventID && activeIndex == 2">
-        <button
-          tuiButton
-          [showLoader]="(savingEvent | async)!"
-          icon="tuiIconCalendarLarge"
-          appearance="custom"
-          class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
-          [disabled]="eventForm.invalid || (uploadingMultiple | async) == true"
-          (click)="createEvent()"
-        >
-          Create Event
-        </button>
-      </ng-container>
+    <div class="flex justify-center gap-3 mt-4">
+      <button
+        *ngIf="!eventID"
+        tuiButton
+        [showLoader]="(savingEvent | async)!"
+        icon="tuiIconCalendarLarge"
+        appearance="custom"
+        class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
+        [disabled]="eventForm.invalid || (uploadingMultiple | async) == true"
+        (click)="createEvent()"
+      >
+        Create Event
+      </button>
 
-      <ng-container *ngIf="eventID && activeIndex == 2">
+      <ng-container *ngIf="eventID">
         <button
           tuiButton
           [showLoader]="(savingEvent | async)!"
@@ -647,39 +626,16 @@
         </button>
       </ng-container>
 
-      <ng-container *ngIf="activeIndex < 2">
-        <button
-          tuiButton
-          icon="tuiIconSkipForward"
-          appearance="custom"
-          class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
-          (click)="nextStep()"
-        >
-          Next
-        </button>
-      </ng-container>
-      <ng-container *ngIf="!eventID">
-        <button
-          tuiButton
-          icon="tuiIconCloseLarge"
-          appearance="accent"
-          class="mt-1"
-          [disabled]="(savingEvent | async) == true"
-          (click)="closeDialog($event)"
-        >
-          Cancel
-        </button>
-      </ng-container>
-      <ng-container *ngIf="activeIndex > 0">
-        <button
-          tuiButton
-          icon="tuiIconSkipBack"
-          appearance="secondary-destructive"
-          (click)="prevStep()"
-        >
-          Back
-        </button>
-      </ng-container>
+      <button
+        tuiButton
+        icon="tuiIconCloseLarge"
+        appearance="accent"
+        class="mt-1"
+        [disabled]="(savingEvent | async) == true"
+        (click)="closeDialog($event)"
+      >
+        Cancel
+      </button>
     </div>
   </form>
   <div *ngIf="(uploadingMultiple | async) == true" class="absolute z-50 right-3 bottom-6">

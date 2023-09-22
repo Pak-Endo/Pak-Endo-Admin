@@ -16,6 +16,21 @@
         <tui-svg new size="xxs" src="tuiIconCalendarLarge"></tui-svg>&nbsp; Events
       </a>
     </li>
+    <li class="font-medium text-base hover:text-gray-200 cursor-pointer my-5" >
+      <a [routerLink]="['/pages/speakers']" routerLinkActive="router-link-active" class="no-underline hover:text-gray-200 text-white pr-10 1.7xl:pr-20 pl-2 py-1 rounded-md inline-flex">
+        <tui-svg new size="xxs" src="tuiIconMicLarge"></tui-svg>&nbsp; Speakers
+      </a>
+    </li>
+    <li class="font-medium text-base hover:text-gray-200 cursor-pointer my-5" >
+      <a [routerLink]="['/pages/sponsors']" routerLinkActive="router-link-active" class="no-underline hover:text-gray-200 text-white pr-10 1.7xl:pr-20 pl-2 py-1 rounded-md inline-flex">
+        <tui-svg new size="xxs" src="tuiIconAwardLarge"></tui-svg>&nbsp; Sponsors
+      </a>
+    </li>
+    <li class="font-medium text-base hover:text-gray-200 cursor-pointer my-5" >
+      <a [routerLink]="['/pages/venues']" routerLinkActive="router-link-active" class="no-underline hover:text-gray-200 text-white pr-10 1.7xl:pr-20 pl-2 py-1 rounded-md inline-flex">
+        <tui-svg new size="xxs" src="tuiIconMapPinLarge"></tui-svg>&nbsp; Venues
+      </a>
+    </li>
 
     <li class="font-medium text-base hover:text-gray-200 cursor-pointer my-5 absolute bottom-20 left-0 w-full">
       <button (click)="logoutOfDashbaord()" class="bg-red-600 rounded-md text-center py-2 px-5 1.7xl:px-8">

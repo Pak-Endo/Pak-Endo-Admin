@@ -45,7 +45,7 @@ export class EventsComponent implements OnDestroy {
   today: TuiDay
   tomorrow: TuiDay;
   activeIndex: number = 0;
-  eventTypes = ['Conference', 'Workshop'];
+  eventTypes = ['Conference', 'Workshop', 'Corporate Symposium'];
   daysOfEvents: any = [];
   daysOfEventsValue: any = [];
   readonly countries: readonly TuiCountryIsoCode[] = [
@@ -120,25 +120,7 @@ export class EventsComponent implements OnDestroy {
       type: new FormControl(null, Validators.required),
       organizer: new FormControl(null, Validators.required),
       organizerContact: new FormControl(null, Validators.required),
-      fees: new FormControl(null, Validators.required),
-      agendas: this.fb.array(
-        [
-          this.fb.group({
-            _id: [undefined],
-            agendaTitle: [null, Validators.required],
-            day: [0, Validators.required],
-            from: [null, Validators.required],
-            to: [null, Validators.required],
-            isPmFrom: [false],
-            isPmTo: [false],
-            venue: [null, Validators.required],
-            streamUrl: [null],
-            speaker: [undefined],
-            speakerImg: [undefined],
-            attachments: [[]]
-          })
-        ]
-      )
+      fees: new FormControl(null, Validators.required)
     })
   }
 
@@ -236,8 +218,8 @@ export class EventsComponent implements OnDestroy {
 
   showAddorEditDialog(content: PolymorpheusContent<TuiDialogContext>, data?: EventModel | any): void {
     if(data) {
-      let agendaDays: any[] = [];
-      this.agendas.clear();
+      // let agendaDays: any[] = [];
+      // this.agendas.clear();
       this.eventID = data?._id;
       this.f['title'].setValue(data?.title)
       this.f['fees'].setValue(data?.fees)
@@ -248,39 +230,39 @@ export class EventsComponent implements OnDestroy {
       this.f['organizerContact'].setValue(data?.organizerContact)
       this.f['organizer'].setValue(data?.organizer);
       this.f['openForPublic']?.setValue(data?.openForPublic || true)
-      this.multipleImages = data?.gallery?.mediaUrl !== null ? data?.gallery?.mediaUrl : []
+      this.multipleImages = data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : []
       this.f['gallery'].setValue(data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : undefined);
       let convertedStartDate = this.convertTimestampToObject(data?.startDate)
       let convertedEndDate = this.convertTimestampToObject(data?.endDate)
-      let eventDayRange: TuiDayRange = new TuiDayRange(convertedStartDate?.Date,  convertedEndDate?.Date);
+      let eventDayRange: TuiDayRange = new TuiDayRange(convertedStartDate?.Date, convertedEndDate?.Date);
       this.f['eventDays'].setValue(eventDayRange)
-      data.agenda.map((agenda: any) => {
-        agenda.day = this.convertTimestampToObject(agenda.day)?.Date
-        agenda.from = this.convertTimeStringToObject(agenda.from)
-        agenda.to = this.convertTimeStringToObject(agenda.to)
-        agendaDays.push({...agenda.day})
-        let formAgenda = this.fb.group({
-          _id: [agenda._id],
-          agendaTitle: [agenda.agendaTitle, Validators.required],
-          day: [agenda.day, Validators.required],
-          from: [agenda.from, Validators.required],
-          to: [agenda.to, Validators.required],
-          venue: [agenda.venue, Validators.required],
-          speaker: [agenda.speaker || null],
-          streamUrl: [agenda.streamUrl || null],
-          speakerImg: [agenda.speakerImg || null],
-          attachments: [agenda.attachments || []]
-        });
-        this.agendas.push(formAgenda)
-        this.agendas.updateValueAndValidity();
-      });
-      agendaDays = [...new Map(agendaDays?.map((data: any) => [data['day'], data])).values()]
-      this.daysOfEvents = agendaDays;
+      // data.agenda.map((agenda: any) => {
+      //   agenda.day = this.convertTimestampToObject(agenda.day)?.Date
+      //   agenda.from = this.convertTimeStringToObject(agenda.from)
+      //   agenda.to = this.convertTimeStringToObject(agenda.to)
+      //   agendaDays.push({...agenda.day})
+        // let formAgenda = this.fb.group({
+        //   _id: [agenda._id],
+        //   agendaTitle: [agenda.agendaTitle, Validators.required],
+        //   day: [agenda.day, Validators.required],
+        //   from: [agenda.from, Validators.required],
+        //   to: [agenda.to, Validators.required],
+        //   venue: [agenda.venue, Validators.required],
+        //   speaker: [agenda.speaker || null],
+        //   streamUrl: [agenda.streamUrl || null],
+        //   speakerImg: [agenda.speakerImg || null],
+        //   attachments: [agenda.attachments || []]
+        // });
+        // this.agendas.push(formAgenda)
+        // this.agendas.updateValueAndValidity();
+      // });
+      // agendaDays = [...new Map(agendaDays?.map((data: any) => [data['day'], data])).values()]
+      // this.daysOfEvents = agendaDays;
     }
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,
       closeable: false,
-      size: 'fullscreen'
+      size: 'l'
     }).pipe(takeUntil(this.destroy$)).subscribe());
   }
 
@@ -400,27 +382,9 @@ export class EventsComponent implements OnDestroy {
         type: null,
         organizer: null,
         organizerContact: null,
-        fees: null,
-        agendas: [
-          {
-            _id: null,
-            agendaTitle: null,
-            day: 0,
-            from: null,
-            to: null,
-            isPmFrom: false,
-            isPmTo: false,
-            venue: null,
-            speaker: null,
-            speakerImg: null,
-            streamUrl: null,
-            attachments: [[]]
-          }
-        ]
+        fees: null
       }
     );
-    this.agendas.removeAt(0);
-    this.addAgenda(0)
     this.activeIndex = 0;
     this.eventID = null;
   }
@@ -624,19 +588,19 @@ export class EventsComponent implements OnDestroy {
       59,
       0
     ).getTime();
-    let agendasWithDays = this.eventForm.value.agendas;
-    agendasWithDays = agendasWithDays.map((data: any) => {
-      let day = this.daysOfEvents[data.day];
-      day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
-      data.from = data.from.toString();
-      data.to = data.to.toString();
-      return {...data, day: day}
-    })
+    // let agendasWithDays = this.eventForm.value.agendas;
+    // agendasWithDays = agendasWithDays.map((data: any) => {
+    //   let day = this.daysOfEvents[data.day];
+    //   day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
+    //   data.from = data.from.toString();
+    //   data.to = data.to.toString();
+    //   return {...data, day: day}
+    // })
     const payload = Object.assign(
       this.eventForm.value,
       {startDate: startDateTimestamp},
       {endDate: endDateTimestamp},
-      {agenda: agendasWithDays},
+      {agenda: []},
       {rating: 0}
     );
     delete payload.eventDays
@@ -675,26 +639,25 @@ export class EventsComponent implements OnDestroy {
       59,
       0
     ).getTime();
-    let agendasWithDays = this.eventForm.value.agendas;
-    agendasWithDays = agendasWithDays.map((data: any) => {
-      if(typeof data.day == 'number') {
-        let day = this.daysOfEvents[data.day];
-        day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
-        data.from = data.from.toString();
-        data.to = data.to.toString();
-        return {...data, day: day}
-      }
+    // let agendasWithDays = this.eventForm.value.agendas;
+    // agendasWithDays = agendasWithDays.map((data: any) => {
+    //   if(typeof data.day == 'number') {
+    //     let day = this.daysOfEvents[data.day];
+    //     day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
+    //     data.from = data.from.toString();
+    //     data.to = data.to.toString();
+    //     return {...data, day: day}
+    //   }
 
-      let day = new Date(data.day.year, data.day.month, data.day.day, 23, 59, 59, 0).getTime();
-      data.from = data.from.toString();
-      data.to = data.to.toString();
-      return {...data, day: day}
-    })
+    //   let day = new Date(data.day.year, data.day.month, data.day.day, 23, 59, 59, 0).getTime();
+    //   data.from = data.from.toString();
+    //   data.to = data.to.toString();
+    //   return {...data, day: day}
+    // })
     const payload = Object.assign(
       this.eventForm.value,
       {startDate: startDateTimestamp},
-      {endDate: endDateTimestamp},
-      {agenda: agendasWithDays}
+      {endDate: endDateTimestamp}
     );
     delete payload.eventDays
     delete payload.agendas
