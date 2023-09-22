@@ -726,29 +726,3 @@ export class EventsComponent implements OnDestroy {
     this.dialogSubs.forEach(val => val.unsubscribe());
   }
 }
-
-/**
- * function generateUniqueID(speakerName) {
-  // Function to generate a random string of characters
-  function generateRandomString(length) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      result += characters.charAt(randomIndex);
-    }
-    return result;
-  }
-
-  // Extract the initials from the speaker's name
-  const initials = speakerName.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
-
-  // Generate a random string of 8 characters
-  const randomString = generateRandomString(8);
-
-  // Combine initials and random string to create a unique ID
-  const uniqueID = initials + randomString;
-
-  return uniqueID;
-}
- */

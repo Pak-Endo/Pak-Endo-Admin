@@ -1,1 +1,141 @@
-<p>venues works!</p>
+<h1 class="text-2xl font-bold">Venues</h1>
+<div class="flex justify-end">
+  <button
+    tuiButton
+    icon="tuiIconPlusLarge"
+    type="submit"
+    size="m"
+    appearance="custom"
+    class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
+  >
+    Add venue
+  </button>
+</div>
+<gui-grid
+  [source]="source"
+  [loading]="loading"
+  [autoResizeWidth]="true"
+  [sorting]="true"
+  [searching]="searching"
+  [paging]="paging"
+  [verticalGrid]="false"
+  [horizontalGrid]="false"
+  [theme]="'Material'"
+  class="w-full mt-2 overflow-x-auto shadow-lg mb-7"
+>
+  <!--Member ID-->
+  <gui-grid-column header="Venue Name" field="venueName">
+    <ng-template let-value="value" let-item="item">
+      {{item?.venueName}}
+    </ng-template>
+  </gui-grid-column>
+  <!--Full name-->
+  <gui-grid-column header="City" field="city">
+    <ng-template let-value="value" let-item="item">
+      {{item?.city}}
+    </ng-template>
+  </gui-grid-column>
+  <!--Phone No-->
+  <gui-grid-column header="Halls" field="halls">
+    <ng-template let-value="value" let-item="item">
+      {{item?.halls}}
+    </ng-template>
+  </gui-grid-column>
+  <!--Actions-->
+  <gui-grid-column header="Actions" [sorting]="false">
+    <ng-template let-value="value" let-item="item">
+      <td class="inline-flex gap-2 py-4">
+        <button
+          tuiIconButton
+          icon="tuiIconEdit"
+          type="button"
+          appearance="custom"
+          size="s"
+          class="bg-[#1F566E] text-white"
+        >
+        </button>
+        <button
+          tuiIconButton
+          icon="tuiIconTrash2"
+          type="button"
+          appearance="custom"
+          size="s"
+          class="text-white bg-red-500"
+        >
+        </button>
+      </td>
+    </ng-template>
+  </gui-grid-column>
+</gui-grid>
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="control.hasError(validation) && (control.dirty || control.touched)">
+    <div class="w-full mt-1 text-left fv-plugins-message-container text-xxs 2xl:text-xs">
+      <span class="text-xs font-semibold text-orange-600 fv-help-block" role="alert">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
+<!-- 
+<ng-template #deleteTemplate let-observer>
+  <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Remove Member</h1>
+  <h1 class="py-3 text-xl font-bold text-center">Are you sure you want to delete this member?</h1>
+  <div class="flex justify-center gap-3 mt-5">
+    <button [showLoader]="(savingMember | async) == true" tuiButton appearance="custom" icon="tuiIconTrashLarge" class="text-white bg-red-500" (click)="deleteMember(); observer.complete()">
+      Delete
+    </button>
+    <button tuiButton appearance="secondary-destructive" icon="tuiIconCloseLarge" (click)="observer.complete()">
+      Cancel
+    </button>
+  </div>
+</ng-template> -->
+<!-- 
+<ng-template #approveTemplate let-observer>
+  <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Approve User</h1>
+  <div class="mt-7">
+    <label class="text-base font-semibold">Please specify a membership type for this user</label>
+    <tui-select
+      tuiTextfieldSize="l"
+      [formControl]="approveMembertype"
+      class="mt-1"
+    >
+      Specify membership type
+      <input
+        tuiTextfield
+        placeholder="Select type"
+      />
+      <tui-data-list-wrapper
+        *tuiDataList
+        [items]="types"
+      ></tui-data-list-wrapper>
+    </tui-select>
+    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+      validation: 'required',
+      message: 'Please specify a membership type',
+      control: approveMembertype
+    }">
+    </ng-container>
+  </div>
+  <div class="flex justify-center gap-3 mt-5">
+    <button
+      [showLoader]="(savingMember | async) == true"
+      tuiButton
+      appearance="custom"
+      icon="tuiIconCheckLarge"
+      class="text-white bg-[#234A76]"
+      [disabled]="approveMembertype.invalid"
+      (click)="approveMember()"
+    >
+      Approve
+    </button>
+    <button
+      tuiButton
+      appearance="secondary-destructive"
+      icon="tuiIconCloseLarge"
+      (click)="observer.complete(); approveMembertype.reset()"
+    >
+      Cancel
+    </button>
+  </div>
+</ng-template> -->

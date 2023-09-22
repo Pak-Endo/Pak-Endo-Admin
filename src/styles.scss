@@ -15,3 +15,12 @@
 ._disabled {
   opacity: 1!important;
 }
+
+.gui-structure-container .gui-structure-container-element .gui-content .gui-row .gui-cell {
+  border-right: 1px solid transparent!important;
+  box-sizing: border-box!important;
+  line-height: 1em!important;
+  overflow: hidden!important;
+  padding: 0!important;
+  white-space: pre-line!important;
+}
