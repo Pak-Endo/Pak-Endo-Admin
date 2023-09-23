@@ -70,7 +70,6 @@
             <th class="px-2 py-3 text-sm">Ends On</th>
             <th class="px-2 py-3 text-sm">Location</th>
             <th class="px-2 py-3 text-sm">Status</th>
-            <th class="px-2 py-3 text-sm">Rating</th>
             <th scope="col" class="px-2 py-3 text-sm">
               Actions
             </th>
@@ -98,13 +97,10 @@
                   {{event?.endDate | date:'mediumDate'}}
                 </td>
                 <td class="px-2 py-4">
-                    {{event?.location}}
+                    {{event?.location?.name}}
                 </td>
                 <td class="px-2 py-4 capitalize">
                   {{event?.eventStatus}}
-                </td>
-                <td class="py-4">
-                  <tui-rating [(ngModel)]="rating" class="text-yellow-600" disabled="true"></tui-rating>
                 </td>
                 <td class="inline-flex gap-2 py-4">
                   <button
@@ -241,27 +237,38 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-12 gap-3 w-full">
+    <div class="grid w-full grid-cols-12 gap-3">
       <!--Location-->
-      <div class="my-4 col-span-6">
+      <div class="col-span-6 my-4">
         <label class="text-base font-semibold">Venue</label>
-        <tui-input formControlName="location" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" tuiTextfieldIcon="tuiIconMapPinLarge">
-          e.g. Serena Hotel, Islamabad
-          <input
-            tuiTextfield
-            type="text"
-            autocomplete="new-password"
-          />
-        </tui-input>
+        <tui-select
+          formControlName="location"
+          [tuiTextfieldLabelOutside]="true"
+          [valueContent]="stringify(venues)"
+          [(ngModel)]="venueValue"
+          class="mt-1.5"
+        >
+        <ng-template tuiDataList>
+          <tui-data-list>
+            <button
+              *ngFor="let item of venues"
+              tuiOption
+              [value]="item.id"
+            >
+              {{ item.name }}
+            </button>
+          </tui-data-list>
+        </ng-template>
+        </tui-select>
         <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
           validation: 'required',
-          message: 'Please specify location for the event',
+          message: 'Please specify a venue for the event',
           control: f['location']
         }">
         </ng-container>
       </div>
       <!--Type-->
-      <div class="my-4 col-span-6">
+      <div class="col-span-6 my-4">
         <label class="text-base font-semibold">Type</label>
         <tui-select
           formControlName="type"
@@ -309,7 +316,7 @@
       <label class="text-base font-semibold">Gallery Images</label><sup>(Optional)</sup>
       <div (change)="uploadMultipleImages($event)" class="flex items-center justify-center w-full mt-1">
         <ng-container *ngIf="multipleImages?.length == 0">
-          <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-50 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+          <label for="dropzone-file" class="flex flex-col items-center justify-center w-full border-2 border-gray-400 border-dashed rounded-lg cursor-pointer h-50 bg-gray-50 hover:bg-gray-100">
             <div class="flex flex-col items-center justify-center pt-5 pb-6">
               <tui-marker-icon
                 mode="link"
@@ -323,7 +330,7 @@
           </label>
         </ng-container>
         <ng-container *ngIf="multipleImages.length > 0">
-          <label for="dropzone-file" class="flex flex-col justify-start w-full h-50 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+          <label for="dropzone-file" class="flex flex-col justify-start w-full border-2 border-gray-400 border-dashed rounded-lg cursor-pointer h-50 bg-gray-50 hover:bg-gray-100">
             <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
               <ng-container *ngFor="let image of multipleImages; let j = index">
                 <div class="relative w-24 h-24">
@@ -343,20 +350,31 @@
     <!--Sponsor-->
     <div class="my-3">
       <label class="text-base font-semibold">Grand Sponsor</label>
-      <tui-input formControlName="organizer" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-        e.g. Quaid Technologies
-        <input
-          tuiTextfield
-          type="text"
-          autocomplete="new-password"
-        />
-      </tui-input>
-      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-        validation: 'required',
-        message: 'Please specify a grand sponsor for your event',
-        control: f['organizer']
-      }">
-      </ng-container>
+      <tui-select
+          formControlName="grandSponsor"
+          [tuiTextfieldLabelOutside]="true"
+          [valueContent]="stringify(sponsors)"
+          [(ngModel)]="sponsorValue"
+          class="mt-1.5"
+        >
+        <ng-template tuiDataList>
+          <tui-data-list>
+            <button
+              *ngFor="let item of sponsors"
+              tuiOption
+              [value]="item.id"
+            >
+              {{ item.name }}
+            </button>
+          </tui-data-list>
+        </ng-template>
+        </tui-select>
+        <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+          validation: 'required',
+          message: 'Please specify a grand sponsor for the event',
+          control: f['grandSponsor']
+        }">
+        </ng-container>
     </div>
 
     <!--Contact-->
@@ -364,16 +382,16 @@
       <label class="text-base font-semibold">Sponsor Contact</label>
       <tui-input-phone-international
         class="mt-1"
-        formControlName="organizerContact"
+        formControlName="grandSponsorContact"
         [countries]="countries"
         [tuiTextfieldLabelOutside]="true"
         [tuiTextfieldCleaner]="true"
         [(countryIsoCode)]="countryIsoCode"
       ></tui-input-phone-international>
       <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-        validation: 'organizerContact',
+        validation: 'grandSponsorContact',
         message: 'Please provide a phone number',
-        control: f['organizerContact']
+        control: f['grandSponsorContact']
       }">
       </ng-container>
 
@@ -478,7 +496,7 @@
                         class="my-1.5"
                         size="l"
                       ></tui-toggle>
-                      <span class="text-xxs text-gray-400 ml-2">Toggle to switch between AM and PM</span>
+                      <span class="ml-2 text-gray-400 text-xxs">Toggle to switch between AM and PM</span>
                     </div>
                     <div class="col-span-6">
                       <label class="text-base font-semibold">End time</label>
@@ -495,7 +513,7 @@
                         class="my-1.5"
                         size="l"
                       ></tui-toggle>
-                      <span class="text-xxs text-gray-400 ml-2">Toggle to switch between AM and PM</span>
+                      <span class="ml-2 text-gray-400 text-xxs">Toggle to switch between AM and PM</span>
                     </div>
                     <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="col-span-12 text-xs text-red-500">
                       Please provide a valid timeline
@@ -744,13 +762,13 @@
         </tui-input>
       </div>
       <div class="my-4">
-        <label class="mb-2 block">Event Status</label>
+        <label class="block mb-2">Event Status</label>
         <tui-filter
           formControlName="status"
           (toggledItem)="filterToggleStatus($event)"
           size="m"
           [items]="items"
-          class="capitalize mt-2"
+          class="mt-2 capitalize"
         ></tui-filter>
       </div>
       <div class="my-4">

@@ -7,9 +7,10 @@ import { EventModel } from 'src/@core/models/events.model';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import { MediaUploadService } from 'src/@core/core-service/media-upload.service';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
-import { TuiDay, TuiDayRange, TuiTime } from '@taiga-ui/cdk';
+import { TuiContextWithImplicit, TuiDay, TuiDayRange, TuiStringHandler, TuiTime, tuiPure } from '@taiga-ui/cdk';
 import {TuiCountryIsoCode} from '@taiga-ui/i18n';
 import {tuiCreateTimePeriods, tuiInputTimeOptionsProvider} from '@taiga-ui/kit';
+import { PagesService } from '../pages/pages.service';
 
 @Component({
   selector: 'app-events',
@@ -30,7 +31,6 @@ export class EventsComponent implements OnDestroy {
   page: number = 1;
   index: number = 0;
   destroy$ = new Subject();
-  rating = 0;
   toggleExpand: boolean = true;
   eventForm!: FormGroup;
   filterForm!: FormGroup;
@@ -63,14 +63,35 @@ export class EventsComponent implements OnDestroy {
     'ongoing',
     'finished'
   ];
+  venues: any[] = [];
+  sponsors: any[] = [];
+  venueValue: any;
+  sponsorValue: any;
 
   constructor(
     private eventService: EventsService,
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     private fb: FormBuilder,
-    public media: MediaUploadService
+    public media: MediaUploadService,
+    private pageService: PagesService
   ) {
     this.initFilterForm();
+    this.pageService.getAllVenues(1000, 1).pipe(takeUntil(this.destroy$)).subscribe(value => {
+      this.venues = value?.data?.data?.map((venues: any) => {
+        return {
+          id: venues._id,
+          name: venues.venueName + ', ' + venues.city
+        }
+      })
+    });
+    this.pageService.getAllSponsors(1000, 1).pipe(takeUntil(this.destroy$)).subscribe(value => {
+      this.sponsors = value?.data?.data?.map((sponsors: any) => {
+        return {
+          id: sponsors._id,
+          name: sponsors.sponsorName
+        }
+      })
+    })
     let day = new Date().getDate()
     let nextDay = new Date().getDate() + 1
     let month = new Date().getMonth()
@@ -89,10 +110,16 @@ export class EventsComponent implements OnDestroy {
     this.setNoOfDaysForAgenda();
   }
 
+  @tuiPure
+    stringify(items: readonly any[]): TuiStringHandler<TuiContextWithImplicit<any>> {
+      const map = new Map(items.map(({id, name}) => [id, name] as [string, string]));
+      return ({$implicit}: TuiContextWithImplicit<string>) => map.get($implicit) || '';
+    }
+
   getPostfix(index: number, isFromField: boolean): string {
     const isPmFrom = this.agendas.at(index)?.get('isPmFrom')?.value;
     const isPmTo = this.agendas.at(index)?.get('isPmTo')?.value;
-  
+
     if (isFromField && isPmFrom) {
       return 'PM';
     } else if (!isFromField && isPmTo) {
@@ -118,8 +145,8 @@ export class EventsComponent implements OnDestroy {
       featuredImage: new FormControl(null, Validators.required),
       gallery: new FormControl(undefined),
       type: new FormControl(null, Validators.required),
-      organizer: new FormControl(null, Validators.required),
-      organizerContact: new FormControl(null, Validators.required),
+      grandSponsor: new FormControl(null, Validators.required),
+      grandSponsorContact: new FormControl(null, Validators.required),
       fees: new FormControl(null, Validators.required)
     })
   }
@@ -226,9 +253,11 @@ export class EventsComponent implements OnDestroy {
       this.f['description'].setValue(data?.description)
       this.f['featuredImage'].setValue(data?.featuredImage)
       this.f['type'].setValue(data?.type)
-      this.f['location'].setValue(data?.location)
-      this.f['organizerContact'].setValue(data?.organizerContact)
-      this.f['organizer'].setValue(data?.organizer);
+      this.f['location'].setValue(data?.location?.name)
+      this.venueValue = data?.location?.id;
+      this.sponsorValue = data?.grandSponsor?.id;
+      this.f['grandSponsorContact'].setValue(data?.grandSponsorContact)
+      this.f['grandSponsor'].setValue(data?.grandSponsor?.name);
       this.f['openForPublic']?.setValue(data?.openForPublic || true)
       this.multipleImages = data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : []
       this.f['gallery'].setValue(data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : undefined);
@@ -380,8 +409,8 @@ export class EventsComponent implements OnDestroy {
         featuredImage: null,
         gallery: null,
         type: null,
-        organizer: null,
-        organizerContact: null,
+        grandSponsor: null,
+        grandSponsorContact: null,
         fees: null
       }
     );
@@ -491,10 +520,10 @@ export class EventsComponent implements OnDestroy {
         this.agendas.controls.map(value => {
           console.log(value)
         })
-        
+
         return this.agendas.markAllAsTouched();
       }
-      
+
       return this.activeIndex++
     }
   }
@@ -539,15 +568,15 @@ export class EventsComponent implements OnDestroy {
 
   valdiateStepTwo() {
     if(this.agendas.value?.map((data: any) => data != null).includes(false)) {
-      
+
       return false
     }
     if(this.agendas.length < this.daysOfEvents.length) {
-      
+
       return false
     }
     if(this.getValidityForAgendas().includes(false)) {
-      
+
       return false
     }
     return true
@@ -600,6 +629,9 @@ export class EventsComponent implements OnDestroy {
       this.eventForm.value,
       {startDate: startDateTimestamp},
       {endDate: endDateTimestamp},
+      {grandSponsor: this.sponsors?.filter(value => value?.id == this.f['grandSponsor']?.value)[0]},
+      {location: this.venues?.filter(value => value?.id == this.f['location']?.value)[0]},
+      {gallery: this.f['gallery']?.value ? this.f['gallery']?.value: undefined},
       {agenda: []},
       {rating: 0}
     );
@@ -657,10 +689,14 @@ export class EventsComponent implements OnDestroy {
     const payload = Object.assign(
       this.eventForm.value,
       {startDate: startDateTimestamp},
-      {endDate: endDateTimestamp}
+      {endDate: endDateTimestamp},
+      {grandSponsor: this.sponsors?.filter(value => value?.id == this.f['grandSponsor']?.value)[0]},
+      {location: this.venues?.filter(value => value?.id == this.f['location']?.value)[0]},
+      {gallery: this.f['gallery']?.value ? this.f['gallery']?.value: undefined}
     );
     delete payload.eventDays
     delete payload.agendas
+    debugger
     this.eventService.updateEvent(payload, this.eventID).pipe(takeUntil(this.destroy$)).subscribe(val => {
       if(val) {
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
@@ -691,7 +727,7 @@ export class EventsComponent implements OnDestroy {
     this.filterForm.get('speaker')?.value ||
     this.filterForm.get('endDate')?.value ||
     this.filterForm.get('startDate')?.value ||
-    this.filterForm.get('type')?.value || 
+    this.filterForm.get('type')?.value ||
     this.filterForm.get('status')?.value)
   }
 

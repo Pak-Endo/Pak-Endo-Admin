@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { EventsRoutingModule } from './events-routing.module';
 import { EventsComponent } from './events.component';
 import { TuiInputTimeModule, TuiInputDateRangeModule, TuiInputFilesModule, TuiInputModule, TuiMarkerIconModule, TuiPaginationModule, TuiRatingModule, TuiTextAreaModule, TuiStepperModule, TuiDataListWrapperModule, TuiSelectModule, TuiInputPhoneInternationalModule, TuiInputDateModule, TuiCheckboxLabeledModule, TuiInputNumberModule, TuiFilterModule, TuiToggleModule } from '@taiga-ui/kit';
-import { TuiButtonModule, TuiExpandModule, TuiHostedDropdownModule, TuiLabelModule, TuiLoaderModule, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
+import { TuiButtonModule, TuiDataListModule, TuiExpandModule, TuiHostedDropdownModule, TuiLabelModule, TuiLoaderModule, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LayoutComponent } from '../layout/layout.component';
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
@@ -44,7 +44,8 @@ import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
     TuiInputNumberModule,
     TuiCurrencyPipeModule,
     TuiFilterModule,
-    TuiToggleModule
+    TuiToggleModule,
+    TuiDataListModule
   ]
 })
 export class EventsModule { }
