@@ -57,4 +57,27 @@ export class PagesService extends ApiService<any> {
   deleteSponsor(sponsorID: string | null): Observable<ApiResponse<any>> {
     return this.delete(`/sponsors/deleteSponsor/${sponsorID}`).pipe(shareReplay())
   }
+
+  // Venues
+  getAllVenues(limit: number, page: number, venueName?: string): Observable<ApiResponse<any>> {
+    page--;
+    let params: any = {
+      limit: limit,
+      offset: page ? limit * page : 0,
+      name: venueName ? venueName : ''
+    }
+    return this.get(`/venues/getAllVenues`, params).pipe(shareReplay())
+  }
+
+  addNewVenue(payload: any): Observable<ApiResponse<any>> {
+    return this.post(`/venues/addVenue`, payload).pipe(shareReplay())
+  }
+
+  updateVenue(payload: any, venueID: string | null): Observable<ApiResponse<any>> {
+    return this.put(`/venues/updateVenue/${venueID}`, payload).pipe(shareReplay())
+  }
+
+  deleteVenue(venueID: string | null): Observable<ApiResponse<any>> {
+    return this.delete(`/venues/deleteVenue/${venueID}`).pipe(shareReplay())
+  }
 }

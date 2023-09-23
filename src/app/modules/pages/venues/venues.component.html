@@ -7,6 +7,7 @@
     size="m"
     appearance="custom"
     class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
+    (click)="showAddorEditDialog(template)"
   >
     Add venue
   </button>
@@ -52,6 +53,7 @@
           appearance="custom"
           size="s"
           class="bg-[#1F566E] text-white"
+          (click)="showAddorEditDialog(template, item)"
         >
         </button>
         <button
@@ -61,12 +63,136 @@
           appearance="custom"
           size="s"
           class="text-white bg-red-500"
+          (click)="openDeleteDialog(deleteTemplate, item?._id)"
         >
         </button>
       </td>
     </ng-template>
   </gui-grid-column>
 </gui-grid>
+
+<ng-template #template let-observer>
+  <h1 class="text-3xl font-bold text-center">{{venueID ? 'Edit': 'Add new'}} Venue</h1>
+  <form [formGroup]="venueForm">
+    <label class="text-base font-semibold">City</label>
+    <tui-input
+      formControlName="city"
+      [tuiTextfieldLabelOutside]="true"
+      [tuiTextfieldCleaner]="true"
+      class="mt-1"
+    >
+      City
+      <input
+        tuiTextfield
+        type="text"
+        autocomplete="new-password"
+      />
+    </tui-input>
+    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+      validation: 'required',
+      message: 'Please provide a city name',
+      control: f['city']
+    }">
+    </ng-container>
+
+    <div class="my-5">
+      <label class="text-base font-semibold">Venue Name</label>
+      <tui-input
+        formControlName="venueName"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+        class="mt-1"
+      >
+        Venue Name
+        <input
+          tuiTextfield
+          type="text"
+          autocomplete="new-password"
+        />
+      </tui-input>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a venue name',
+        control: f['venueName']
+      }">
+      </ng-container>
+    </div>
+
+    <label class="text-base font-semibold">Halls</label>
+    <tui-input-tag
+      class="mt-1"
+      formControlName="halls"
+      [tuiTextfieldLabelOutside]="true"
+    >
+      Type and press Enter to add halls
+    </tui-input-tag>
+    <span class="text-xs">Add halls by typing the name and pressing Enter key</span>
+    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+      validation: 'required',
+      message: 'Please specify halls for your venue',
+      control: f['halls']
+    }">
+    </ng-container>
+
+    <div class="flex justify-center gap-3 mt-8">
+      <ng-container *ngIf="!venueID">
+        <button
+          tuiButton
+          [showLoader]="(savingMember | async)!"
+          icon="tuiIconUserPlusLarge"
+          appearance="primary"
+          [disabled]="venueForm.invalid"
+          (click)="createVenue()"
+        >
+          Add venue
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="venueID">
+        <button
+          tuiButton
+          [showLoader]="(savingMember | async)!"
+          icon="tuiIconUserPlusLarge"
+          appearance="primary"
+          [disabled]="venueForm.invalid"
+          (click)="editVenue()"
+        >
+          Update venue
+        </button>
+      </ng-container>
+
+      <button
+        tuiButton
+        icon="tuiIconCloseLarge"
+        appearance="secondary-destructive"
+        [disabled]="(savingMember | async) == true"
+        (click)="closeDialog($event)"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #deleteTemplate let-observer>
+  <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Remove Venue</h1>
+  <h1 class="py-3 text-xl font-bold text-center">Are you sure you want to delete this venue?</h1>
+  <div class="flex justify-center gap-3 mt-5">
+    <button
+      [showLoader]="(savingMember | async) == true"
+      tuiButton
+      appearance="custom"
+      icon="tuiIconTrashLarge"
+      class="text-white bg-red-500"
+      (click)="deleteVenue(); observer.complete()"
+    >
+      Delete
+    </button>
+    <button tuiButton appearance="secondary-destructive" icon="tuiIconCloseLarge" (click)="observer.complete(); venueID = null">
+      Cancel
+    </button>
+  </div>
+</ng-template>
 
 <ng-template #formError let-control="control" let-message="message" let-validation="validation">
   <ng-container *ngIf="control.hasError(validation) && (control.dirty || control.touched)">
@@ -77,65 +203,3 @@
     </div>
   </ng-container>
 </ng-template>
-<!-- 
-<ng-template #deleteTemplate let-observer>
-  <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Remove Member</h1>
-  <h1 class="py-3 text-xl font-bold text-center">Are you sure you want to delete this member?</h1>
-  <div class="flex justify-center gap-3 mt-5">
-    <button [showLoader]="(savingMember | async) == true" tuiButton appearance="custom" icon="tuiIconTrashLarge" class="text-white bg-red-500" (click)="deleteMember(); observer.complete()">
-      Delete
-    </button>
-    <button tuiButton appearance="secondary-destructive" icon="tuiIconCloseLarge" (click)="observer.complete()">
-      Cancel
-    </button>
-  </div>
-</ng-template> -->
-<!-- 
-<ng-template #approveTemplate let-observer>
-  <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Approve User</h1>
-  <div class="mt-7">
-    <label class="text-base font-semibold">Please specify a membership type for this user</label>
-    <tui-select
-      tuiTextfieldSize="l"
-      [formControl]="approveMembertype"
-      class="mt-1"
-    >
-      Specify membership type
-      <input
-        tuiTextfield
-        placeholder="Select type"
-      />
-      <tui-data-list-wrapper
-        *tuiDataList
-        [items]="types"
-      ></tui-data-list-wrapper>
-    </tui-select>
-    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-      validation: 'required',
-      message: 'Please specify a membership type',
-      control: approveMembertype
-    }">
-    </ng-container>
-  </div>
-  <div class="flex justify-center gap-3 mt-5">
-    <button
-      [showLoader]="(savingMember | async) == true"
-      tuiButton
-      appearance="custom"
-      icon="tuiIconCheckLarge"
-      class="text-white bg-[#234A76]"
-      [disabled]="approveMembertype.invalid"
-      (click)="approveMember()"
-    >
-      Approve
-    </button>
-    <button
-      tuiButton
-      appearance="secondary-destructive"
-      icon="tuiIconCloseLarge"
-      (click)="observer.complete(); approveMembertype.reset()"
-    >
-      Cancel
-    </button>
-  </div>
-</ng-template> -->

@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { GuiColumn, GuiPaging, GuiPagingDisplay, GuiSearching } from '@generic-ui/ngx-grid';
+import { GuiPaging, GuiPagingDisplay, GuiSearching } from '@generic-ui/ngx-grid';
 import { Subject, Subscription, finalize, map, takeUntil } from 'rxjs';
 import { PagesService } from '../pages.service';
 import { NotificationsService } from 'src/@core/core-service/notifications.service';
@@ -16,7 +16,7 @@ import {TuiCountryIsoCode} from '@taiga-ui/i18n';
   styleUrls: ['./sponsors.component.scss'],
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class SponsorsComponent {
+export class SponsorsComponent implements OnDestroy {
   source: Array<any> = [];
   loading = false;
   searching: GuiSearching = {
