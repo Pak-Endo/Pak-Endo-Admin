@@ -21,25 +21,7 @@ export class SpeakersComponent implements OnDestroy {
   speakerID: string | null = null;
   dialogSubs: Subscription[] = [];
   savingMember = new Subject<boolean>();
-   readonly loadingFiles$ = new Subject<boolean>();
-  columns: Array<GuiColumn> = [
-    {
-      header:'Image',
-      field: 'speakerImg'
-    },
-    {
-      header:'Name',
-      field: 'speakerName'
-    },
-    {
-      header:'Email',
-      field: 'email'
-    },
-    {
-      header:'Details',
-      field: 'description'
-    }
-  ];
+  readonly loadingFiles$ = new Subject<boolean>();
   searching: GuiSearching = {
     enabled: true,
     highlighting: true,
@@ -136,7 +118,7 @@ export class SpeakersComponent implements OnDestroy {
     if(data) {
       this.speakerID = data?._id;
       this.f['speakerName'].setValue(data?.speakerName)
-      this.f['speakerImg'].setValue(data?.lastName)
+      this.f['speakerImg'].setValue(data?.speakerImg)
       this.f['description'].setValue(data?.description)
       this.f['email'].setValue(data?.email);
     }

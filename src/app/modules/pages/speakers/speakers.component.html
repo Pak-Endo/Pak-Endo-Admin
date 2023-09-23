@@ -28,7 +28,7 @@
   <gui-grid-column header="Image" field="speakerImg" [sorting]="false">
     <ng-template let-value="value" let-item="item">
       <div class="w-20 h-20 rounded-md">
-        <img [src]="item?.speakerImg" [alt]="item?.speakerName" width="80" height="80" class="object-contain rounded-md w-full h-full">
+        <img [src]="item?.speakerImg" [alt]="item?.speakerName" width="80" height="80" class="object-contain w-full h-full rounded-md">
       </div>
     </ng-template>
   </gui-grid-column>
@@ -82,7 +82,7 @@
   <h1 class="text-3xl font-bold text-center">{{speakerID ? 'Edit': 'Add new'}} Speaker</h1>
   <form [formGroup]="speakerForm">
     <ng-container *ngIf="!f['speakerImg']!.value">
-      <div class="flex flex-col items-center justify-center mb-5 mt-5">
+      <div class="flex flex-col items-center justify-center mt-5 mb-5">
         <label for="dropzone-file-doc" class="flex flex-col items-center justify-center border-2 border-gray-400 border-dashed rounded-full cursor-pointer w-28 h-28 bg-gray-50 hover:bg-gray-100">
           <div class="flex flex-col items-center justify-center py-1">
             <tui-marker-icon
@@ -155,7 +155,7 @@
     </div>
 
     <label class="text-base font-semibold">Speaker Details</label>
-    <tui-text-area 
+    <tui-text-area
       formControlName="description"
       [tuiTextfieldLabelOutside]="true"
       [tuiTextfieldCleaner]="true"
@@ -208,7 +208,6 @@
     </div>
   </form>
 </ng-template>
-
 
 <ng-template #deleteTemplate let-observer>
   <h1 class="pb-3 text-2xl font-bold text-center border-b border-gray-400">Remove Speaker</h1>
