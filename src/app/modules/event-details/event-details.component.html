@@ -1,18 +1,18 @@
 <app-layout>
   <ng-container *ngIf="event else loading">
     <div class="w-10/12 rounded-lg shadow-lg border-t-8 border-t-[#118A4E] border-b-8 border-b-[#234A75] mx-auto relative overflow-hidden">
-      <div class="absolute right-0 top-0 h-16 w-16">
+      <div class="absolute top-0 right-0 w-16 h-16">
         <div
           class="absolute transform rotate-45 bg-[#234A75] text-center text-white font-semibold py-2 text-base -left-20 top-8 w-[190px] capitalize">
           {{event?.eventStatus}}
         </div>
       </div>
       <h1 class="text-center font-bold text-4xl my-5 mx-32 font-['Preahvihear']">{{event?.title}}</h1>
-      <div class="mx-auto w-100 h-64 shadow-md">
+      <div class="h-64 mx-auto shadow-md w-100">
         <img
           [src]="event?.featuredImage"
           alt="conference_image"
-          class="object-cover rounded-xl w-full h-full"
+          class="object-cover w-full h-full rounded-xl"
         >
       </div>
       <p class="text-center text-xl my-5 rounded-lg font-['Preahvihear']">{{event?.description}}</p>
@@ -23,7 +23,7 @@
         <ng-container *ngIf="event?.startDate == event?.endDate">
           <p class="mt-2"><tui-svg new size="xxs" src="tuiIconCalendarLarge"></tui-svg> &nbsp; {{event?.startDate | date: 'mediumDate'}}</p>
         </ng-container>
-        <p class="my-2"><tui-svg new size="xxs" src="tuiIconMapPinLarge"></tui-svg> &nbsp; {{event?.location}}</p>
+        <p class="my-2"><tui-svg new size="xxs" src="tuiIconMapPinLarge"></tui-svg> &nbsp; {{event?.location?.name}}</p>
       </div>
       <div class="flex justify-center">
         <tui-tabs tuiMobileTabs [(activeItemIndex)]="activeItemIndex" class="mb-5">
@@ -52,9 +52,9 @@
         </tui-tabs>
       </div>
       <!--Timeline-->
-      <tui-scrollbar class="max-h-140 overflow-y-scroll overflow-x-hidden" *ngIf="activeItemIndex == 0">
+      <tui-scrollbar class="overflow-x-hidden overflow-y-scroll max-h-140" *ngIf="activeItemIndex == 0">
         <div class="flex justify-center gap-x-4">
-          <tui-tabs tuiMobileTabs [(activeItemIndex)]="activeItemIndexDates" class="mb-5 mt-2">
+          <tui-tabs tuiMobileTabs [(activeItemIndex)]="activeItemIndexDates" class="mt-2 mb-5">
             <ng-container *ngFor="let date of getObjectKeys(agendaByDay); let i = index">
               <button
                 tuiTab
@@ -77,7 +77,7 @@
                   <p class="mt-2">{{agent.agendaTitle}}</p>
                 </ng-container>
                 <p><span class="font-semibold">Speaker</span>: &nbsp; {{agent.speaker ? agent.speaker : 'No speaker'}}</p>
-                <p><span class="font-semibold">Hall</span>: &nbsp; {{agent.venue}}</p>
+                <p><span class="font-semibold">Hall</span>: &nbsp; {{agent.hall}}</p>
                 <p>
                   <span class="font-semibold">From</span> &nbsp; {{agent.from}} &nbsp;
                   <span class="font-semibold">to</span> &nbsp; {{agent.to}}
@@ -99,7 +99,7 @@
           <img
             *tuiItem
             alt="carousel_item"
-            class="object-contain w-60 h-60 rounded-lg border border-gray-300"
+            class="object-contain border border-gray-300 rounded-lg w-60 h-60"
             draggable="false"
             [src]="item"
             [class.item_active]="index === index + 1"
