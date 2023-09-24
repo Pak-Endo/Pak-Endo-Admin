@@ -277,6 +277,10 @@ export class AgendasComponent implements OnDestroy {
     agendasWithDays = agendasWithDays?.map((data: any) => {
       data.from = data?.from + ' ' + (data?.isPmFrom == true ? 'PM': 'AM')
       data.to = data?.to + ' ' + (data?.isPmTo == true ? 'PM': 'AM')
+      if(!data?.theme) {
+        data.theme = this.agendas.at(0)?.get('theme')?.value
+      }
+      debugger
       if(typeof data.day == 'number') {
         let day = this.daysOfEvents[data.day];
         day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
