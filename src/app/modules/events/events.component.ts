@@ -696,7 +696,6 @@ export class EventsComponent implements OnDestroy {
     );
     delete payload.eventDays
     delete payload.agendas
-    debugger
     this.eventService.updateEvent(payload, this.eventID).pipe(takeUntil(this.destroy$)).subscribe(val => {
       if(val) {
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');

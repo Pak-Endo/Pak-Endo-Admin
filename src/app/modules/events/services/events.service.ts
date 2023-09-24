@@ -81,7 +81,7 @@ export class EventsService extends ApiService<event> {
     }))
   }
 
-  updateEvent(payload: EventData, eventID: string | null): Observable<ApiResponse<any>> {
+  updateEvent(payload: any, eventID: string | null): Observable<ApiResponse<any>> {
     return this.put(`/events/updateEvent/${eventID}`, payload).pipe(shareReplay(), map((res: ApiResponse<any>) => {
       if(!res.hasErrors()) {
         this.notif.displayNotification('Event updated successfully', 'Update Event', TuiNotification.Success)
@@ -108,7 +108,7 @@ export class EventsService extends ApiService<event> {
       }
     }))
   }
-  
+
   getEventByID(eventID: string): Observable<ApiResponse<any>> {
     return this.get(`/events/getEventByID/${eventID}`).pipe(map((res: ApiResponse<any>) => {
       if(!res.hasErrors()) {

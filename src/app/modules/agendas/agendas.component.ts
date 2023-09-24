@@ -7,9 +7,10 @@ import { EventsService } from '../events/services/events.service';
 import { TuiButtonModule, TuiDataListModule, TuiDialogService, TuiLoaderModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { PagesService } from '../pages/pages.service';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
-import { TuiDay, tuiPure, TuiStringHandler, TuiContextWithImplicit } from '@taiga-ui/cdk';
+import { TuiDay } from '@taiga-ui/cdk';
 import { TuiAccordionModule, TuiDataListWrapperModule, TuiInputModule, TuiInputTimeModule, TuiSelectModule, TuiToggleModule, tuiInputTimeOptionsProvider } from '@taiga-ui/kit';
 import { ReactiveFormsModule, FormsModule, FormBuilder, Validators, FormArray } from '@angular/forms'
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-agendas',
@@ -28,7 +29,8 @@ import { ReactiveFormsModule, FormsModule, FormBuilder, Validators, FormArray } 
     TuiSelectModule,
     TuiInputTimeModule,
     TuiToggleModule,
-    TuiDataListModule
+    TuiDataListModule,
+    RouterModule
   ],
   templateUrl: './agendas.component.html',
   styleUrls: ['./agendas.component.scss'],
@@ -48,6 +50,7 @@ export class AgendasComponent implements OnDestroy {
   daysOfEvents: any[] = [];
   halls: any[] = [];
   speakers: any[] = [];
+  sponsors: any[] = [];
   speakerValue: any;
   dialogSubs: Subscription[] = []
   agendaForm = this.fb.group({
@@ -56,6 +59,7 @@ export class AgendasComponent implements OnDestroy {
         this.fb.group({
           _id: [undefined],
           theme: [{value: null, disabled: false}, Validators.required],
+          sponsor: [null, Validators.required],
           agendaTitle: [null, Validators.required],
           day: [0, Validators.required],
           from: [null, Validators.required],
@@ -70,21 +74,15 @@ export class AgendasComponent implements OnDestroy {
       ]
     )
   });
-  speakerForm = this.fb.group({
-    speakerTeam: this.fb.array([
-      this.fb.group({
-        name: [null],
-        role: [null]
-      })
-    ])
-  });
 
   constructor(
     private ac: ActivatedRoute,
     private eventsService: EventsService,
     private pageService: PagesService,
     private fb: FormBuilder,
-    @Inject(TuiDialogService) private readonly dialogs: TuiDialogService
+    private eventService: EventsService,
+    @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
+    private router: Router
   ) {
     this.ac.params.pipe(takeUntil(this.destroy)).subscribe(value => {
       this.eventID = value['id']
@@ -101,13 +99,13 @@ export class AgendasComponent implements OnDestroy {
           this.pageService.getAllSpeakers(1000, 1).pipe(takeUntil(this.destroy))
           .subscribe((speaker: ApiResponse<any>) => {
             if(!speaker.hasErrors()) {
-              this.speakers = speaker?.data?.data?.map((value: any) => {
-                return {
-                  id: value?._id,
-                  name: value?.speakerName,
-                  avatarUrl: value?.speakerImg
-                }
-              })
+              this.speakers = speaker?.data?.data?.map((value: any) => value?.speakerName)
+            }
+          });
+          this.pageService.getAllSponsors(1000, 1).pipe(takeUntil(this.destroy))
+          .subscribe((sponsor: ApiResponse<any>) => {
+            if(!sponsor.hasErrors()) {
+              this.sponsors = sponsor?.data?.data?.map((value: any) => value?.sponsorName)
               this.loadingData.next(false)
             }
           });
@@ -116,12 +114,6 @@ export class AgendasComponent implements OnDestroy {
       })
     })
   }
-
-  @tuiPure
-    stringify(items: readonly any[]): TuiStringHandler<TuiContextWithImplicit<any>> {
-      const map = new Map(items.map(({id, name, avatarUrl}) => [id, name] as [string, string]));
-      return ({$implicit}: TuiContextWithImplicit<string>) => map.get($implicit) || '';
-    }
 
   getPostfix(index: number, isFromField: boolean): string {
     const isPmFrom = this.agendas.at(index)?.get('isPmFrom')?.value;
@@ -140,35 +132,11 @@ export class AgendasComponent implements OnDestroy {
     return this.agendaForm.controls['agendas'] as FormArray
   }
 
-  get speakerTeam() {
-    return this.speakerForm.get('speakerTeam') as FormArray;
-  }
-
-  addSpeakerTeam() {
-    this.speakerTeam.push(this.fb.group({
-      name: [null],
-      role: [null]
-    }));
-  }
-
-  removeSpeaker(index: number) {
-    this.speakerTeam.removeAt(index);
-  }
-
-  submitSpeakerTeam() {
-    this.dialogSubs.forEach(val => val.unsubscribe())
-    console.log(this.speakerForm.value)
-  }
-
-  cancelSpeaker() {
-    this.dialogSubs.forEach(val => val.unsubscribe())
-    this.speakerForm.reset()
-  }
-
   addAgenda(day: number) {
     const agendaForm = this.fb.group({
       _id: [undefined],
       theme: [{value: this.agendas.at(0)?.get('theme')?.value, disabled: true}, Validators.required],
+      sponsor: [null, Validators.required],
       agendaTitle: [null, Validators.required],
       day: [day, Validators.required],
       from: [null, Validators.required],
@@ -257,6 +225,38 @@ export class AgendasComponent implements OnDestroy {
       closeable: false,
       size: 'l'
     }).subscribe());
+  }
+
+  cancel() {
+    this.router.navigate(['/events'])
+  }
+
+  submitAgenda() {
+    let agendasWithDays = this.agendaForm.value?.agendas;
+    agendasWithDays = agendasWithDays?.map((data: any) => {
+      data.from = data?.from + ' ' + (data?.isPmFrom == true ? 'PM': 'AM')
+      data.to = data?.to + ' ' + (data?.isPmTo == true ? 'PM': 'AM')
+      if(typeof data.day == 'number') {
+        let day = this.daysOfEvents[data.day];
+        day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
+        data.from = data.from.toString();
+        data.to = data.to.toString();
+        delete data?.isPmFrom;
+        delete data?.isPmTo;
+        return {...data, day: day}
+      }
+      let day = new Date(data.day.year, data.day.month, data.day.day, 23, 59, 59, 0).getTime();
+      data.from = data.from.toString();
+      data.to = data.to.toString();
+      delete data?.isPmFrom;
+      delete data?.isPmTo;
+      return {...data, day: day}
+    })
+    this.eventService.updateEvent({agenda: agendasWithDays}, this.eventID).pipe(takeUntil(this.destroy)).subscribe(val => {
+      if(val) {
+        this.router.navigate(['/events'])
+      }
+    })
   }
 
   ngOnDestroy(): void {
