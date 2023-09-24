@@ -70,7 +70,7 @@
             <th class="px-2 py-3 text-sm">Ends On</th>
             <th class="px-2 py-3 text-sm">Location</th>
             <th class="px-2 py-3 text-sm">Status</th>
-            <th scope="col" class="px-2 py-3 text-sm">
+            <th class="py-3 text-sm">
               Actions
             </th>
           </tr>
@@ -103,6 +103,17 @@
                   {{event?.eventStatus}}
                 </td>
                 <td class="inline-flex gap-2 py-4">
+                  <button
+                    *ngIf="event?.eventStatus == 'draft'"
+                    tuiIconButton
+                    icon="tuiIconCalendar"
+                    type="submit"
+                    appearance="custom"
+                    size="s"
+                    class="text-white bg-black"
+                    [routerLink]="['/agendas', event?._id]"
+                  >
+                  </button>
                   <button
                     tuiIconButton
                     icon="tuiIconEye"

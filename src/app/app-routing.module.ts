@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './modules/auth/guard/auth.guard';
+import { AgendasComponent } from './modules/agendas/agendas.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,11 @@ const routes: Routes = [
     path: 'events',
     canActivate: [AuthGuard],
     loadChildren: () => import('./modules/events/events.module').then(m => m.EventsModule)
+  },
+  {
+    path: 'agendas/:id',
+    canActivate: [AuthGuard],
+    component: AgendasComponent
   },
   {
     path: 'members',
