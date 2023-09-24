@@ -169,9 +169,23 @@
   #template
   let-observer
 >
-  <h1 class="text-2xl font-bold text-center">{{eventID ? 'Edit': 'Create'}} Event</h1>
+  <h1 *ngIf="!eventID" class="text-2xl font-bold text-center">Create Event</h1>
+  <div *ngIf="eventID" class="flex justify-between">
+    <h1 class="text-2xl font-bold text-center">Edit Event</h1>
+    <button
+      *ngIf="eventID"
+      tuiButton
+      size="s"
+      appearance="custom"
+      class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
+      [disabled]="eventForm.invalid || (uploadingMultiple | async) == true"
+      [routerLink]="['/agendas', eventID]"
+      >
+        Edit Agenda
+      </button>
+  </div>
   <form [formGroup]="eventForm">
-    <h4 class="mt-2 mb-3 text-lg text-center">Provide details for your event</h4>
+    <h4 class="mt-2 mb-3 text-lg" [ngClass]="eventID ? 'text-left': 'text-center'">Provide details for your event</h4>
     <!--Title-->
     <div class="my-3">
       <label class="text-base font-semibold">Title</label>
@@ -418,7 +432,7 @@
       </tui-checkbox-labeled>
     </div>
 
-    <ng-container *ngIf="activeIndex == 1">
+    <!-- <ng-container *ngIf="activeIndex == 1">
       <h4 class="my-5 text-lg text-center">Create an agenda for your event</h4>
       <ng-container *ngFor="let day of daysOfEvents; let index = index; let firstDay = first;">
         <p class="font-bold text-xl bg-[#224C73] rounded-lg text-white px-3 py-2" [ngClass]="firstDay ? 'mb-8': 'my-8'">
@@ -623,7 +637,7 @@
           </div>
         </div>
       </ng-container>
-    </ng-container>
+    </ng-container> -->
 
     <div class="flex justify-center gap-3 mt-4">
       <button

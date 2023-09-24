@@ -7,7 +7,7 @@ import { EventsService } from '../events/services/events.service';
 import { TuiButtonModule, TuiDataListModule, TuiDialogService, TuiLoaderModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { PagesService } from '../pages/pages.service';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
-import { TuiDay } from '@taiga-ui/cdk';
+import { TuiDay, TuiTime } from '@taiga-ui/cdk';
 import { TuiAccordionModule, TuiDataListWrapperModule, TuiInputModule, TuiInputTimeModule, TuiSelectModule, TuiToggleModule, tuiInputTimeOptionsProvider } from '@taiga-ui/kit';
 import { ReactiveFormsModule, FormsModule, FormBuilder, Validators, FormArray } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router';
@@ -110,6 +110,38 @@ export class AgendasComponent implements OnDestroy {
             }
           });
           this.calculateEventDays(data)
+          if(data?.agenda && data?.agenda?.length > 0) {
+            let agendaDays: any[] = [];
+            this.agendas.clear();
+            data.agenda.map((agenda: any) => {
+              let from = agenda.from?.split(' ');
+              let to = agenda.to?.split(' ');
+              agenda.day = this.convertTimestampToObject(agenda.day)
+              agenda.from = this.convertTimeStringToObject(from[0])
+              agenda.to = this.convertTimeStringToObject(to[0])
+              agendaDays.push({...agenda.day})
+              let formAgenda = this.fb.group({
+                _id: [agenda._id],
+                theme: [agenda.theme, Validators.required],
+                agendaTitle: [agenda.agendaTitle, Validators.required],
+                sponsor: [agenda.sponsor, Validators.required],
+                isPmFrom: [from[1]?.includes('AM') ? false: true],
+                isPmTo: [to[1]?.includes('AM') ? false: true],
+                day: [agenda.day, Validators.required],
+                from: [agenda.from, Validators.required],
+                to: [agenda.to, Validators.required],
+                hall: [agenda.hall, Validators.required],
+                speaker: [agenda.speaker || null],
+                streamUrl: [agenda.streamUrl || null],
+                speakerImg: [agenda.speakerImg || null],
+                attachments: [agenda.attachments || []]
+              });
+              this.agendas.push(formAgenda)
+              this.agendas.updateValueAndValidity();
+            });
+            agendaDays = [...new Map(agendaDays?.map((data: any) => [data['day'], data])).values()]
+            this.daysOfEvents = agendaDays;
+          }
         }
       })
     })
@@ -229,6 +261,15 @@ export class AgendasComponent implements OnDestroy {
 
   cancel() {
     this.router.navigate(['/events'])
+  }
+
+  convertTimeStringToObject(timeString: string) {
+    if(typeof timeString == 'string') {
+      const [hours, minutes] = timeString.split(':').map(Number)
+      let time: TuiTime = new TuiTime(hours, minutes)
+      return time
+    }
+    return timeString
   }
 
   submitAgenda() {

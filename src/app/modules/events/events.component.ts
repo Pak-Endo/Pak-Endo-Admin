@@ -671,21 +671,6 @@ export class EventsComponent implements OnDestroy {
       59,
       0
     ).getTime();
-    // let agendasWithDays = this.eventForm.value.agendas;
-    // agendasWithDays = agendasWithDays.map((data: any) => {
-    //   if(typeof data.day == 'number') {
-    //     let day = this.daysOfEvents[data.day];
-    //     day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
-    //     data.from = data.from.toString();
-    //     data.to = data.to.toString();
-    //     return {...data, day: day}
-    //   }
-
-    //   let day = new Date(data.day.year, data.day.month, data.day.day, 23, 59, 59, 0).getTime();
-    //   data.from = data.from.toString();
-    //   data.to = data.to.toString();
-    //   return {...data, day: day}
-    // })
     const payload = Object.assign(
       this.eventForm.value,
       {startDate: startDateTimestamp},
