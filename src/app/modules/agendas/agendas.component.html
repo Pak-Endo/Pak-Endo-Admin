@@ -1,43 +1,316 @@
 <app-layout>
-  <div class="flex justify-between">
-    <h1 class="text-2xl font-bold">Agenda Creation Tool</h1>
+  <tui-loader [overlay]="true" [showLoader]="(loadingData | async) == true" [size]="'xl'">
+    <div class="flex justify-between">
+      <h1 class="text-2xl font-bold">Agenda Creation & Management</h1>
+      <button
+        tuiButton
+        icon="tuiIconArrowLeftLarge"
+        type="button"
+        size="m"
+        appearance="custom"
+        class="text-white bg-red-500"
+      >
+        Cancel
+      </button>
+    </div>
+    <h3 class="mt-4 text-lg font-bold">Topic: &nbsp; <span class="text-gray-600">{{event?.title}}</span></h3>
+    <h3 class="mt-2 text-lg font-bold">Venue: &nbsp; <span class="text-gray-600">{{event?.location?.name}}</span></h3>
+    <h3 class="mt-2 text-lg font-bold">Date/s: &nbsp;
+      <ng-container *ngIf="event?.startDate !== event?.endDate">
+        <span class="text-gray-600">
+          {{event?.startDate | date: 'mediumDate'}} &nbsp; - &nbsp; {{event?.endDate | date: 'mediumDate'}}
+        </span>
+      </ng-container>
+      <ng-container *ngIf="event?.startDate == event?.endDate">
+        <span class="text-gray-600">
+          {{event?.endDate | date: 'mediumDate'}}
+        </span>
+      </ng-container>
+    </h3>
+    <tui-accordion class="my-7" [closeOthers]="false">
+      <tui-accordion-item *ngFor="let day of daysOfEvents; let index = index; let firstDay = first;">
+        <div class="flex justify-between">
+          <p class="text-lg font-semibold">
+            {{mapAndGetMonths(day?.month)}} {{day.day}}, {{day.year}}
+          </p>
+        </div>
+        <ng-template tuiAccordionItemContent>
+          <form [formGroup]="agendaForm">
+            <ng-container formArrayName="agendas">
+              <ng-container *ngFor="let agent of agendas.controls; let i = index; let first = first; let last = last">
+                <div [formGroupName]="i" class="w-full">
+                  <ng-container *ngIf="agent.get('day')!.value === index || agent.get('day')!.value?.day == day?.day">
+                    <!--THEME-->
+                    <div class="relative mt-3 text-center">
+                      <label class="text-lg font-semibold text-center">Set a Theme for your agenda</label>
+                      <tui-input
+                        formControlName="theme"
+                        [tuiTextfieldLabelOutside]="true"
+                        [tuiTextfieldCleaner]="true"
+                        class="mt-1"
+                      >
+                        e.g. Cancer: Types, Diagnosis and Symptoms
+                        <input
+                          tuiTextfield
+                          type="text"
+                          autocomplete="new-password"
+                        />
+                      </tui-input>
+                      <button
+                        *ngIf="i > 0"
+                        tuiIconButton
+                        type="button"
+                        size="s"
+                        appearance="custom"
+                        icon="tuiIconEdit"
+                        class="absolute text-white bg-gray-500 rounded-full top-11 right-2"
+                        (click)="agendas.at(i).get('theme')?.enable()"
+                      >
+                      </button>
+                      <span class="text-xs" *ngIf="i > 0">If you want to change the theme for this agenda, you can do so by clicking the "Edit" icon</span>
+                    </div>
+                    <span *ngIf="(agent.get('theme')!.invalid && agent.get('theme')!.touched)" class="text-xs text-red-500">
+                      Please provide a theme for your agenda
+                    </span>
+
+                    <!--Hall & Title-->
+                    <div class="grid grid-cols-12 gap-3 mt-10">
+                       <!--Hall-->
+                      <div class="col-span-6">
+                        <label class="text-base font-semibold">Hall</label>
+                        <tui-select
+                          class="mt-[5px]"
+                          formControlName="hall"
+                          [tuiTextfieldLabelOutside]="true"
+                        >
+                          Select hall
+                          <input
+                            placeholder="Select hall"
+                            tuiTextfield
+                          />
+                          <tui-data-list-wrapper
+                            *tuiDataList
+                            [items]="halls"
+                          ></tui-data-list-wrapper>
+                        </tui-select>
+                        <span *ngIf="(agent.get('hall')!.invalid && agent.get('hall')!.touched)" class="text-xs text-red-500">
+                          Please provide a hall for this event
+                        </span>
+                      </div>
+                      <!--Agenda title-->
+                      <div class="col-span-6">
+                        <label class="text-base font-semibold">Topic</label>
+                        <tui-input formControlName="agendaTitle" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1">
+                          e.g. Adrenal Health and Disease.
+                          <input
+                            tuiTextfield
+                            type="text"
+                            autocomplete="new-password"
+                          />
+                        </tui-input>
+                        <span *ngIf="(agent.get('agendaTitle')!.invalid && agent.get('agendaTitle')!.touched)" class="text-xs text-red-500">
+                          Please provide a valid title for the agenda
+                        </span>
+                      </div>
+                    </div>
+                    <!--Time-->
+                    <div class="grid grid-cols-12 gap-3 mt-4">
+                      <div class="col-span-6">
+                        <label class="text-base font-semibold">Start time</label>
+                        <tui-input-time
+                          formControlName="from"
+                          [tuiTextfieldLabelOutside]="true"
+                          [tuiTextfieldCleaner]="true"
+                          [tuiTextfieldPostfix]="getPostfix(i, true)"
+                        >
+                          e.g. 09:00
+                        </tui-input-time>
+                        <tui-toggle
+                          formControlName="isPmFrom"
+                          class="my-1.5"
+                          size="l"
+                        ></tui-toggle>
+                        <span class="ml-2 text-gray-400 text-xxs">Toggle to switch between AM and PM</span>
+                      </div>
+                      <div class="col-span-6">
+                        <label class="text-base font-semibold">End time</label>
+                        <tui-input-time
+                          formControlName="to"
+                          [tuiTextfieldLabelOutside]="true"
+                          [tuiTextfieldCleaner]="true"
+                          [tuiTextfieldPostfix]="getPostfix(i, false)"
+                        >
+                          e.g. 02:00
+                        </tui-input-time>
+                        <tui-toggle
+                          formControlName="isPmTo"
+                          class="my-1.5"
+                          size="l"
+                        ></tui-toggle>
+                        <span class="ml-2 text-gray-400 text-xxs">Toggle to switch between AM and PM</span>
+                      </div>
+                      <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="col-span-12 text-xs text-red-500">
+                        Please provide a valid timeline
+                      </span>
+                    </div>
+                    <!--Speaker-->
+                    <div class="my-4">
+                      <label class="text-base font-semibold">Speaker</label>
+                      <tui-select
+                        class="mt-[5px]"
+                        formControlName="speaker"
+                        [valueContent]="stringify(speakers)"
+                        [(ngModel)]="speakerValue"
+                        [tuiTextfieldLabelOutside]="true"
+                      >
+                        Choose speaker
+                        <ng-template tuiDataList>
+                          <tui-data-list>
+                            <button
+                              *ngFor="let item of speakers"
+                              tuiOption
+                              [value]="item.id"
+                            >
+                              {{ item.name }}
+                            </button>
+                          </tui-data-list>
+                        </ng-template>
+                      </tui-select>
+                      <span *ngIf="(agent.get('speaker')!.invalid && agent.get('speaker')!.touched)" class="text-xs text-red-500">
+                        Please provide a speaker for this event
+                      </span>
+                    </div>
+                    <!--Speaker team-->
+                    <button
+                      tuiButton
+                      type="button"
+                      size="m"
+                      appearance="primary"
+                      (click)="addSpeakerDialog(template)"
+                    >
+                      Add speaker's team
+                    </button>
+                    <!--Delete agenda btn-->
+                    <div *ngIf="i > 0" class="flex justify-end">
+                      <button
+                        tuiIconButton
+                        type="button"
+                        size="m"
+                        appearance="accent"
+                        icon="tuiIconTrash2Large"
+                        (click)="removeAgenda(i)"
+                      ></button>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </ng-container>
+            <div class="mt-3 mb-2">
+              <button
+                tuiButton
+                type="button"
+                size="m"
+                class="mt-4 bg-[#224C73] text-white"
+                appearance="custom"
+                icon="tuiIconPlusLarge"
+                (click)="addAgenda(index)"
+              >Add Agenda</button>
+            </div>
+          </form>
+        </ng-template>
+      </tui-accordion-item>
+    </tui-accordion>
+    <!-- <div class="flex justify-center gap-x-3">
+        <button
+          tuiButton
+          icon="tuiIconPlusLarge"
+          type="submit"
+          size="m"
+          appearance="custom"
+          class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
+          >
+        </button>
+      </div> -->
+  </tui-loader>
+</app-layout>
+
+<ng-template #template>
+  <p class="text-xl font-semibold text-center">Add speaker team</p>
+  <form [formGroup]="speakerForm">
+    <ng-container formArrayName="speakerTeam">
+      <ng-container *ngFor="let agent of speakerTeam.controls; let i = index; let first = first; let last = last">
+        <div [formGroupName]="i" class="w-full">
+          <div class="grid grid-cols-12 gap-3 mt-10">
+            <!--Hall-->
+           <div class="col-span-6">
+             <label class="text-base font-semibold">Name</label>
+             <tui-input formControlName="name" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1">
+              <input
+                tuiTextfield
+                type="text"
+                autocomplete="new-password"
+              />
+            </tui-input>
+           </div>
+           <!--Agenda title-->
+           <div class="col-span-6">
+             <label class="text-base font-semibold">Role</label>
+             <tui-input formControlName="role" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1">
+               <input
+                 tuiTextfield
+                 type="text"
+                 autocomplete="new-password"
+               />
+             </tui-input>
+           </div>
+          </div>
+          <div class="flex justify-end mt-2">
+            <button
+              tuiIconButton
+              type="button"
+              size="m"
+              appearance="accent"
+              icon="tuiIconTrash2Large"
+              (click)="removeSpeaker(i)"
+            ></button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <div class="mb-2">
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        class="mt-4 bg-[#224C73] text-white"
+        appearance="custom"
+        icon="tuiIconPlusLarge"
+        (click)="addSpeakerTeam()"
+      >Add team member</button>
+    </div>
+  </form>
+  <div class="flex justify-center">
     <button
       tuiButton
-      icon="tuiIconArrowLeftLarge"
       type="button"
       size="m"
+      class="mt-4 text-white bg-green-700"
       appearance="custom"
-      class="my-1 text-white bg-red-500"
+      (click)="submitSpeakerTeam()"
+    >
+      Submit
+    </button>
+    <button
+      tuiButton
+      type="button"
+      size="m"
+      class="mt-4 text-white bg-red-500"
+      appearance="custom"
+      (click)="cancelSpeaker()"
     >
       Cancel
     </button>
   </div>
-  <h3 class="mt-4 text-lg font-bold">Title: &nbsp; <span class="text-gray-600">{{event?.title}}</span></h3>
-  <h3 class="mt-2 text-lg font-bold">Venue: &nbsp; <span class="text-gray-600">{{event?.location?.name}}</span></h3>
-  <h3 class="mt-2 text-lg font-bold">Date/s: &nbsp;
-    <ng-container *ngIf="event?.startDate !== event?.endDate">
-      <span class="text-gray-600">
-        {{event?.startDate | date: 'mediumDate'}} &nbsp; - &nbsp; {{event?.endDate | date: 'mediumDate'}}
-      </span>
-    </ng-container>
-    <ng-container *ngIf="event?.startDate == event?.endDate">
-      <span class="text-gray-600">
-        {{event?.endDate | date: 'mediumDate'}}
-      </span>
-    </ng-container>
-  </h3>
-  <div class="w-full p-5 border border-gray-400 border-dashed rounded-lg my-7">
-    <div class="flex justify-center gap-x-3">
-      <button
-        tuiButton
-        icon="tuiIconPlusLarge"
-        type="submit"
-        size="l"
-        appearance="custom"
-        class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
-        >
-        Add agenda
-      </button>
-    </div>
-  </div>
-</app-layout>
+
+</ng-template>
+

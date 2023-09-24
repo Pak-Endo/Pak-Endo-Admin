@@ -110,7 +110,7 @@
                     type="submit"
                     appearance="custom"
                     size="s"
-                    class="text-white bg-black"
+                    class="text-white bg-slate-800"
                     [routerLink]="['/agendas', event?._id]"
                   >
                   </button>
@@ -424,14 +424,13 @@
         <p class="font-bold text-xl bg-[#224C73] rounded-lg text-white px-3 py-2" [ngClass]="firstDay ? 'mb-8': 'my-8'">
           Day {{index + 1}} - {{mapAndGetMonths(day?.month)}} {{day.day}}, {{day.year}}
         </p>
-        <!--Set Agenda-->
         <div class="pb-5 border-b border-gray-400">
           <ng-container formArrayName="agendas">
             <ng-container *ngFor="let agent of agendas.controls; let i = index; let first = first; let last = last">
               <div [formGroupName]="i" class="w-full">
                 <ng-container *ngIf="agent.get('day')!.value === index || agent.get('day')!.value?.day == day?.day">
                   <h1 class="my-3 text-xl font-bold"></h1>
-                  <!-- image -->
+
                   <ng-container *ngIf="!agent.get('speakerImg')!.value">
                     <div class="flex flex-col items-center justify-center mb-7">
                       <label [for]="'dropzone-file-doc-' + i" class="flex flex-col items-center justify-center border-2 border-gray-400 border-dashed rounded-full cursor-pointer w-28 h-28 bg-gray-50 hover:bg-gray-100">
@@ -460,7 +459,7 @@
                       <p class="mt-1 text-xs">Upload an image for the speaker <sup>(Optional)</sup></p>
                     </div>
                   </ng-container>
-                  <!--Hall-->
+
                   <div class="my-3">
                     <label class="text-base font-semibold">Hall</label>
                     <tui-input formControlName="venue" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
@@ -475,7 +474,7 @@
                       Please provide a venue for this event
                     </span>
                   </div>
-                  <!--Agenda title-->
+
                   <div class="my-3">
                     <label class="text-base font-semibold">Title</label>
                     <tui-input formControlName="agendaTitle" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
@@ -490,7 +489,7 @@
                       Please provide a valid title for the agenda
                     </span>
                   </div>
-                  <!--Time-->
+
                   <div class="grid grid-cols-12 gap-3">
                     <div class="col-span-6">
                       <label class="text-base font-semibold">Start time</label>
@@ -530,7 +529,7 @@
                       Please provide a valid timeline
                     </span>
                   </div>
-                  <!--Speaker-->
+
                   <div class="my-3">
                     <label class="text-base font-semibold">Speaker</label>
                     <tui-input formControlName="speaker" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
@@ -542,7 +541,7 @@
                       />
                     </tui-input>
                   </div>
-                   <!--Stream Url-->
+
                    <div class="my-3">
                     <label class="text-base font-semibold">Stream Url</label>
                     <tui-input formControlName="streamUrl" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
@@ -557,7 +556,7 @@
                       Please provide a valid title for the agenda
                     </span>
                   </div>
-                  <!--attachments-->
+
                   <div *ngIf="eventID" class="my-3">
                     <ng-container *ngIf="attachments.length > 0">
                       <label class="text-base font-semibold">Attachments</label>
@@ -626,7 +625,6 @@
       </ng-container>
     </ng-container>
 
-    <!--SUBMIT BTNS-->
     <div class="flex justify-center gap-3 mt-4">
       <button
         *ngIf="!eventID"

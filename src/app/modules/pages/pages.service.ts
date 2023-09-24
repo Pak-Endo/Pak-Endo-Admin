@@ -35,6 +35,10 @@ export class PagesService extends ApiService<any> {
     return this.delete(`/speakers/deleteSpeaker/${speakerID}`).pipe(shareReplay())
   }
 
+  getSpeakerById(speakerID: string): Observable<ApiResponse<any>> {
+    return this.get(`/speakers/getSpeakerByID/${speakerID}`).pipe(shareReplay())
+  }
+
   // Sposnors
   getAllSponsors(limit: number, page: number, sponsorName?: string): Observable<ApiResponse<any>> {
     page--;
@@ -67,6 +71,10 @@ export class PagesService extends ApiService<any> {
       name: venueName ? venueName : ''
     }
     return this.get(`/venues/getAllVenues`, params).pipe(shareReplay())
+  }
+
+  getVenueById(venueID: string): Observable<ApiResponse<any>> {
+    return this.get(`/venues/getVenueByID/${venueID}`).pipe(shareReplay())
   }
 
   addNewVenue(payload: any): Observable<ApiResponse<any>> {
