@@ -8,6 +8,7 @@ import { TuiButtonModule, TuiDataListModule, TuiExpandModule, TuiHostedDropdownM
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LayoutComponent } from '../layout/layout.component';
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
+import { RouterModule } from '@angular/router';
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
     TuiCurrencyPipeModule,
     TuiFilterModule,
     TuiToggleModule,
-    TuiDataListModule
+    TuiDataListModule,
+    RouterModule
   ]
 })
 export class EventsModule { }
