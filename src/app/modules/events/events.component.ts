@@ -11,6 +11,7 @@ import { TuiContextWithImplicit, TuiDay, TuiDayRange, TuiStringHandler, TuiTime,
 import {TuiCountryIsoCode} from '@taiga-ui/i18n';
 import {tuiCreateTimePeriods, tuiInputTimeOptionsProvider} from '@taiga-ui/kit';
 import { PagesService } from '../pages/pages.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-events',
@@ -73,7 +74,8 @@ export class EventsComponent implements OnDestroy {
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     private fb: FormBuilder,
     public media: MediaUploadService,
-    private pageService: PagesService
+    private pageService: PagesService,
+    private router: Router
   ) {
     this.initFilterForm();
     this.pageService.getAllVenues(1000, 1).pipe(takeUntil(this.destroy$)).subscribe(value => {
@@ -637,14 +639,15 @@ export class EventsComponent implements OnDestroy {
     );
     delete payload.eventDays
     delete payload.agendas
-    this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe(val => {
+    this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe((val: any) => {
       if(val) {
         this.events$ = this.eventService.getAllEvents(this.limit, this.page, this.searchValue?.value || ' ');
         this.savingEvent.next(false);
         this.dialogSubs.forEach(val => val.unsubscribe());
         this.activeIndex = 0;
         this.eventForm.reset();
-        this.eventID = null
+        this.router.navigate(['/agendas', val?.id])
+        this.eventID = null;
       }
     })
   }
