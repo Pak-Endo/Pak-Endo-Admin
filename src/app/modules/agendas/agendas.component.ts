@@ -50,6 +50,7 @@ export class AgendasComponent implements OnDestroy {
   daysOfEvents: any[] = [];
   halls: any[] = [];
   speakers: any[] = [];
+  allSpeakers: any[] = [];
   sponsors: any[] = [];
   speakerValue: any;
   dialogSubs: Subscription[] = []
@@ -69,6 +70,13 @@ export class AgendasComponent implements OnDestroy {
           hall: [null, Validators.required],
           streamUrl: [null],
           speaker: [null, Validators.required],
+          speakerImg: [null],
+          speakerTeam: this.fb.array([
+            this.fb.group({
+              name: [null],
+              role: [null]
+            })
+          ]),
           attachments: [[]]
         })
       ]
@@ -99,6 +107,7 @@ export class AgendasComponent implements OnDestroy {
           this.pageService.getAllSpeakers(1000, 1).pipe(takeUntil(this.destroy))
           .subscribe((speaker: ApiResponse<any>) => {
             if(!speaker.hasErrors()) {
+              this.allSpeakers = speaker?.data?.data;
               this.speakers = speaker?.data?.data?.map((value: any) => value?.speakerName)
             }
           });
@@ -113,7 +122,7 @@ export class AgendasComponent implements OnDestroy {
           if(data?.agenda && data?.agenda?.length > 0) {
             let agendaDays: any[] = [];
             this.agendas.clear();
-            data.agenda.map((agenda: any) => {
+            data.agenda.map((agenda: any, index: number) => {
               let from = agenda.from?.split(' ');
               let to = agenda.to?.split(' ');
               agenda.day = this.convertTimestampToObject(agenda.day)
@@ -134,6 +143,12 @@ export class AgendasComponent implements OnDestroy {
                 speaker: [agenda.speaker || null],
                 streamUrl: [agenda.streamUrl || null],
                 speakerImg: [agenda.speakerImg || null],
+                speakerTeam: this.fb.array(agenda.speakerTeam?.map((team: {name: string, role: string}) => {
+                  return this.fb.group({
+                    name: [team.name || null],
+                    role: [team.role || null]
+                  })
+                })),
                 attachments: [agenda.attachments || []]
               });
               this.agendas.push(formAgenda)
@@ -178,6 +193,12 @@ export class AgendasComponent implements OnDestroy {
       hall: [null, Validators.required],
       streamUrl: [null],
       speaker: [null, Validators.required],
+      speakerTeam: this.fb.array([
+        this.fb.group({
+          name: [null],
+          role: [null]
+        })
+      ]),
       attachments: [[]]
     })
     this.agendas.push(agendaForm)
@@ -185,6 +206,23 @@ export class AgendasComponent implements OnDestroy {
 
   removeAgenda(index: number) {
     this.agendas.removeAt(index);
+  }
+
+  getSpeakerTeam(i: number) {
+    return this.agendas.at(i).get("speakerTeam") as FormArray
+  }
+
+  addSpeaker(index: number) {
+    const newTeam = this.fb.group({
+      name: [null],
+      role: [null]
+    })
+    this.getSpeakerTeam(index)?.push(newTeam)
+  }
+
+  removeSpeakerTeam(agendaIndex:number, teamIndex:number) {
+    const control = <FormArray>this.agendas.at(agendaIndex)?.get('speakerTeam');
+    control.removeAt(teamIndex);
   }
 
   convertTimestampToObject(timestamp: number) {
@@ -276,7 +314,8 @@ export class AgendasComponent implements OnDestroy {
     let agendasWithDays = this.agendaForm.value?.agendas;
     agendasWithDays = agendasWithDays?.map((data: any) => {
       data.from = data?.from + ' ' + (data?.isPmFrom == true ? 'PM': 'AM')
-      data.to = data?.to + ' ' + (data?.isPmTo == true ? 'PM': 'AM')
+      data.to = data?.to + ' ' + (data?.isPmTo == true ? 'PM': 'AM');
+      data.speakerImg = this.allSpeakers?.filter(value => value.speakerName == data?.speaker)[0]?.speakerImg
       if(!data?.theme) {
         data.theme = this.agendas.at(0)?.get('theme')?.value
       }
@@ -294,8 +333,9 @@ export class AgendasComponent implements OnDestroy {
       data.to = data.to.toString();
       delete data?.isPmFrom;
       delete data?.isPmTo;
-      return {...data, day: day}
+      return Object.assign(data, {day: day})
     })
+
     this.eventService.updateEvent({agenda: agendasWithDays}, this.eventID).pipe(takeUntil(this.destroy)).subscribe(val => {
       if(val) {
         this.router.navigate(['/events'])

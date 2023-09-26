@@ -39,7 +39,7 @@
           <form [formGroup]="agendaForm">
             <ng-container formArrayName="agendas">
               <ng-container *ngFor="let agent of agendas.controls; let i = index; let first = first; let last = last">
-                <div [formGroupName]="i" class="w-full mb-12">
+                <div [formGroupName]="i" class="w-full mb-12 bg-slate-100 shadow-lg rounded-md px-4 py-2">
                   <ng-container *ngIf="agent.get('day')!.value === index || agent.get('day')!.value?.day == day?.day">
                     <!--THEME-->
                     <div class="relative mt-3 text-center">
@@ -129,9 +129,10 @@
                         <tui-toggle
                           formControlName="isPmFrom"
                           class="my-1.5"
+                          [showIcons]="true"
                           size="l"
                         ></tui-toggle>
-                        <span class="ml-2 text-gray-400 text-xxs">Toggle to switch between AM and PM</span>
+                        <span class="ml-2 text-gray-500 text-xxs">Toggle to switch between AM and PM</span>
                       </div>
                       <div class="col-span-6">
                         <label class="text-base font-semibold">End time</label>
@@ -145,61 +146,112 @@
                         </tui-input-time>
                         <tui-toggle
                           formControlName="isPmTo"
+                          [showIcons]="true"
                           class="my-1.5"
                           size="l"
                         ></tui-toggle>
-                        <span class="ml-2 text-gray-400 text-xxs">Toggle to switch between AM and PM</span>
+                        <span class="ml-2 text-gray-500 text-xxs">Toggle to switch between AM and PM</span>
                       </div>
                       <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="col-span-12 text-xs text-red-500">
                         Please provide a valid timeline
                       </span>
                     </div>
-                    <!--Speaker-->
-                    <div class="my-4">
-                      <label class="text-base font-semibold">Speaker</label>
-                        <tui-select
-                          class="mt-[5px]"
-                          formControlName="speaker"
-                          [tuiTextfieldLabelOutside]="true"
-                        >
-                          Choose speaker
-                          <input
-                            placeholder="Choose speaker"
-                            tuiTextfield
-                          />
-                          <tui-data-list-wrapper
-                            *tuiDataList
-                            [items]="speakers"
-                          ></tui-data-list-wrapper>
-                        </tui-select>
-                      <span *ngIf="(agent.get('speaker')!.invalid && agent.get('speaker')!.touched)" class="text-xs text-red-500">
-                        Please provide a speaker for this event
-                      </span>
+                    <!--SPEAKER & SPONSOR-->
+                    <div class="grid grid-cols-12 gap-3 mt-4">
+                      <!--Speaker-->
+                      <div class="col-span-6">
+                        <label class="text-base font-semibold">Speaker</label>
+                          <tui-select
+                            class="mt-[5px]"
+                            formControlName="speaker"
+                            [tuiTextfieldLabelOutside]="true"
+                          >
+                            Choose speaker
+                            <input
+                              placeholder="Choose speaker"
+                              tuiTextfield
+                            />
+                            <tui-data-list-wrapper
+                              *tuiDataList
+                              [items]="speakers"
+                            ></tui-data-list-wrapper>
+                          </tui-select>
+                        <span *ngIf="(agent.get('speaker')!.invalid && agent.get('speaker')!.touched)" class="text-xs text-red-500">
+                          Please provide a speaker for this event
+                        </span>
+                      </div>
+                      <!--Sponsor-->
+                      <div class="col-span-6">
+                        <label class="text-base font-semibold">Sponsor</label>
+                          <tui-select
+                            class="mt-[5px]"
+                            formControlName="sponsor"
+                            [tuiTextfieldLabelOutside]="true"
+                          >
+                            Choose sponsor
+                            <input
+                              placeholder="Choose sponsor"
+                              tuiTextfield
+                            />
+                            <tui-data-list-wrapper
+                              *tuiDataList
+                              [items]="sponsors"
+                            ></tui-data-list-wrapper>
+                          </tui-select>
+                        <span *ngIf="(agent.get('sponsor')!.invalid && agent.get('sponsor')!.touched)" class="text-xs text-red-500">
+                          Please provide a sponsor for this agenda
+                        </span>
+                      </div>
                     </div>
-                    <!--Sponsor-->
-                    <div class="my-4">
-                      <label class="text-base font-semibold">Sponsor</label>
-                        <tui-select
-                          class="mt-[5px]"
-                          formControlName="sponsor"
-                          [tuiTextfieldLabelOutside]="true"
-                        >
-                          Choose sponsor
-                          <input
-                            placeholder="Choose sponsor"
-                            tuiTextfield
-                          />
-                          <tui-data-list-wrapper
-                            *tuiDataList
-                            [items]="sponsors"
-                          ></tui-data-list-wrapper>
-                        </tui-select>
-                      <span *ngIf="(agent.get('sponsor')!.invalid && agent.get('sponsor')!.touched)" class="text-xs text-red-500">
-                        Please provide a sponsor for this agenda
-                      </span>
+                    <!--Speaker team-->
+                    <div formArrayName="speakerTeam">
+                      <h3 class="font-semibold mt-5 mb-3">Add Speaker's team</h3>
+                      <ng-container *ngFor="let team of getSpeakerTeam(i).controls; let j = index;">
+                        <div [formGroupName]="j">
+                          <div class="grid grid-cols-12 gap-2 mx-14">
+                            <tui-input
+                              formControlName="name"
+                              tuiTextfieldSize="m"
+                              [tuiTextfieldCleaner]="true"
+                              class="col-span-6"
+                            >
+                              Name
+                              <input
+                                autocomplete="new-password"
+                                tuiTextfield
+                                type="text"
+                              />
+                            </tui-input>
+                            <tui-input
+                              formControlName="role"
+                              tuiTextfieldSize="m"
+                              [tuiTextfieldCleaner]="true"
+                              class="col-span-6"
+                            >
+                              Role
+                              <input
+                                autocomplete="new-password"
+                                tuiTextfield
+                                type="text"
+                              />
+                            </tui-input>
+                          </div>
+                        </div>
+                        <div class="flex justify-end">
+                          <button
+                            tuiIconButton
+                            size="s"
+                            appearance="secondary-destructive"
+                            icon="tuiIconTrash"
+                            (click)="removeSpeakerTeam(i,j)">
+                          </button>
+                        </div>
+                      </ng-container>
+                      <button tuiButton appearance="primary" class="mx-14" size="s" type="button" (click)="addSpeaker(i)">Add new member</button>
                     </div>
+
                     <!--Delete agenda btn-->
-                    <div *ngIf="i > 0" class="flex justify-end">
+                    <div class="flex justify-end mt-2" *ngIf="i > 0">
                       <button
                         tuiIconButton
                         type="button"
@@ -234,6 +286,7 @@
         type="submit"
         size="m"
         appearance="custom"
+        [disabled]="agendaForm.invalid"
         class="bg-gradient-to-r from-[#234976] to-[#0F9449] text-white my-1"
         (click)="submitAgenda()"
         >
