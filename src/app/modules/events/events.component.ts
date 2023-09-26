@@ -225,6 +225,7 @@ export class EventsComponent implements OnDestroy {
     if(this.searchValue?.value) {
       payload = {...payload, title: this.searchValue?.value }
     }
+    debugger
     this.events$ = this.eventService.getAllEvents(this.limit, this.page, payload);
   }
 
