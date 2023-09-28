@@ -379,8 +379,13 @@ export class AgendasComponent implements OnDestroy {
       if(data?.speakerTeam[0]?.name == "" || data?.speakerTeam[0]?.name == null) {
         data.speakerTeam = []
       }
-      if(!data?.theme) {
+
+      if(!data?.theme && data?.isLunchBreak == false && data?.isTeaBreak == false) {
+
         data.theme = this.agendas.at(0)?.get('theme')?.value
+      }
+      if(data?.isLunchBreak == true || data?.isTeaBreak == true) {
+        data.theme = null
       }
       if(typeof data.day == 'number') {
         let day = this.daysOfEvents[data.day];
