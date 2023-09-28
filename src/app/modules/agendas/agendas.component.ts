@@ -134,18 +134,22 @@ export class AgendasComponent implements OnDestroy {
               agenda.from = this.convertTimeStringToObject(from[0])
               agenda.to = this.convertTimeStringToObject(to[0])
               agendaDays.push({...agenda.day})
+              debugger
               let formAgenda = this.fb.group({
                 _id: [agenda._id],
-                theme: [agenda.theme, Validators.required],
-                agendaTitle: [agenda.agendaTitle, Validators.required],
-                sponsor: [agenda.sponsor, Validators.required],
+                theme: [agenda.theme || null, Validators.required],
+                agendaTitle: [agenda.agendaTitle || null, Validators.required],
+                sponsor: [agenda?.sponsor?.sponsorName || null, Validators.required],
                 isPmFrom: [from[1]?.includes('AM') ? false: true],
                 isPmTo: [to[1]?.includes('AM') ? false: true],
+                isLunchBreak: [!['Lunch Break', 'Tea Break'].includes(agenda.agendaTitle) ? false : true],
+                isTeaBreak: [!['Lunch Break', 'Tea Break'].includes(agenda.agendaTitle) ? false : true],
                 day: [agenda.day, Validators.required],
                 from: [agenda.from, Validators.required],
                 to: [agenda.to, Validators.required],
                 hall: [agenda.hall, Validators.required],
                 speaker: [agenda.speaker || null],
+                speakerDesignation: [agenda.speakerDesignation || null],
                 streamUrl: [agenda.streamUrl || null],
                 speakerImg: [agenda.speakerImg || null],
                 speakerTeam: this.fb.array(agenda.speakerTeam?.map((team: {name: string, role: string}) => {
