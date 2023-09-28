@@ -70,6 +70,7 @@ export class AgendasComponent implements OnDestroy {
           hall: [null, Validators.required],
           streamUrl: [null],
           speaker: [null, Validators.required],
+          speakerDesignation: [null, Validators.required],
           speakerImg: [null],
           speakerTeam: this.fb.array([
             this.fb.group({
