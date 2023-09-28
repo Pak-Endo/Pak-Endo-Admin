@@ -42,7 +42,7 @@
                 <div [formGroupName]="i" class="w-full mb-12 bg-slate-100 shadow-lg rounded-md px-4 py-2">
                   <ng-container *ngIf="agent.get('day')!.value === index || agent.get('day')!.value?.day == day?.day">
                     <!--THEME-->
-                    <div class="relative mt-3 text-center">
+                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="relative mt-3 text-center">
                       <label class="text-lg font-semibold text-center">Agenda Theme</label>
                       <tui-input
                         formControlName="theme"
@@ -77,7 +77,7 @@
                     <!--Hall & Title-->
                     <div class="grid grid-cols-12 gap-3 mt-10">
                        <!--Hall-->
-                      <div class="col-span-6">
+                      <div class="col-span-6" [ngClass]="(agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false) ? 'col-span-6' : 'col-span-full'">
                         <label class="text-base font-semibold">Hall</label>
                         <tui-select
                           class="mt-[5px]"
@@ -99,7 +99,7 @@
                         </span>
                       </div>
                       <!--Agenda title-->
-                      <div class="col-span-6">
+                      <div class="col-span-6" *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false">
                         <label class="text-base font-semibold">Topic</label>
                         <tui-input formControlName="agendaTitle" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1">
                           e.g. Adrenal Health and Disease.
@@ -157,7 +157,7 @@
                       </span>
                     </div>
                     <!--SPEAKER & SPONSOR-->
-                    <div class="grid grid-cols-12 gap-3 mt-4">
+                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="grid grid-cols-12 gap-3 mt-4">
                       <!--Speaker-->
                       <div class="col-span-6">
                         <label class="text-base font-semibold">Speaker</label>
@@ -203,8 +203,25 @@
                         </span>
                       </div>
                     </div>
+                    <!--Speaker Designation-->
+                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="mt-4">
+                      <label class="text-base font-semibold">Speaker Designation</label>
+                      <tui-input
+                        formControlName="speakerDesignation"
+                        [tuiTextfieldLabelOutside]="true"
+                        [tuiTextfieldCleaner]="true"
+                        class="mt-1"
+                      >
+                        Chairman
+                        <input
+                          tuiTextfield
+                          type="text"
+                          autocomplete="new-password"
+                        />
+                      </tui-input>
+                    </div>
                     <!--Speaker team-->
-                    <div formArrayName="speakerTeam">
+                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" formArrayName="speakerTeam">
                       <h3 class="font-semibold mt-5 mb-3">Add Speaker's team</h3>
                       <ng-container *ngFor="let team of getSpeakerTeam(i).controls; let j = index;">
                         <div [formGroupName]="j">
@@ -265,7 +282,7 @@
                 </div>
               </ng-container>
             </ng-container>
-            <div class="mt-3 mb-2">
+            <div class="mt-3 mb-2 flex justify-start gap-x-3">
               <button
                 tuiButton
                 type="button"
@@ -275,6 +292,24 @@
                 icon="tuiIconPlusLarge"
                 (click)="addAgenda(index)"
               >Add Agenda</button>
+              <button
+                tuiButton
+                type="button"
+                size="m"
+                class="mt-4 bg-[#224C73] text-white"
+                appearance="custom"
+                icon="tuiIconPlusLarge"
+                (click)="addLunchBreak(index)"
+              >Add Lunch Break</button>
+              <button
+                tuiButton
+                type="button"
+                size="m"
+                class="mt-4 bg-[#224C73] text-white"
+                appearance="custom"
+                icon="tuiIconPlusLarge"
+                (click)="addTeaBreak(index)"
+              >Add Tea Break</button>
             </div>
           </form>
         </ng-template>

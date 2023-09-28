@@ -52,6 +52,7 @@ export class AgendasComponent implements OnDestroy {
   speakers: any[] = [];
   allSpeakers: any[] = [];
   sponsors: any[] = [];
+  sponsorList: any[] = [];
   speakerValue: any;
   dialogSubs: Subscription[] = []
   agendaForm = this.fb.group({
@@ -66,6 +67,8 @@ export class AgendasComponent implements OnDestroy {
           from: [null, Validators.required],
           to: [null, Validators.required],
           isPmFrom: [false],
+          isLunchBreak: [false],
+          isTeaBreak: [false],
           isPmTo: [false],
           hall: [null, Validators.required],
           streamUrl: [null],
@@ -115,6 +118,7 @@ export class AgendasComponent implements OnDestroy {
           this.pageService.getAllSponsors(1000, 1).pipe(takeUntil(this.destroy))
           .subscribe((sponsor: ApiResponse<any>) => {
             if(!sponsor.hasErrors()) {
+              this.sponsorList = sponsor?.data?.data
               this.sponsors = sponsor?.data?.data?.map((value: any) => value?.sponsorName)
               this.loadingData.next(false)
             }
@@ -189,17 +193,66 @@ export class AgendasComponent implements OnDestroy {
       day: [day, Validators.required],
       from: [null, Validators.required],
       to: [null, Validators.required],
+      isLunchBreak: [false],
+      isTeaBreak: [false],
       isPmFrom: [false],
       isPmTo: [false],
       hall: [null, Validators.required],
       streamUrl: [null],
       speaker: [null, Validators.required],
+      speakerDesignation: [null, Validators.required],
       speakerTeam: this.fb.array([
         this.fb.group({
           name: [null],
           role: [null]
         })
       ]),
+      attachments: [[]]
+    })
+    this.agendas.push(agendaForm)
+  }
+
+  addLunchBreak(day: number) {
+    const agendaForm = this.fb.group({
+      _id: [undefined],
+      theme: [null],
+      sponsor: [null],
+      agendaTitle: ['Lunch Break'],
+      day: [day],
+      from: [null],
+      to: [null],
+      speakerDesignation: [null],
+      isLunchBreak: [true],
+      isTeaBreak: [false],
+      isPmFrom: [false],
+      isPmTo: [false],
+      hall: [null],
+      streamUrl: [null],
+      speaker: [null],
+      speakerTeam: [[]],
+      attachments: [[]]
+    })
+    this.agendas.push(agendaForm)
+  }
+
+  addTeaBreak(day: number) {
+    const agendaForm = this.fb.group({
+      _id: [undefined],
+      theme: [null],
+      sponsor: [null],
+      agendaTitle: ['Tea Break'],
+      day: [day],
+      from: [null],
+      to: [null],
+      speakerDesignation: [null],
+      isLunchBreak: [false],
+      isTeaBreak: [true],
+      isPmFrom: [false],
+      isPmTo: [false],
+      hall: [null],
+      streamUrl: [null],
+      speaker: [null],
+      speakerTeam: [[]],
       attachments: [[]]
     })
     this.agendas.push(agendaForm)
@@ -316,7 +369,9 @@ export class AgendasComponent implements OnDestroy {
     agendasWithDays = agendasWithDays?.map((data: any) => {
       data.from = data?.from + ' ' + (data?.isPmFrom == true ? 'PM': 'AM')
       data.to = data?.to + ' ' + (data?.isPmTo == true ? 'PM': 'AM');
-      data.speakerImg = this.allSpeakers?.filter(value => value.speakerName == data?.speaker)[0]?.speakerImg
+      data.speakerImg = this.allSpeakers?.filter(value => value.speakerName == data?.speaker)[0]?.speakerImg || null;
+      debugger
+      data.sponsor = this.sponsorList?.filter(value => value.sponsorName == data?.sponsor)[0] || null
       if(!data?.theme) {
         data.theme = this.agendas.at(0)?.get('theme')?.value
       }
@@ -327,6 +382,8 @@ export class AgendasComponent implements OnDestroy {
         data.to = data.to.toString();
         delete data?.isPmFrom;
         delete data?.isPmTo;
+        delete data?.isLunchBreak;
+        delete data?.isTeaBreak;
         return {...data, day: day}
       }
       let day = new Date(data.day.year, data.day.month, data.day.day, 23, 59, 59, 0).getTime();
@@ -334,9 +391,11 @@ export class AgendasComponent implements OnDestroy {
       data.to = data.to.toString();
       delete data?.isPmFrom;
       delete data?.isPmTo;
+      delete data?.isLunchBreak;
+      delete data?.isTeaBreak;
       return Object.assign(data, {day: day})
     })
-
+    debugger
     this.eventService.updateEvent({agenda: agendasWithDays}, this.eventID).pipe(takeUntil(this.destroy)).subscribe(val => {
       if(val) {
         this.router.navigate(['/events'])
