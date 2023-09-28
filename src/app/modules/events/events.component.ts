@@ -496,13 +496,12 @@ export class EventsComponent implements OnDestroy {
       this.eventForm.value,
       {startDate: startDateTimestamp},
       {endDate: endDateTimestamp},
-      {grandSponsor: this.sponsors?.filter(value => value?.name == this.f['grandSponsor']?.value)[0]},
+      {grandSponsor: this.sponsors?.filter(value => this.f['grandSponsor']?.value.includes(value.name))},
       {location: this.venues?.filter(value => value?.id == this.f['location']?.value)[0]},
       {gallery: this.f['gallery']?.value ? this.f['gallery']?.value: undefined},
       {agenda: []},
       {rating: 0}
     );
-    debugger
     delete payload.eventDays
     delete payload.agendas
     this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe((val: any) => {
@@ -544,7 +543,7 @@ export class EventsComponent implements OnDestroy {
       this.eventForm.value,
       {startDate: startDateTimestamp},
       {endDate: endDateTimestamp},
-      {grandSponsor: this.sponsors?.filter(value => value?.id == this.f['grandSponsor']?.value)[0]},
+      {grandSponsor: this.sponsors?.filter(value => this.f['grandSponsor']?.value.includes(value.name))},
       {location: this.venues?.filter(value => value?.id == this.f['location']?.value)[0]},
       {gallery: this.f['gallery']?.value ? this.f['gallery']?.value: undefined}
     );
