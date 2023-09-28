@@ -44,6 +44,7 @@ import { Router, RouterModule } from '@angular/router';
 
 export class AgendasComponent implements OnDestroy {
   destroy = new Subject();
+  saving = new Subject<boolean>();
   eventID: string | null = null;
   event: any;
   loadingData = new BehaviorSubject<boolean>(true);
@@ -134,7 +135,6 @@ export class AgendasComponent implements OnDestroy {
               agenda.from = this.convertTimeStringToObject(from[0])
               agenda.to = this.convertTimeStringToObject(to[0])
               agendaDays.push({...agenda.day})
-              debugger
               let formAgenda = this.fb.group({
                 _id: [agenda._id],
                 theme: [agenda.theme || null, Validators.required],
@@ -164,7 +164,7 @@ export class AgendasComponent implements OnDestroy {
               this.agendas.updateValueAndValidity();
             });
             agendaDays = [...new Map(agendaDays?.map((data: any) => [data['day'], data])).values()]
-            this.daysOfEvents = agendaDays;
+            // this.daysOfEvents = agendaDays;
           }
         }
       })
@@ -369,12 +369,12 @@ export class AgendasComponent implements OnDestroy {
   }
 
   submitAgenda() {
+    this.saving.next(true)
     let agendasWithDays = this.agendaForm.value?.agendas;
     agendasWithDays = agendasWithDays?.map((data: any) => {
       data.from = data?.from + ' ' + (data?.isPmFrom == true ? 'PM': 'AM')
       data.to = data?.to + ' ' + (data?.isPmTo == true ? 'PM': 'AM');
       data.speakerImg = this.allSpeakers?.filter(value => value.speakerName == data?.speaker)[0]?.speakerImg || null;
-      debugger
       data.sponsor = this.sponsorList?.filter(value => value.sponsorName == data?.sponsor)[0] || null
       if(!data?.theme) {
         data.theme = this.agendas.at(0)?.get('theme')?.value
@@ -399,9 +399,9 @@ export class AgendasComponent implements OnDestroy {
       delete data?.isTeaBreak;
       return Object.assign(data, {day: day})
     })
-    debugger
     this.eventService.updateEvent({agenda: agendasWithDays}, this.eventID).pipe(takeUntil(this.destroy)).subscribe(val => {
       if(val) {
+        this.saving.next(false)
         this.router.navigate(['/events'])
       }
     })
