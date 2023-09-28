@@ -375,7 +375,10 @@ export class AgendasComponent implements OnDestroy {
       data.from = data?.from + ' ' + (data?.isPmFrom == true ? 'PM': 'AM')
       data.to = data?.to + ' ' + (data?.isPmTo == true ? 'PM': 'AM');
       data.speakerImg = this.allSpeakers?.filter(value => value.speakerName == data?.speaker)[0]?.speakerImg || null;
-      data.sponsor = this.sponsorList?.filter(value => value.sponsorName == data?.sponsor)[0] || null
+      data.sponsor = this.sponsorList?.filter(value => value.sponsorName == data?.sponsor)[0] || null;
+      if(data?.speakerTeam[0]?.name == "" || data?.speakerTeam[0]?.name == null) {
+        data.speakerTeam = []
+      }
       if(!data?.theme) {
         data.theme = this.agendas.at(0)?.get('theme')?.value
       }
