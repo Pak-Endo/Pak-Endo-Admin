@@ -66,6 +66,7 @@ export class EventsComponent implements OnDestroy {
   ];
   venues: any[] = [];
   sponsors: any[] = [];
+  sponsorsForDisplay: any[] = [];
   venueValue: any;
   sponsorValue: any;
 
@@ -90,9 +91,12 @@ export class EventsComponent implements OnDestroy {
       this.sponsors = value?.data?.data?.map((sponsors: any) => {
         return {
           id: sponsors._id,
-          name: sponsors.sponsorName
+          name: sponsors.sponsorName,
+          logo: sponsors.sponsorLogo,
+          contact: sponsors.contact
         }
-      })
+      });
+      this.sponsorsForDisplay = value?.data?.data?.map((val: any) => val.sponsorName)
     })
     let day = new Date().getDate()
     let nextDay = new Date().getDate() + 1
@@ -118,19 +122,6 @@ export class EventsComponent implements OnDestroy {
       return ({$implicit}: TuiContextWithImplicit<string>) => map.get($implicit) || '';
     }
 
-  getPostfix(index: number, isFromField: boolean): string {
-    const isPmFrom = this.agendas.at(index)?.get('isPmFrom')?.value;
-    const isPmTo = this.agendas.at(index)?.get('isPmTo')?.value;
-
-    if (isFromField && isPmFrom) {
-      return 'PM';
-    } else if (!isFromField && isPmTo) {
-      return 'PM';
-    } else {
-      return 'AM';
-    }
-  }
-
   initEventForm() {
     this.eventForm = this.fb.group({
       title: new FormControl(null, Validators.required),
@@ -147,9 +138,13 @@ export class EventsComponent implements OnDestroy {
       featuredImage: new FormControl(null, Validators.required),
       gallery: new FormControl(undefined),
       type: new FormControl(null, Validators.required),
-      grandSponsor: new FormControl(null, Validators.required),
-      grandSponsorContact: new FormControl(null, Validators.required),
-      fees: new FormControl(null, Validators.required)
+      grandSponsor: new FormControl([], Validators.required),
+      fees: new FormArray([
+        new FormGroup({
+          feeType: new FormControl(null, Validators.required),
+          feeValue: new FormControl(null, Validators.required)
+        })
+      ])
     })
   }
 
@@ -173,30 +168,20 @@ export class EventsComponent implements OnDestroy {
     return this.eventForm.controls;
   }
 
-  get agendas() {
-    return this.f['agendas'] as FormArray
+  get fees() {
+    return this.f['fees'] as FormArray
   }
 
-  addAgenda(day: number) {
-    const agendaForm = this.fb.group({
-      _id: [undefined],
-      agendaTitle: [null, Validators.required],
-      day: [day, Validators.required],
-      from: [null, Validators.required],
-      to: [null, Validators.required],
-      isPmFrom: [false],
-      isPmTo: [false],
-      venue: [null, Validators.required],
-      streamUrl: [null],
-      speaker: [undefined],
-      speakerImg: [undefined],
-      attachments: [[]]
+  addFees() {
+    const fee = this.fb.group({
+      feeType: [null, Validators.required],
+      feeValue: [null, Validators.required]
     })
-    this.agendas.push(agendaForm)
+    this.fees.push(fee)
   }
 
-  removeAgenda(index: number) {
-    this.agendas.removeAt(index);
+  removeFees(index: number) {
+    this.fees.removeAt(index)
   }
 
   setNoOfDaysForAgenda() {
@@ -248,19 +233,22 @@ export class EventsComponent implements OnDestroy {
 
   showAddorEditDialog(content: PolymorpheusContent<TuiDialogContext>, data?: EventModel | any): void {
     if(data) {
-      // let agendaDays: any[] = [];
-      // this.agendas.clear();
+      this.fees.clear();
       this.eventID = data?._id;
       this.f['title'].setValue(data?.title)
-      this.f['fees'].setValue(data?.fees)
+      data?.fees?.map((val: any) => {
+        let feeForm = this.fb.group({
+          feeType: [val.feeType],
+          feeValue: [val.feeValue],
+        })
+        this.fees.push(feeForm)
+      })
       this.f['description'].setValue(data?.description)
       this.f['featuredImage'].setValue(data?.featuredImage)
       this.f['type'].setValue(data?.type)
       this.f['location'].setValue(data?.location?.name)
       this.venueValue = data?.location?.id;
-      this.sponsorValue = data?.grandSponsor?.id;
-      this.f['grandSponsorContact'].setValue(data?.grandSponsorContact)
-      this.f['grandSponsor'].setValue(data?.grandSponsor?.name);
+      this.f['grandSponsor'].setValue(data?.grandSponsor?.map((val: any) => val.name));
       this.f['openForPublic']?.setValue(data?.openForPublic || true)
       this.multipleImages = data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : []
       this.f['gallery'].setValue(data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : undefined);
@@ -304,23 +292,6 @@ export class EventsComponent implements OnDestroy {
       dismissible: true,
       closeable: true,
     }).pipe(takeUntil(this.destroy$)).subscribe()
-  }
-
-  uploadSpeakerImage(event: any, index: number) {
-    let file = event.target.files[0];
-    if(file && ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'].includes(file.type)) {
-      return this.media.uploadMedia('test', file).pipe(
-        map((res: ApiResponse<any>) => {
-          if(!res.hasErrors()) {
-            this.agendas.at(index)?.get('speakerImg')?.setValue(res?.data?.url)
-            return res.data?.url
-          }
-          return null;
-        }),
-        finalize(() => this.loadingFiles$.next(false))
-      ).pipe(takeUntil(this.destroy$)).subscribe()
-    }
-    return null
   }
 
   uploadFeaturedImage(event: any) {
@@ -379,7 +350,6 @@ export class EventsComponent implements OnDestroy {
         forkJoin(mediaUpload).subscribe((values: any[]) => {
           for (const value of values) {
             this.attachments.push(value?.data);
-            this.agendas.at(index)?.get('attachments')?.setValue(this.attachments);
           }
           this.uploadingMultiple.next(false);
         });
@@ -402,21 +372,7 @@ export class EventsComponent implements OnDestroy {
     event.stopPropagation();
     this.eventID = null;
     this.dialogSubs.forEach(val => val.unsubscribe());
-    this.eventForm.setValue(
-      {
-        title: null,
-        description: null,
-        eventDays: null,
-        location: null,
-        openForPublic: true,
-        featuredImage: null,
-        gallery: null,
-        type: null,
-        grandSponsor: null,
-        grandSponsorContact: null,
-        fees: null
-      }
-    );
+    this.eventForm.reset();
     this.activeIndex = 0;
     this.eventID = null;
   }
@@ -432,7 +388,6 @@ export class EventsComponent implements OnDestroy {
     event.preventDefault();
     event.stopImmediatePropagation();
     this.attachments.splice(index, 1);
-    this.agendas.at(index)?.get('attachments')?.setValue(this.attachments);
   }
 
   toggle() {
@@ -483,60 +438,6 @@ export class EventsComponent implements OnDestroy {
     return dateTimeStamp
   }
 
-  nextStep() {
-    if(this.activeIndex == 0) {
-      if(this.validateStepOne() == true) {
-        Array.from(document.getElementsByClassName('t-dialog ng-tns-c1-0 ng-trigger ng-trigger-tuiParentAnimation ng-star-inserted'))?.forEach(value => {
-          value.scrollTo(0, 0)
-        })
-        this.daysOfEventsValue = [{...this.f['eventDays']?.value?.from}, {...this.f['eventDays']?.value?.to}];
-        let startDay = new TuiDay(this.daysOfEventsValue[0]?.year, this.daysOfEventsValue[0]?.month, this.daysOfEventsValue[0]?.day);
-        let endDay = new TuiDay(this.daysOfEventsValue[1]?.year, this.daysOfEventsValue[1]?.month, this.daysOfEventsValue[1]?.day);
-        let daysArr = []
-        while (startDay < endDay) {
-          if(startDay.monthSameOrBefore(endDay)) {
-            if(startDay.daysCount === startDay.day) {
-              startDay = new TuiDay(startDay?.year, startDay?.month + 1, 1);
-            }
-            else {
-              startDay = new TuiDay(startDay?.year, startDay?.month, startDay?.day + 1);
-            }
-          }
-          else {
-            startDay = new TuiDay(startDay?.year, startDay?.month + 1, 1);
-          }
-          if(startDay === endDay) {
-            break
-          }
-          daysArr.push({...startDay})
-        }
-        this.daysOfEventsValue.pop();
-        this.daysOfEvents = [...this.daysOfEventsValue, ...daysArr]
-        return this.activeIndex++
-      }
-      else {
-        return this.eventForm.markAllAsTouched()
-      }
-    }
-    if(this.activeIndex == 1) {
-      if(this.valdiateStepTwo() == false) {
-        this.agendas.controls.map(value => {
-          console.log(value)
-        })
-
-        return this.agendas.markAllAsTouched();
-      }
-
-      return this.activeIndex++
-    }
-  }
-
-  prevStep() {
-    if(this.activeIndex > 0) {
-      this.activeIndex--
-    }
-  }
-
   mapAndGetMonths(value: number) {
     let months = new Map([
       [0, 'January'],
@@ -569,35 +470,6 @@ export class EventsComponent implements OnDestroy {
     )
   }
 
-  valdiateStepTwo() {
-    if(this.agendas.value?.map((data: any) => data != null).includes(false)) {
-
-      return false
-    }
-    if(this.agendas.length < this.daysOfEvents.length) {
-
-      return false
-    }
-    if(this.getValidityForAgendas().includes(false)) {
-
-      return false
-    }
-    return true
-  }
-
-  getValidityForAgendas() {
-    return this.agendas.controls.map(value => {
-      if(
-        value.get('from')?.invalid ||
-        value.get('to')?.invalid ||
-        value.get('venue')?.invalid
-      ) {
-        return false
-      }
-      return true
-    })
-  }
-
   createEvent() {
     this.savingEvent.next(true)
     let startDate: TuiDay = this.f['eventDays']?.value?.from;
@@ -620,24 +492,17 @@ export class EventsComponent implements OnDestroy {
       59,
       0
     ).getTime();
-    // let agendasWithDays = this.eventForm.value.agendas;
-    // agendasWithDays = agendasWithDays.map((data: any) => {
-    //   let day = this.daysOfEvents[data.day];
-    //   day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
-    //   data.from = data.from.toString();
-    //   data.to = data.to.toString();
-    //   return {...data, day: day}
-    // })
     const payload = Object.assign(
       this.eventForm.value,
       {startDate: startDateTimestamp},
       {endDate: endDateTimestamp},
-      {grandSponsor: this.sponsors?.filter(value => value?.id == this.f['grandSponsor']?.value)[0]},
+      {grandSponsor: this.sponsors?.filter(value => value?.name == this.f['grandSponsor']?.value)[0]},
       {location: this.venues?.filter(value => value?.id == this.f['location']?.value)[0]},
       {gallery: this.f['gallery']?.value ? this.f['gallery']?.value: undefined},
       {agenda: []},
       {rating: 0}
     );
+    debugger
     delete payload.eventDays
     delete payload.agendas
     this.eventService.createNewEvent(payload).pipe(takeUntil(this.destroy$)).subscribe((val: any) => {

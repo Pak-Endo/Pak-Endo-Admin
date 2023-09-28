@@ -325,15 +325,57 @@
     </div>
 
     <!--Fees-->
-    <div class="my-4">
-      <label class="text-base font-semibold">Event Fees</label>
-      <tui-input-number
-        formControlName="fees"
-        [tuiTextfieldPrefix]="'PKR ' | tuiCurrency"
-        [tuiTextfieldLabelOutside]="true"
-      >
-        e.g. 1000
-      </tui-input-number>
+    <p class="my-3 font-semibold text-left">Event Fees</p>
+    <ng-container formArrayName="fees">
+      <ng-container *ngFor="let fee of fees.controls; let i = index; let first = first; let last = last">
+        <div class="my-4" [formGroupName]="i">
+          <div class="grid grid-cols-12 gap-3">
+            <div class="col-span-6">
+              <label class="text-sm font-semibold">Type</label>
+              <tui-input formControlName="feeType" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true">
+                <input
+                  tuiTextfield
+                  type="text"
+                  autocomplete="new-password"
+                />
+              </tui-input>
+            </div>
+            <div class="col-span-6">
+              <label class="text-sm font-semibold">Value</label>
+              <tui-input formControlName="feeValue" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true">
+                <input
+                  tuiTextfield
+                  type="text"
+                  autocomplete="new-password"
+                />
+              </tui-input>
+            </div>
+          </div>
+          <div class="flex justify-end mt-3">
+            <button
+              *ngIf="i > 0"
+              tuiIconButton
+              type="button"
+              size="s"
+              appearance="accent"
+              icon="tuiIconTrash"
+              (click)="removeFees(i)"
+            >
+          </button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <div class="mt-3 mb-2">
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        class="mt-4 bg-[#224C73] text-white"
+        appearance="custom"
+        icon="tuiIconPlus"
+        (click)="addFees()"
+      >Add more</button>
     </div>
 
     <!--Gallery Images-->
@@ -375,51 +417,23 @@
     <!--Sponsor-->
     <div class="my-3">
       <label class="text-base font-semibold">Grand Sponsor</label>
-      <tui-select
+      <tui-multi-select
           formControlName="grandSponsor"
           [tuiTextfieldLabelOutside]="true"
-          [valueContent]="stringify(sponsors)"
-          [(ngModel)]="sponsorValue"
           class="mt-1.5"
         >
-        <ng-template tuiDataList>
-          <tui-data-list>
-            <button
-              *ngFor="let item of sponsors"
-              tuiOption
-              [value]="item.id"
-            >
-              {{ item.name }}
-            </button>
-          </tui-data-list>
-        </ng-template>
-        </tui-select>
+        <tui-data-list-wrapper
+          *tuiDataList
+          tuiMultiSelectGroup
+          [items]="sponsorsForDisplay"
+        ></tui-data-list-wrapper>
+        </tui-multi-select>
         <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
           validation: 'required',
-          message: 'Please specify a grand sponsor for the event',
+          message: 'Please specify at least one grand sponsor for the event',
           control: f['grandSponsor']
         }">
         </ng-container>
-    </div>
-
-    <!--Contact-->
-    <div class="my-3">
-      <label class="text-base font-semibold">Sponsor Contact</label>
-      <tui-input-phone-international
-        class="mt-1"
-        formControlName="grandSponsorContact"
-        [countries]="countries"
-        [tuiTextfieldLabelOutside]="true"
-        [tuiTextfieldCleaner]="true"
-        [(countryIsoCode)]="countryIsoCode"
-      ></tui-input-phone-international>
-      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
-        validation: 'grandSponsorContact',
-        message: 'Please provide a phone number',
-        control: f['grandSponsorContact']
-      }">
-      </ng-container>
-
     </div>
 
     <!--Public Open?-->
