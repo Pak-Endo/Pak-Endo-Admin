@@ -45,9 +45,24 @@
     </ng-template>
   </gui-grid-column>
   <!--Phone No-->
-  <gui-grid-column header="Details" field="description" [width]="'450'">
+  <gui-grid-column header="Details" field="description" [width]="360">
     <ng-template let-value="value" let-item="item">
       {{item?.description}}
+    </ng-template>
+  </gui-grid-column>
+  <gui-grid-column header="Country" field="country" [width]="150">
+    <ng-template let-value="value" let-item="item">
+      {{item?.country}}
+    </ng-template>
+  </gui-grid-column>
+  <gui-grid-column header="City" field="city">
+    <ng-template let-value="value" let-item="item">
+      {{item?.city}}
+    </ng-template>
+  </gui-grid-column>
+  <gui-grid-column header="Contact" field="speakerContact">
+    <ng-template let-value="value" let-item="item">
+      {{item?.speakerContact}}
     </ng-template>
   </gui-grid-column>
   <!--Actions-->
@@ -169,6 +184,70 @@
       control: f['description']
     }">
     </ng-container>
+    <!--Country-->
+    <div class="my-4">
+      <label class="text-base font-semibold">Country</label>
+      <tui-input
+        formControlName="country"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+        class="mt-1"
+      >
+        Country
+        <input
+          tuiTextfield
+          type="text"
+          autocomplete="new-password"
+        />
+      </tui-input>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a country for the speaker',
+        control: f['country']
+      }">
+      </ng-container>
+    </div>
+    <!--City-->
+    <div class="my-1">
+      <label class="text-base font-semibold">City</label>
+      <tui-input
+        formControlName="city"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+        class="mt-1"
+      >
+        City
+        <input
+          tuiTextfield
+          type="text"
+          autocomplete="new-password"
+        />
+      </tui-input>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a city for the speaker',
+        control: f['city']
+      }">
+      </ng-container>
+    </div>
+    <!--Contact-->
+    <div class="my-4">
+      <label class="text-base font-semibold">Contact Information</label>
+      <tui-input-phone-international
+        class="mt-1"
+        formControlName="speakerContact"
+        [countries]="countries"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+        [(countryIsoCode)]="countryIsoCode"
+      ></tui-input-phone-international>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a contact number for the speaker',
+        control: f['speakerContact']
+      }">
+      </ng-container>
+    </div>
 
     <div class="flex justify-center gap-3 mt-8">
       <ng-container *ngIf="!speakerID">

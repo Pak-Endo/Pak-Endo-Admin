@@ -1,5 +1,5 @@
 import { Component, OnDestroy, Inject } from '@angular/core';
-import { GuiColumn, GuiPaging, GuiPagingDisplay, GuiSearching } from '@generic-ui/ngx-grid';
+import { GuiPaging, GuiPagingDisplay, GuiSearching } from '@generic-ui/ngx-grid';
 import { PagesService } from '../pages.service';
 import  { Subject, Subscription, finalize, map, takeUntil } from 'rxjs';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
@@ -10,6 +10,7 @@ import { generateUniqueID } from 'src/@core/utils/utility-functions';
 import { TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import { MediaUploadService } from 'src/@core/core-service/media-upload.service';
+import {TuiCountryIsoCode} from '@taiga-ui/i18n';
 
 @Component({
   templateUrl: './speakers.component.html',
@@ -45,8 +46,22 @@ export class SpeakersComponent implements OnDestroy {
       Validators.required,
       Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
     ])),
+    speakerContact: new FormControl(null, Validators.required),
+    country: new FormControl(null, Validators.required),
+    city: new FormControl(null, Validators.required),
     description: new FormControl(null, Validators.required),
   })
+  readonly countries: readonly TuiCountryIsoCode[] = [
+    TuiCountryIsoCode.PK,
+    TuiCountryIsoCode.US,
+    TuiCountryIsoCode.GB,
+    TuiCountryIsoCode.FR,
+    TuiCountryIsoCode.AU,
+    TuiCountryIsoCode.IT,
+    TuiCountryIsoCode.SA,
+    TuiCountryIsoCode.CA
+  ];
+  countryIsoCode = TuiCountryIsoCode.PK;
 
   constructor(
     private pageService: PagesService,
