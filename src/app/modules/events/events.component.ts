@@ -9,7 +9,7 @@ import { MediaUploadService } from 'src/@core/core-service/media-upload.service'
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
 import { TuiContextWithImplicit, TuiDay, TuiDayRange, TuiStringHandler, TuiTime, tuiPure } from '@taiga-ui/cdk';
 import {TuiCountryIsoCode} from '@taiga-ui/i18n';
-import {tuiCreateTimePeriods, tuiInputTimeOptionsProvider} from '@taiga-ui/kit';
+import {tuiInputTimeOptionsProvider} from '@taiga-ui/kit';
 import { PagesService } from '../pages/pages.service';
 import { Router } from '@angular/router';
 

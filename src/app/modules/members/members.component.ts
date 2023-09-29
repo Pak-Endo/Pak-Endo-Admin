@@ -117,7 +117,8 @@ export class MembersComponent implements OnDestroy {
       gender: [null, Validators.required],
       status: [null],
       city: [null, Validators.required],
-      type: [null, Validators.required]
+      type: [null, Validators.required],
+      qualifications: [null, Validators.required],
     })
   }
 
@@ -136,6 +137,7 @@ export class MembersComponent implements OnDestroy {
       this.f['gender'].setValue(data?.gender)
       this.f['status'].setValue(data?.status)
       this.f['email'].setValue(data?.email);
+      this.f['qualifications'].setValue(data?.qualifications);
       let statuses: any = new Object(Type)
       for (const key in statuses) {
         if(key == data.type) {

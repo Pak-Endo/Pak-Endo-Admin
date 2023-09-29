@@ -5,7 +5,7 @@ import { GuiGridModule } from '@generic-ui/ngx-grid';
 import { MembersRoutingModule } from './members-routing.module';
 import { MembersComponent } from './members.component';
 import { LayoutComponent } from '../layout/layout.component';
-import { TuiDataListWrapperModule, TuiInputModule, TuiInputPhoneInternationalModule, TuiPaginationModule, TuiRadioBlockModule, TuiSelectModule } from '@taiga-ui/kit';
+import { TuiDataListWrapperModule, TuiInputModule, TuiInputPhoneInternationalModule, TuiPaginationModule, TuiRadioBlockModule, TuiSelectModule, TuiTextAreaModule } from '@taiga-ui/kit';
 import { TuiButtonModule, TuiGroupModule, TuiLoaderModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -30,7 +30,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     TuiInputPhoneInternationalModule,
     TuiRadioBlockModule,
     TuiGroupModule,
-    GuiGridModule
+    GuiGridModule,
+    TuiTextAreaModule
   ]
 })
 export class MembersModule { }

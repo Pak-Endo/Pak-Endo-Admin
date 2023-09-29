@@ -10,7 +10,7 @@ import { VenuesComponent } from './venues/venues.component';
 import { GuiGridModule } from '@generic-ui/ngx-grid';
 import { TuiButtonModule } from '@taiga-ui/core/components';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'
-import { TuiInputModule, TuiInputPhoneInternationalModule, TuiMarkerIconModule, TuiTextAreaModule, TuiInputTagModule } from '@taiga-ui/kit';
+import { TuiInputModule, TuiInputPhoneInternationalModule, TuiMarkerIconModule, TuiTextAreaModule, TuiInputTagModule, TuiDataListWrapperModule, TuiSelectModule } from '@taiga-ui/kit';
 import { TuiTextfieldControllerModule } from '@taiga-ui/core';
 
 @NgModule({
@@ -33,7 +33,9 @@ import { TuiTextfieldControllerModule } from '@taiga-ui/core';
     TuiTextAreaModule,
     TuiMarkerIconModule,
     TuiInputPhoneInternationalModule,
-    TuiInputTagModule
+    TuiInputTagModule,
+    TuiDataListWrapperModule,
+    TuiSelectModule
   ]
 })
 export class PagesModule { }

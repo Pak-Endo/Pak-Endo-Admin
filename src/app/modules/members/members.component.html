@@ -54,6 +54,12 @@
           {{item?.fullName}}
         </ng-template>
       </gui-grid-column>
+      <!--Qualifications-->
+      <gui-grid-column header="Qualifications" field="qualifications">
+        <ng-template let-value="value" let-item="item">
+          {{item?.qualifications}}
+        </ng-template>
+      </gui-grid-column>
       <!--Phone No-->
       <gui-grid-column header="Phone No." field="phoneNumber">
         <ng-template let-value="value" let-item="item">
@@ -67,13 +73,13 @@
         </ng-template>
       </gui-grid-column>
       <!--City-->
-      <gui-grid-column header="City" field="city">
+      <gui-grid-column header="City" field="city" [width]="110">
         <ng-template let-value="value" let-item="item">
           {{item?.city}}
         </ng-template>
       </gui-grid-column>
       <!--City-->
-      <gui-grid-column header="Status" field="status">
+      <gui-grid-column header="Status" field="status" [width]="110">
         <ng-template let-value="value" let-item="item">
           {{item?.status}}
         </ng-template>
@@ -297,6 +303,24 @@
         validation: 'required',
         message: 'Please specify a membership type',
         control: f['type']
+      }">
+      </ng-container>
+    </div>
+
+    <!--Qualifications-->
+    <div class="mt-5">
+      <label class="text-base font-semibold">Qualifications</label>
+      <tui-text-area
+        formControlName="qualifications"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+      >
+      Qualifications
+      </tui-text-area>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide qualifications for the speaker',
+        control: f['qualifications']
       }">
       </ng-container>
     </div>

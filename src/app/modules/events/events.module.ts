@@ -48,8 +48,7 @@ import { RouterModule } from '@angular/router';
     TuiToggleModule,
     TuiDataListModule,
     RouterModule,
-    TuiMultiSelectModule,
-    TuiDataListWrapperModule
+    TuiMultiSelectModule
   ]
 })
 export class EventsModule { }

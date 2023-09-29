@@ -37,6 +37,7 @@ export class SponsorsComponent implements OnDestroy {
   limit: number = 1000;
   page = 1;
   dialogSubs: Subscription[] = [];
+  catItems = ['Platinum', 'Gold', 'Silver', 'Bronze', 'Other']
   sponsorID: string | null = null;
   readonly loadingFiles$ = new Subject<boolean>();
   sponsorForm = new FormGroup({
@@ -44,6 +45,12 @@ export class SponsorsComponent implements OnDestroy {
     sponsorLogo: new FormControl(null, Validators.required),
     contact: new FormControl(null, Validators.required),
     description: new FormControl(null, Validators.required),
+    sponsorEmail: new FormControl(null, Validators.compose([
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
+    ])),
+    sponsorCategory: new FormControl(null, Validators.required),
+    contactPerson: new FormControl(null, Validators.required),
   });
   readonly countries: readonly TuiCountryIsoCode[] = [
     TuiCountryIsoCode.PK,
@@ -126,6 +133,9 @@ export class SponsorsComponent implements OnDestroy {
       this.f['sponsorLogo'].setValue(data?.sponsorLogo)
       this.f['description'].setValue(data?.description)
       this.f['contact'].setValue(data?.contact);
+      this.f['contactPerson'].setValue(data?.contactPerson);
+      this.f['sponsorEmail'].setValue(data?.sponsorEmail);
+      this.f['sponsorCategory'].setValue(data?.sponsorCategory);
     }
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,

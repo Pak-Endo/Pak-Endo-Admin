@@ -39,7 +39,7 @@
     </ng-template>
   </gui-grid-column>
   <!--Phone No-->
-  <gui-grid-column header="Details" field="description">
+  <gui-grid-column header="Details" field="description" [width]="350">
     <ng-template let-value="value" let-item="item">
       {{item?.description}}
     </ng-template>
@@ -47,6 +47,21 @@
   <gui-grid-column header="Contact" field="contact">
     <ng-template let-value="value" let-item="item">
       {{item?.contact}}
+    </ng-template>
+  </gui-grid-column>
+  <gui-grid-column header="Contact Person" field="contactPerson">
+    <ng-template let-value="value" let-item="item">
+      {{item?.contactPerson}}
+    </ng-template>
+  </gui-grid-column>
+  <gui-grid-column header="Email" field="sponsorEmail">
+    <ng-template let-value="value" let-item="item">
+      {{item?.sponsorEmail}}
+    </ng-template>
+  </gui-grid-column>
+  <gui-grid-column header="Category" field="sponsorCategory">
+    <ng-template let-value="value" let-item="item">
+      {{item?.sponsorCategory}}
     </ng-template>
   </gui-grid-column>
   <!--Actions-->
@@ -144,6 +159,81 @@
         validation: 'contact',
         message: 'Please provide a valid contact number',
         control: f['contact']
+      }">
+      </ng-container>
+    </div>
+
+    <div class="mb-5">
+      <label class="text-base font-semibold">Contact Person</label>
+      <tui-input
+      formControlName="contactPerson"
+      [tuiTextfieldLabelOutside]="true"
+      [tuiTextfieldCleaner]="true"
+      class="mt-1"
+    >
+      Contact Person
+      <input
+        tuiTextfield
+        type="text"
+        autocomplete="new-password"
+      />
+    </tui-input>
+    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+      validation: 'required',
+      message: 'Please provide a person for contact',
+      control: f['contactPerson']
+    }">
+    </ng-container>
+    </div>
+
+    <div class="mb-5">
+      <label class="text-base font-semibold">Sponsor Email</label>
+      <tui-input
+      formControlName="sponsorEmail"
+      [tuiTextfieldLabelOutside]="true"
+      [tuiTextfieldCleaner]="true"
+      class="mt-1"
+      >
+        Sponsor Email
+        <input
+          tuiTextfield
+          type="text"
+          autocomplete="new-password"
+        />
+      </tui-input>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a valid email address',
+        control: f['sponsorEmail']
+      }">
+      </ng-container>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'pattern',
+        message: 'Please provide a valid email address',
+        control: f['sponsorEmail']
+      }">
+      </ng-container>
+    </div>
+
+    <div class="mb-5">
+      <label class="text-base font-semibold">Sponsor Category</label>
+      <tui-select
+        [tuiTextfieldLabelOutside]="true"
+        formControlName="sponsorCategory"
+      >
+        Category
+        <input
+          tuiTextfield
+        />
+        <tui-data-list-wrapper
+          *tuiDataList
+          [items]="catItems"
+        ></tui-data-list-wrapper>
+      </tui-select>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a valid category',
+        control: f['sponsorCategory']
       }">
       </ng-container>
     </div>

@@ -136,6 +136,9 @@ export class SpeakersComponent implements OnDestroy {
       this.f['speakerImg'].setValue(data?.speakerImg)
       this.f['description'].setValue(data?.description)
       this.f['email'].setValue(data?.email);
+      this.f['country'].setValue(data?.country);
+      this.f['city'].setValue(data?.city);
+      this.f['speakerContact'].setValue(data?.speakerContact);
     }
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,
