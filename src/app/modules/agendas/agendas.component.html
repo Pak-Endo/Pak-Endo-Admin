@@ -41,8 +41,17 @@
               <ng-container *ngFor="let agent of agendas.controls; let i = index; let first = first; let last = last">
                 <ng-container *ngIf="agent.get('day')!.value === index || agent.get('day')!.value?.day == day?.day">
                   <div [formGroupName]="i" class="w-full px-4 py-2 mb-12 rounded-md shadow-lg bg-slate-100">
+                    <button
+                      tuiButton
+                      type="button"
+                      size="m"
+                      class="mt-4 bg-[#224C73] text-white flex justify-end"
+                      appearance="custom"
+                      icon="tuiIconPlusLarge"
+                      (click)="addPreliminaries(index)"
+                    >Add Preliminaries</button>
                     <!--THEME-->
-                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="relative mt-3 text-center">
+                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false && agent.get('isPrelim')!.value == false" class="relative mt-3 text-center">
                       <label class="text-lg font-semibold text-center">Agenda Theme</label>
                       <tui-input
                         formControlName="theme"
@@ -113,6 +122,25 @@
                           Please provide a valid title for the agenda
                         </span>
                       </div>
+                      <!--Break Title-->
+                      <div class="col-span-full" *ngIf="agent.get('isLunchBreak')!.value == true && agent.get('isTeaBreak')!.value == false">
+                        <label class="text-base font-semibold">Title</label>
+                        <tui-select
+                          class="mt-[5px]"
+                          formControlName="agendaTitle"
+                          [tuiTextfieldLabelOutside]="true"
+                        >
+                          Choose meal type
+                          <input
+                            placeholder="Choose meal type"
+                            tuiTextfield
+                          />
+                          <tui-data-list-wrapper
+                            *tuiDataList
+                            [items]="['Breakfast', 'Lunch', 'Dinner', 'Gala Dinner', 'Other']"
+                          ></tui-data-list-wrapper>
+                        </tui-select>
+                      </div>
                     </div>
                     <!--Time-->
                     <div class="grid grid-cols-12 gap-3 mt-4">
@@ -157,7 +185,7 @@
                       </span>
                     </div>
                     <!--SPEAKER & SPONSOR-->
-                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="grid grid-cols-12 gap-3 mt-4">
+                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false && agent.get('isPrelim')!.value == false" class="grid grid-cols-12 gap-3 mt-4">
                       <!--Speaker-->
                       <div class="col-span-6">
                         <label class="text-base font-semibold">Speaker</label>
@@ -204,7 +232,7 @@
                       </div>
                     </div>
                     <!--Speaker Designation-->
-                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="mt-4">
+                    <!-- <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="mt-4">
                       <label class="text-base font-semibold">Speaker Designation</label>
                       <tui-input
                         formControlName="speakerDesignation"
@@ -219,39 +247,43 @@
                           autocomplete="new-password"
                         />
                       </tui-input>
-                    </div>
+                    </div> -->
                     <!--Speaker team-->
-                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" formArrayName="speakerTeam">
+                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false && agent.get('isPrelim')!.value == false" formArrayName="speakerTeam">
                       <h3 class="mt-5 mb-3 font-semibold">Add Speaker's team</h3>
                       <ng-container *ngFor="let team of getSpeakerTeam(i).controls; let j = index;">
                         <div [formGroupName]="j">
                           <div class="grid grid-cols-12 gap-2 mx-14">
-                            <tui-input
+                            <tui-select
                               formControlName="name"
-                              tuiTextfieldSize="m"
-                              [tuiTextfieldCleaner]="true"
+                              [tuiTextfieldLabelOutside]="true"
                               class="col-span-6"
                             >
-                              Name
+                              Choose member
                               <input
-                                autocomplete="new-password"
+                                placeholder="Choose member"
                                 tuiTextfield
-                                type="text"
                               />
-                            </tui-input>
-                            <tui-input
+                              <tui-data-list-wrapper
+                                *tuiDataList
+                                [items]="speakers"
+                              ></tui-data-list-wrapper>
+                            </tui-select>
+                            <tui-select
                               formControlName="role"
-                              tuiTextfieldSize="m"
-                              [tuiTextfieldCleaner]="true"
+                              [tuiTextfieldLabelOutside]="true"
                               class="col-span-6"
                             >
-                              Role
+                              Choose role
                               <input
-                                autocomplete="new-password"
+                                placeholder="Choose role"
                                 tuiTextfield
-                                type="text"
                               />
-                            </tui-input>
+                              <tui-data-list-wrapper
+                                *tuiDataList
+                                [items]="['Chairman', 'Co-Chair', 'Secretary', 'Moderator', 'Other']"
+                              ></tui-data-list-wrapper>
+                            </tui-select>
                           </div>
                         </div>
                         <div class="flex justify-end">
@@ -300,7 +332,7 @@
                 appearance="custom"
                 icon="tuiIconPlusLarge"
                 (click)="addLunchBreak(index)"
-              >Add Lunch Break</button>
+              >Add Meal Break</button>
               <button
                 tuiButton
                 type="button"

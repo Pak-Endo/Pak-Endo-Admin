@@ -70,11 +70,12 @@ export class AgendasComponent implements OnDestroy {
           isPmFrom: [false],
           isLunchBreak: [false],
           isTeaBreak: [false],
+          isPrelim: [false],
           isPmTo: [false],
           hall: [null, Validators.required],
           streamUrl: [null],
           speaker: [null, Validators.required],
-          speakerDesignation: [null, Validators.required],
+          // speakerDesignation: [null, Validators.required],
           speakerImg: [null],
           speakerTeam: this.fb.array([
             this.fb.group({
@@ -142,14 +143,15 @@ export class AgendasComponent implements OnDestroy {
                 sponsor: [agenda?.sponsor?.sponsorName || null, Validators.required],
                 isPmFrom: [from[1]?.includes('AM') ? false: true],
                 isPmTo: [to[1]?.includes('AM') ? false: true],
-                isLunchBreak: [!['Lunch Break', 'Tea Break'].includes(agenda.agendaTitle) ? false : true],
+                isLunchBreak: [!['Lunch', 'Breakfast', 'Dinner', 'Gala Dinner', 'Other'].includes(agenda.agendaTitle) ? false : true],
                 isTeaBreak: [!['Lunch Break', 'Tea Break'].includes(agenda.agendaTitle) ? false : true],
+                isPrelim: [agenda?.isPrelim],
                 day: [agenda.day, Validators.required],
                 from: [agenda.from, Validators.required],
                 to: [agenda.to, Validators.required],
                 hall: [agenda.hall, Validators.required],
                 speaker: [agenda.speaker || null],
-                speakerDesignation: [agenda.speakerDesignation || null],
+                // speakerDesignation: [agenda.speakerDesignation || null],
                 streamUrl: [agenda.streamUrl || null],
                 speakerImg: [agenda.speakerImg || null],
                 speakerTeam: this.fb.array(agenda.speakerTeam?.map((team: {name: string, role: string}) => {
@@ -200,11 +202,12 @@ export class AgendasComponent implements OnDestroy {
       isLunchBreak: [false],
       isTeaBreak: [false],
       isPmFrom: [false],
+      isPrelim: [false],
       isPmTo: [false],
       hall: [null, Validators.required],
       streamUrl: [null],
       speaker: [null, Validators.required],
-      speakerDesignation: [null, Validators.required],
+      // speakerDesignation: [null, Validators.required],
       speakerTeam: this.fb.array([
         this.fb.group({
           name: [null],
@@ -221,13 +224,14 @@ export class AgendasComponent implements OnDestroy {
       _id: [undefined],
       theme: [null],
       sponsor: [null],
-      agendaTitle: ['Lunch Break'],
+      agendaTitle: ['Lunch'],
       day: [day],
       from: [null],
       to: [null],
-      speakerDesignation: [null],
+      // speakerDesignation: [null],
       isLunchBreak: [true],
       isTeaBreak: [false],
+      isPrelim: [false],
       isPmFrom: [false],
       isPmTo: [false],
       hall: [null],
@@ -239,6 +243,30 @@ export class AgendasComponent implements OnDestroy {
     this.agendas.push(agendaForm)
   }
 
+  addPreliminaries(day: number) {
+    const agendaForm = this.fb.group({
+      _id: [undefined],
+      theme: [null],
+      sponsor: [null],
+      agendaTitle: [null],
+      day: [day],
+      from: [null],
+      to: [null],
+      // speakerDesignation: [null],
+      isLunchBreak: [false],
+      isTeaBreak: [false],
+      isPrelim: [true],
+      isPmFrom: [false],
+      isPmTo: [false],
+      hall: [null],
+      streamUrl: [null],
+      speaker: [null],
+      speakerTeam: [[]],
+      attachments: [[]]
+    })
+    this.agendas.insert(0, agendaForm)
+  }
+
   addTeaBreak(day: number) {
     const agendaForm = this.fb.group({
       _id: [undefined],
@@ -248,7 +276,7 @@ export class AgendasComponent implements OnDestroy {
       day: [day],
       from: [null],
       to: [null],
-      speakerDesignation: [null],
+      // speakerDesignation: [null],
       isLunchBreak: [false],
       isTeaBreak: [true],
       isPmFrom: [false],
@@ -379,12 +407,10 @@ export class AgendasComponent implements OnDestroy {
       if(data?.speakerTeam[0]?.name == "" || data?.speakerTeam[0]?.name == null) {
         data.speakerTeam = []
       }
-
-      if(!data?.theme && data?.isLunchBreak == false && data?.isTeaBreak == false) {
-
+      if(!data?.theme && data?.isLunchBreak == false && data?.isTeaBreak == false && data?.isPrelim == false) {
         data.theme = this.agendas.at(0)?.get('theme')?.value
       }
-      if(data?.isLunchBreak == true || data?.isTeaBreak == true) {
+      if(data?.isLunchBreak == true || data?.isTeaBreak == true || data?.isPrelim == true) {
         data.theme = null
       }
       if(typeof data.day == 'number') {
@@ -407,6 +433,7 @@ export class AgendasComponent implements OnDestroy {
       delete data?.isTeaBreak;
       return Object.assign(data, {day: day})
     })
+    console.log(agendasWithDays)
     this.eventService.updateEvent({agenda: agendasWithDays}, this.eventID).pipe(takeUntil(this.destroy)).subscribe(val => {
       if(val) {
         this.saving.next(false)
