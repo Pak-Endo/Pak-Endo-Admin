@@ -88,14 +88,7 @@ export class EventsComponent implements OnDestroy {
       })
     });
     this.pageService.getAllSponsors(1000, 1).pipe(takeUntil(this.destroy$)).subscribe(value => {
-      this.sponsors = value?.data?.data?.map((sponsors: any) => {
-        return {
-          id: sponsors._id,
-          name: sponsors.sponsorName,
-          logo: sponsors.sponsorLogo,
-          contact: sponsors.contact
-        }
-      });
+      this.sponsors = value?.data?.data;
       this.sponsorsForDisplay = value?.data?.data?.map((val: any) => val.sponsorName)
     })
     let day = new Date().getDate()
@@ -144,7 +137,9 @@ export class EventsComponent implements OnDestroy {
           feeType: new FormControl(null, Validators.required),
           feeValue: new FormControl(null, Validators.required)
         })
-      ])
+      ]),
+      contactPerson: new FormControl(null, Validators.required),
+      contactNumber: new FormControl(null, Validators.required),
     })
   }
 
@@ -210,7 +205,6 @@ export class EventsComponent implements OnDestroy {
     if(this.searchValue?.value) {
       payload = {...payload, title: this.searchValue?.value }
     }
-    debugger
     this.events$ = this.eventService.getAllEvents(this.limit, this.page, payload);
   }
 
@@ -244,6 +238,8 @@ export class EventsComponent implements OnDestroy {
         this.fees.push(feeForm)
       })
       this.f['description'].setValue(data?.description)
+      this.f['contactPerson'].setValue(data?.contactPerson)
+      this.f['contactNumber'].setValue(data?.contactNumber)
       this.f['featuredImage'].setValue(data?.featuredImage)
       this.f['type'].setValue(data?.type)
       this.f['location'].setValue(data?.location?.name)

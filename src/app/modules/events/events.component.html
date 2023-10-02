@@ -435,6 +435,44 @@
         </ng-container>
     </div>
 
+    <!--Contact-->
+    <div class="my-3">
+      <label class="text-base font-semibold">Contact Number</label>
+      <tui-input-number formControlName="contactNumber" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+        e.g. +923333333333
+        <input
+          tuiTextfield
+          autocomplete="new-password"
+        />
+      </tui-input-number>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a contact number for fee payments',
+        control: f['contactNumber']
+      }">
+      </ng-container>
+
+    </div>
+
+    <!--Contact Person-->
+    <div class="my-3">
+      <label class="text-base font-semibold">Contact Person</label>
+      <tui-input formControlName="contactPerson" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
+        e.g. Mehmood Khan
+        <input
+          tuiTextfield
+          autocomplete="new-password"
+        />
+      </tui-input>
+      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+        validation: 'required',
+        message: 'Please provide a person to contact',
+        control: f['contactPerson']
+      }">
+      </ng-container>
+
+    </div>
+
     <!--Public Open?-->
     <div class="mt-5">
       <tui-checkbox-labeled
