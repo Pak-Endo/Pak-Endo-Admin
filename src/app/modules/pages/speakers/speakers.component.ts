@@ -41,15 +41,14 @@ export class SpeakersComponent implements OnDestroy {
   destroy$ = new Subject();
   speakerForm = new FormGroup({
     speakerName: new FormControl<string | null | undefined>(null, Validators.required),
-    speakerImg: new FormControl(null, Validators.required),
+    speakerImg: new FormControl(null, ),
     email: new FormControl(null, Validators.compose([
-      Validators.required,
       Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
     ])),
-    speakerContact: new FormControl(null, Validators.required),
-    country: new FormControl(null, Validators.required),
-    city: new FormControl(null, Validators.required),
-    description: new FormControl(null, Validators.required),
+    speakerContact: new FormControl(null),
+    country: new FormControl(null),
+    city: new FormControl(null),
+    description: new FormControl(null),
   })
   readonly countries: readonly TuiCountryIsoCode[] = [
     TuiCountryIsoCode.PK,
@@ -133,12 +132,12 @@ export class SpeakersComponent implements OnDestroy {
     if(data) {
       this.speakerID = data?._id;
       this.f['speakerName'].setValue(data?.speakerName)
-      this.f['speakerImg'].setValue(data?.speakerImg)
-      this.f['description'].setValue(data?.description)
-      this.f['email'].setValue(data?.email);
-      this.f['country'].setValue(data?.country);
-      this.f['city'].setValue(data?.city);
-      this.f['speakerContact'].setValue(data?.speakerContact);
+      this.f['speakerImg'].setValue(data?.speakerImg || null)
+      this.f['description'].setValue(data?.description || null)
+      this.f['email'].setValue(data?.email || null);
+      this.f['country'].setValue(data?.country || null);
+      this.f['city'].setValue(data?.city || null);
+      this.f['speakerContact'].setValue(data?.speakerContact || null);
     }
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,

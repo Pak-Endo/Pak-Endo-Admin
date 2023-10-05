@@ -42,15 +42,14 @@ export class SponsorsComponent implements OnDestroy {
   readonly loadingFiles$ = new Subject<boolean>();
   sponsorForm = new FormGroup({
     sponsorName: new FormControl<string | null | undefined>(null, Validators.required),
-    sponsorLogo: new FormControl(null, Validators.required),
-    contact: new FormControl(null, Validators.required),
-    description: new FormControl(null, Validators.required),
+    sponsorLogo: new FormControl(null),
+    contact: new FormControl(null),
+    description: new FormControl(null),
     sponsorEmail: new FormControl(null, Validators.compose([
-      Validators.required,
       Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
     ])),
-    sponsorCategory: new FormControl(null, Validators.required),
-    contactPerson: new FormControl(null, Validators.required),
+    sponsorCategory: new FormControl(null),
+    contactPerson: new FormControl(null),
   });
   readonly countries: readonly TuiCountryIsoCode[] = [
     TuiCountryIsoCode.PK,
@@ -129,13 +128,13 @@ export class SponsorsComponent implements OnDestroy {
   showAddorEditDialog(content: PolymorpheusContent<TuiDialogContext>, data?: any): void {
     if(data) {
       this.sponsorID = data?._id;
-      this.f['sponsorName'].setValue(data?.sponsorName)
-      this.f['sponsorLogo'].setValue(data?.sponsorLogo)
-      this.f['description'].setValue(data?.description)
-      this.f['contact'].setValue(data?.contact);
-      this.f['contactPerson'].setValue(data?.contactPerson);
-      this.f['sponsorEmail'].setValue(data?.sponsorEmail);
-      this.f['sponsorCategory'].setValue(data?.sponsorCategory);
+      this.f['sponsorName'].setValue(data?.sponsorName || null)
+      this.f['sponsorLogo'].setValue(data?.sponsorLogo || null)
+      this.f['description'].setValue(data?.description || null)
+      this.f['contact'].setValue(data?.contact || null);
+      this.f['contactPerson'].setValue(data?.contactPerson || null);
+      this.f['sponsorEmail'].setValue(data?.sponsorEmail || null);
+      this.f['sponsorCategory'].setValue(data?.sponsorCategory || null);
     }
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,

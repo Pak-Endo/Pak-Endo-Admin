@@ -39,8 +39,8 @@ export class VenuesComponent implements OnDestroy {
   readonly loadingFiles$ = new Subject<boolean>();
   venueForm = new FormGroup({
     venueName: new FormControl<string | null | undefined>(null, Validators.required),
-    city: new FormControl(null, Validators.required),
-    halls: new FormControl([], Validators.required)
+    city: new FormControl(null),
+    halls: new FormControl([])
   });
   constructor(
     private pageService: PagesService,
@@ -111,8 +111,8 @@ export class VenuesComponent implements OnDestroy {
     if(data) {
       this.venueID = data?._id;
       this.f['venueName'].setValue(data?.venueName)
-      this.f['halls'].setValue(data?.halls)
-      this.f['city'].setValue(data?.city)
+      this.f['halls'].setValue(data?.halls || [])
+      this.f['city'].setValue(data?.city || null)
     }
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: false,
