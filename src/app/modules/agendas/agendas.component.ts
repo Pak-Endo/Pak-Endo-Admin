@@ -8,7 +8,7 @@ import { TuiButtonModule, TuiDataListModule, TuiDialogService, TuiLoaderModule, 
 import { PagesService } from '../pages/pages.service';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
 import { TuiDay, TuiTime } from '@taiga-ui/cdk';
-import { TuiAccordionModule, TuiDataListWrapperModule, TuiInputModule, TuiInputTimeModule, TuiSelectModule, TuiToggleModule, tuiInputTimeOptionsProvider } from '@taiga-ui/kit';
+import { TuiAccordionModule, TuiComboBoxModule, TuiDataListWrapperModule, TuiFilterByInputPipeModule, TuiInputModule, TuiInputTimeModule, TuiSelectModule, TuiToggleModule, tuiInputTimeOptionsProvider } from '@taiga-ui/kit';
 import { ReactiveFormsModule, FormsModule, FormBuilder, Validators, FormArray } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router';
 
@@ -30,7 +30,9 @@ import { Router, RouterModule } from '@angular/router';
     TuiInputTimeModule,
     TuiToggleModule,
     TuiDataListModule,
-    RouterModule
+    RouterModule,
+    TuiComboBoxModule,
+    TuiFilterByInputPipeModule
   ],
   templateUrl: './agendas.component.html',
   styleUrls: ['./agendas.component.scss'],
