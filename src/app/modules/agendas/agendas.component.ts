@@ -37,7 +37,7 @@ import { Router, RouterModule } from '@angular/router';
   providers: [
     tuiInputTimeOptionsProvider({
       mode: 'HH:MM',
-      maxValues: {HH: 12, MM: 0, SS: 0, MS: 0}
+      maxValues: {HH: 12, MM: 59, SS: 59, MS: 999},
     }),
   ],
 })
