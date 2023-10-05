@@ -62,7 +62,7 @@ export class AgendasComponent implements OnDestroy {
         this.fb.group({
           _id: [undefined],
           theme: [{value: null, disabled: false}, Validators.required],
-          sponsor: [null, Validators.required],
+          sponsor: [null],
           agendaTitle: [null, Validators.required],
           day: [0, Validators.required],
           from: [null, Validators.required],
@@ -74,7 +74,7 @@ export class AgendasComponent implements OnDestroy {
           isPmTo: [false],
           hall: [null, Validators.required],
           streamUrl: [null],
-          speaker: [null, Validators.required],
+          speaker: [null],
           // speakerDesignation: [null, Validators.required],
           speakerImg: [null],
           speakerTeam: this.fb.array([
@@ -140,7 +140,7 @@ export class AgendasComponent implements OnDestroy {
                 _id: [agenda._id],
                 theme: [agenda.theme || null, Validators.required],
                 agendaTitle: [agenda.agendaTitle || null, Validators.required],
-                sponsor: [agenda?.sponsor?.sponsorName || null, Validators.required],
+                sponsor: [agenda?.sponsor?.sponsorName || null],
                 isPmFrom: [from[1]?.includes('AM') ? false: true],
                 isPmTo: [to[1]?.includes('AM') ? false: true],
                 isLunchBreak: [!['Lunch', 'Breakfast', 'Dinner', 'Gala Dinner', 'Other'].includes(agenda.agendaTitle) ? false : true],
@@ -194,7 +194,7 @@ export class AgendasComponent implements OnDestroy {
     const agendaForm = this.fb.group({
       _id: [undefined],
       theme: [{value: this.agendas.at(0)?.get('theme')?.value, disabled: true}, Validators.required],
-      sponsor: [null, Validators.required],
+      sponsor: [null],
       agendaTitle: [null, Validators.required],
       day: [day, Validators.required],
       from: [null, Validators.required],
@@ -206,7 +206,7 @@ export class AgendasComponent implements OnDestroy {
       isPmTo: [false],
       hall: [null, Validators.required],
       streamUrl: [null],
-      speaker: [null, Validators.required],
+      speaker: [null],
       // speakerDesignation: [null, Validators.required],
       speakerTeam: this.fb.array([
         this.fb.group({
