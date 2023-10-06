@@ -193,9 +193,11 @@ export class AgendasComponent implements OnDestroy {
   }
 
   addAgenda(day: number) {
+    console.log(this.agendas.length - 1)
+    console.log(this.agendas.at(this.agendas.length - 1)?.get('theme')?.value)
     const agendaForm = this.fb.group({
       _id: [undefined],
-      theme: [{value: this.agendas.at(0)?.get('theme')?.value, disabled: true}, Validators.required],
+      theme: [{value: this.agendas.at(this.agendas.length - 1)?.get('theme')?.value, disabled: true}, Validators.required],
       sponsor: [null],
       agendaTitle: [null, Validators.required],
       day: [day, Validators.required],
@@ -266,7 +268,7 @@ export class AgendasComponent implements OnDestroy {
       speakerTeam: [[]],
       attachments: [[]]
     })
-    this.agendas.insert(0, agendaForm)
+    this.agendas.insert(day, agendaForm)
   }
 
   addTeaBreak(day: number) {
@@ -435,11 +437,13 @@ export class AgendasComponent implements OnDestroy {
       delete data?.isTeaBreak;
       return Object.assign(data, {day: day})
     })
-    console.log(agendasWithDays)
     this.eventService.updateEvent({agenda: agendasWithDays}, this.eventID).pipe(takeUntil(this.destroy)).subscribe(val => {
       if(val) {
         this.saving.next(false)
         this.router.navigate(['/events'])
+      }
+      else {
+        this.saving.next(false)
       }
     })
   }
