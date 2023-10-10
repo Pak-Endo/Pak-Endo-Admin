@@ -137,7 +137,7 @@
                           />
                           <tui-data-list-wrapper
                             *tuiDataList
-                            [items]="['Breakfast', 'Lunch', 'Dinner', 'Gala Dinner', 'Other']"
+                            [items]="['Breakfast', 'Lunch', 'Dinner', 'Gala Dinner', 'Luncheon', 'Other']"
                           ></tui-data-list-wrapper>
                         </tui-select>
                       </div>
@@ -189,21 +189,12 @@
                       <!--Speaker-->
                       <div class="col-span-6">
                         <label class="text-base font-semibold">Speaker</label>
-                          <tui-select
-                            class="mt-[5px]"
-                            formControlName="speaker"
-                            [tuiTextfieldLabelOutside]="true"
-                          >
-                            Choose speaker
-                            <input
-                              placeholder="Choose speaker"
-                              tuiTextfield
-                            />
-                            <tui-data-list-wrapper
-                              *tuiDataList
-                              [items]="speakers"
-                            ></tui-data-list-wrapper>
-                          </tui-select>
+                        <tui-combo-box formControlName="speaker" class="mt-[5px]" [tuiTextfieldLabelOutside]="true">
+                          <tui-data-list-wrapper
+                            *tuiDataList
+                            [items]="speakers | tuiFilterByInput"
+                          ></tui-data-list-wrapper>
+                        </tui-combo-box>
                         <span *ngIf="(agent.get('speaker')!.invalid && agent.get('speaker')!.touched)" class="text-xs text-red-500">
                           Please provide a speaker for this event
                         </span>
@@ -211,21 +202,16 @@
                       <!--Sponsor-->
                       <div class="col-span-6">
                         <label class="text-base font-semibold">Sponsor</label>
-                          <tui-select
+                          <tui-combo-box
                             class="mt-[5px]"
                             formControlName="sponsor"
                             [tuiTextfieldLabelOutside]="true"
                           >
-                            Choose sponsor
-                            <input
-                              placeholder="Choose sponsor"
-                              tuiTextfield
-                            />
                             <tui-data-list-wrapper
                               *tuiDataList
-                              [items]="sponsors"
+                              [items]="sponsors | tuiFilterByInput"
                             ></tui-data-list-wrapper>
-                          </tui-select>
+                          </tui-combo-box>
                         <span *ngIf="(agent.get('sponsor')!.invalid && agent.get('sponsor')!.touched)" class="text-xs text-red-500">
                           Please provide a sponsor for this agenda
                         </span>
@@ -254,21 +240,16 @@
                       <ng-container *ngFor="let team of getSpeakerTeam(i).controls; let j = index;">
                         <div [formGroupName]="j">
                           <div class="grid grid-cols-12 gap-2 mx-14">
-                            <tui-select
+                            <tui-combo-box
                               formControlName="name"
                               [tuiTextfieldLabelOutside]="true"
                               class="col-span-6"
                             >
-                              Choose member
-                              <input
-                                placeholder="Choose member"
-                                tuiTextfield
-                              />
                               <tui-data-list-wrapper
                                 *tuiDataList
-                                [items]="speakers"
+                                [items]="speakers | tuiFilterByInput"
                               ></tui-data-list-wrapper>
-                            </tui-select>
+                            </tui-combo-box>
                             <tui-select
                               formControlName="role"
                               [tuiTextfieldLabelOutside]="true"
@@ -281,7 +262,7 @@
                               />
                               <tui-data-list-wrapper
                                 *tuiDataList
-                                [items]="['Chairman', 'Co-Chair', 'Secretary', 'Moderator', 'Other']"
+                                [items]="['Chairman', 'Chair person', 'Co-Chair', 'Secretary', 'Moderator', 'Facilitator', 'Expert', 'Other']"
                               ></tui-data-list-wrapper>
                             </tui-select>
                           </div>
@@ -300,7 +281,7 @@
                     </div>
 
                     <!--Delete agenda btn-->
-                    <div class="flex justify-end mt-2" *ngIf="i > 0">
+                    <div class="flex justify-end mt-2">
                       <button
                         tuiIconButton
                         type="button"

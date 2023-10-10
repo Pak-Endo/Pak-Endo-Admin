@@ -128,18 +128,18 @@ export class EventsComponent implements OnDestroy {
       ),
       location: new FormControl(null, Validators.required),
       openForPublic: new FormControl(true),
-      featuredImage: new FormControl(null, Validators.required),
+      featuredImage: new FormControl(null),
       gallery: new FormControl(undefined),
       type: new FormControl(null, Validators.required),
-      grandSponsor: new FormControl([], Validators.required),
+      grandSponsor: new FormControl([]),
       fees: new FormArray([
         new FormGroup({
-          feeType: new FormControl(null, Validators.required),
-          feeValue: new FormControl(null, Validators.required)
+          feeType: new FormControl(null),
+          feeValue: new FormControl(null)
         })
       ]),
-      contactPerson: new FormControl(null, Validators.required),
-      contactNumber: new FormControl(null, Validators.required),
+      contactPerson: new FormControl(null),
+      contactNumber: new FormControl(null),
     })
   }
 
@@ -169,8 +169,8 @@ export class EventsComponent implements OnDestroy {
 
   addFees() {
     const fee = this.fb.group({
-      feeType: [null, Validators.required],
-      feeValue: [null, Validators.required]
+      feeType: [null],
+      feeValue: [null]
     })
     this.fees.push(fee)
   }
@@ -244,7 +244,7 @@ export class EventsComponent implements OnDestroy {
       this.f['type'].setValue(data?.type)
       this.f['location'].setValue(data?.location?.name)
       this.venueValue = data?.location?.id;
-      this.f['grandSponsor'].setValue(data?.grandSponsor?.map((val: any) => val.name));
+      this.f['grandSponsor'].setValue(data?.grandSponsor?.map((val: any) => val.name) || []);
       this.f['openForPublic']?.setValue(data?.openForPublic || true)
       this.multipleImages = data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : []
       this.f['gallery'].setValue(data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : undefined);

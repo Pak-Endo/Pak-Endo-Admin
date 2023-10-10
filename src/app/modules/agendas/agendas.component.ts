@@ -8,7 +8,7 @@ import { TuiButtonModule, TuiDataListModule, TuiDialogService, TuiLoaderModule, 
 import { PagesService } from '../pages/pages.service';
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
 import { TuiDay, TuiTime } from '@taiga-ui/cdk';
-import { TuiAccordionModule, TuiDataListWrapperModule, TuiInputModule, TuiInputTimeModule, TuiSelectModule, TuiToggleModule, tuiInputTimeOptionsProvider } from '@taiga-ui/kit';
+import { TuiAccordionModule, TuiComboBoxModule, TuiDataListWrapperModule, TuiFilterByInputPipeModule, TuiInputModule, TuiInputTimeModule, TuiSelectModule, TuiToggleModule, tuiInputTimeOptionsProvider } from '@taiga-ui/kit';
 import { ReactiveFormsModule, FormsModule, FormBuilder, Validators, FormArray } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router';
 
@@ -30,14 +30,16 @@ import { Router, RouterModule } from '@angular/router';
     TuiInputTimeModule,
     TuiToggleModule,
     TuiDataListModule,
-    RouterModule
+    RouterModule,
+    TuiComboBoxModule,
+    TuiFilterByInputPipeModule
   ],
   templateUrl: './agendas.component.html',
   styleUrls: ['./agendas.component.scss'],
   providers: [
     tuiInputTimeOptionsProvider({
       mode: 'HH:MM',
-      maxValues: {HH: 11, MM: 59, SS: 59, MS: 999}
+      maxValues: {HH: 12, MM: 59, SS: 59, MS: 999},
     }),
   ],
 })
@@ -62,7 +64,7 @@ export class AgendasComponent implements OnDestroy {
         this.fb.group({
           _id: [undefined],
           theme: [{value: null, disabled: false}, Validators.required],
-          sponsor: [null, Validators.required],
+          sponsor: [null],
           agendaTitle: [null, Validators.required],
           day: [0, Validators.required],
           from: [null, Validators.required],
@@ -74,7 +76,7 @@ export class AgendasComponent implements OnDestroy {
           isPmTo: [false],
           hall: [null, Validators.required],
           streamUrl: [null],
-          speaker: [null, Validators.required],
+          speaker: [null],
           // speakerDesignation: [null, Validators.required],
           speakerImg: [null],
           speakerTeam: this.fb.array([
@@ -140,7 +142,7 @@ export class AgendasComponent implements OnDestroy {
                 _id: [agenda._id],
                 theme: [agenda.theme || null, Validators.required],
                 agendaTitle: [agenda.agendaTitle || null, Validators.required],
-                sponsor: [agenda?.sponsor?.sponsorName || null, Validators.required],
+                sponsor: [agenda?.sponsor?.sponsorName || null],
                 isPmFrom: [from[1]?.includes('AM') ? false: true],
                 isPmTo: [to[1]?.includes('AM') ? false: true],
                 isLunchBreak: [!['Lunch', 'Breakfast', 'Dinner', 'Gala Dinner', 'Other'].includes(agenda.agendaTitle) ? false : true],
@@ -191,10 +193,12 @@ export class AgendasComponent implements OnDestroy {
   }
 
   addAgenda(day: number) {
+    console.log(this.agendas.length - 1)
+    console.log(this.agendas.at(this.agendas.length - 1)?.get('theme')?.value)
     const agendaForm = this.fb.group({
       _id: [undefined],
-      theme: [{value: this.agendas.at(0)?.get('theme')?.value, disabled: true}, Validators.required],
-      sponsor: [null, Validators.required],
+      theme: [{value: this.agendas.at(this.agendas.length - 1)?.get('theme')?.value, disabled: true}, Validators.required],
+      sponsor: [null],
       agendaTitle: [null, Validators.required],
       day: [day, Validators.required],
       from: [null, Validators.required],
@@ -206,7 +210,7 @@ export class AgendasComponent implements OnDestroy {
       isPmTo: [false],
       hall: [null, Validators.required],
       streamUrl: [null],
-      speaker: [null, Validators.required],
+      speaker: [null],
       // speakerDesignation: [null, Validators.required],
       speakerTeam: this.fb.array([
         this.fb.group({
@@ -264,7 +268,7 @@ export class AgendasComponent implements OnDestroy {
       speakerTeam: [[]],
       attachments: [[]]
     })
-    this.agendas.insert(0, agendaForm)
+    this.agendas.insert(day, agendaForm)
   }
 
   addTeaBreak(day: number) {
@@ -433,11 +437,13 @@ export class AgendasComponent implements OnDestroy {
       delete data?.isTeaBreak;
       return Object.assign(data, {day: day})
     })
-    console.log(agendasWithDays)
     this.eventService.updateEvent({agenda: agendasWithDays}, this.eventID).pipe(takeUntil(this.destroy)).subscribe(val => {
       if(val) {
         this.saving.next(false)
         this.router.navigate(['/events'])
+      }
+      else {
+        this.saving.next(false)
       }
     })
   }

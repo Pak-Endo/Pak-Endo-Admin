@@ -33,7 +33,7 @@
       </div>
     </ng-template>
   </gui-grid-column>
-  <gui-grid-column header="Name" field="speakerName">
+  <gui-grid-column header="Name" field="speakerName" [width]="230">
     <ng-template let-value="value" let-item="item">
       {{item?.speakerName}}
     </ng-template>
