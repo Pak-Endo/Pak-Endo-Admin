@@ -12,6 +12,7 @@ import { TuiButtonModule } from '@taiga-ui/core/components';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'
 import { TuiInputModule, TuiInputPhoneInternationalModule, TuiMarkerIconModule, TuiTextAreaModule, TuiInputTagModule, TuiDataListWrapperModule, TuiSelectModule } from '@taiga-ui/kit';
 import { TuiTextfieldControllerModule } from '@taiga-ui/core';
+import { UppercaseDirective } from 'src/app/directives/uppercase.directive';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { TuiTextfieldControllerModule } from '@taiga-ui/core';
     TuiInputPhoneInternationalModule,
     TuiInputTagModule,
     TuiDataListWrapperModule,
-    TuiSelectModule
+    TuiSelectModule,
+    UppercaseDirective
   ]
 })
 export class PagesModule { }

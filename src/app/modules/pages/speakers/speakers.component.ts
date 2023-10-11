@@ -58,7 +58,12 @@ export class SpeakersComponent implements OnDestroy {
     TuiCountryIsoCode.AU,
     TuiCountryIsoCode.IT,
     TuiCountryIsoCode.SA,
-    TuiCountryIsoCode.CA
+    TuiCountryIsoCode.CA,
+    TuiCountryIsoCode.JP,
+    TuiCountryIsoCode.CN,
+    TuiCountryIsoCode.CO,
+    TuiCountryIsoCode.BR,
+    TuiCountryIsoCode.AR,
   ];
   countryIsoCode = TuiCountryIsoCode.PK;
 
