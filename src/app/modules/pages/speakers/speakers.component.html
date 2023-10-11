@@ -60,7 +60,7 @@
       {{item?.city}}
     </ng-template>
   </gui-grid-column>
-  <gui-grid-column header="Contact" field="speakerContact">
+  <gui-grid-column header="Contact" field="speakerContact" [width]="160">
     <ng-template let-value="value" let-item="item">
       {{item?.speakerContact}}
     </ng-template>
@@ -191,6 +191,7 @@
         formControlName="country"
         [tuiTextfieldLabelOutside]="true"
         [tuiTextfieldCleaner]="true"
+        appUppercase
         class="mt-1"
       >
         Country
@@ -214,6 +215,7 @@
         formControlName="city"
         [tuiTextfieldLabelOutside]="true"
         [tuiTextfieldCleaner]="true"
+        appUppercase
         class="mt-1"
       >
         City

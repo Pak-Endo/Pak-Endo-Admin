@@ -52,7 +52,7 @@
                     >Add Preliminaries</button>
                     <!--THEME-->
                     <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false && agent.get('isPrelim')!.value == false" class="relative mt-3 text-center">
-                      <label class="text-lg font-semibold text-center">Agenda Theme</label>
+                      <label class="text-lg font-semibold text-center">Agenda Theme <sup class="text-red-500">*</sup></label>
                       <tui-input
                         formControlName="theme"
                         [tuiTextfieldLabelOutside]="true"
@@ -87,7 +87,7 @@
                     <div class="grid grid-cols-12 gap-3 mt-10">
                        <!--Hall-->
                       <div class="col-span-6" [ngClass]="(agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false) ? 'col-span-6' : 'col-span-full'">
-                        <label class="text-base font-semibold">Hall</label>
+                        <label class="text-base font-semibold">Hall <sup class="text-red-500">*</sup></label>
                         <tui-select
                           class="mt-[5px]"
                           formControlName="hall"
@@ -109,7 +109,7 @@
                       </div>
                       <!--Agenda title-->
                       <div class="col-span-6" *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false">
-                        <label class="text-base font-semibold">Topic</label>
+                        <label class="text-base font-semibold">Topic <sup class="text-red-500">*</sup></label>
                         <tui-input formControlName="agendaTitle" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1">
                           e.g. Adrenal Health and Disease.
                           <input
@@ -145,7 +145,7 @@
                     <!--Time-->
                     <div class="grid grid-cols-12 gap-3 mt-4">
                       <div class="col-span-6">
-                        <label class="text-base font-semibold">Start time</label>
+                        <label class="text-base font-semibold">Start time <sup class="text-red-500">*</sup></label>
                         <tui-input-time
                           formControlName="from"
                           [tuiTextfieldLabelOutside]="true"
@@ -163,7 +163,7 @@
                         <span class="ml-2 text-gray-500 text-xxs">Toggle to switch between AM and PM</span>
                       </div>
                       <div class="col-span-6">
-                        <label class="text-base font-semibold">End time</label>
+                        <label class="text-base font-semibold">End time <sup class="text-red-500">*</sup></label>
                         <tui-input-time
                           formControlName="to"
                           [tuiTextfieldLabelOutside]="true"
@@ -217,23 +217,34 @@
                         </span>
                       </div>
                     </div>
-                    <!--Speaker Designation-->
-                    <!-- <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="mt-4">
-                      <label class="text-base font-semibold">Speaker Designation</label>
-                      <tui-input
-                        formControlName="speakerDesignation"
-                        [tuiTextfieldLabelOutside]="true"
-                        [tuiTextfieldCleaner]="true"
-                        class="mt-1"
-                      >
-                        Chairman
-                        <input
-                          tuiTextfield
-                          type="text"
-                          autocomplete="new-password"
-                        />
-                      </tui-input>
-                    </div> -->
+                    <!--Mdoerator and Stream-->
+                    <div class="grid grid-cols-12 gap-3 mt-4">
+                      <div class="col-span-6">
+                        <label class="text-base font-semibold">Moderator</label>
+                        <tui-input formControlName="moderator" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" appUppercase>
+                          Moderator name
+                          <input
+                            tuiTextfield
+                            appUppercase
+                            type="text"
+                            autocomplete="new-password"
+                          />
+                        </tui-input>
+                      </div>
+                      <div class="col-span-6">
+                        <label class="text-base font-semibold">Stream URL</label>
+                        <tui-input formControlName="streamUrl" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1">
+                          <input
+                            tuiTextfield
+                            type="text"
+                            autocomplete="new-password"
+                          />
+                        </tui-input>
+                      </div>
+                      <span *ngIf="(agent.get('from')!.invalid && agent.get('from')!.touched) || (agent.get('to')!.invalid && agent.get('to')!.touched)" class="col-span-12 text-xs text-red-500">
+                        Please provide a valid timeline
+                      </span>
+                    </div>
                     <!--Speaker team-->
                     <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false && agent.get('isPrelim')!.value == false" formArrayName="speakerTeam">
                       <h3 class="mt-5 mb-3 font-semibold">Add Speaker's team</h3>
