@@ -403,6 +403,7 @@ export class EventsComponent implements OnDestroy {
     this.eventID = null;
     this.dialogSubs.forEach(val => val.unsubscribe());
     this.eventForm.reset();
+    this.pdfFile = null;
     this.activeIndex = 0;
     this.eventID = null;
   }
