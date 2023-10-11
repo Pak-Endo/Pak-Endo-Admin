@@ -84,7 +84,7 @@
           <ng-template #showEvents>
             <ng-container *ngFor="let event of data?.events; let i = index; let first = first; let last = last; trackBy: trackByFn">
               <tr class="text-gray-600 bg-white border-b border-gray-300">
-                <td class="py-4 pl-4 max-w-48">
+                <td class="py-4 pl-4 max-w-60">
                   <div class="flex items-center gap-2">
                     <img [src]="event?.featuredImage" alt="featured" class="w-12 h-12 rounded-md">
                     <span>{{event?.title}}</span>
@@ -181,7 +181,7 @@
         tuiButton
         size="s"
         appearance="custom"
-        class="bg-green-400 text-white px-2"
+        class="px-2 text-white bg-green-400"
         (click)="showPDF(actions)"
       >
         Preview PDF
@@ -211,7 +211,7 @@
         tuiButton
         size="s"
         appearance="custom"
-        class="bg-green-400 text-white px-2"
+        class="px-2 text-white bg-green-400"
         (click)="showPDF(actions)"
       >
         Preview PDF
