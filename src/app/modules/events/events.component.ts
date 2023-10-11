@@ -9,9 +9,10 @@ import { MediaUploadService } from 'src/@core/core-service/media-upload.service'
 import { ApiResponse } from 'src/@core/models/core-response-model/response.model';
 import { TuiContextWithImplicit, TuiDay, TuiDayRange, TuiStringHandler, TuiTime, tuiPure } from '@taiga-ui/cdk';
 import {TuiCountryIsoCode} from '@taiga-ui/i18n';
-import {tuiInputTimeOptionsProvider} from '@taiga-ui/kit';
+import {TuiPdfViewerOptions, TuiPdfViewerService, tuiInputTimeOptionsProvider} from '@taiga-ui/kit';
 import { PagesService } from '../pages/pages.service';
 import { Router } from '@angular/router';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-events',
@@ -36,6 +37,7 @@ export class EventsComponent implements OnDestroy {
   eventForm!: FormGroup;
   filterForm!: FormGroup;
   readonly loadingFiles$ = new Subject<boolean>();
+  readonly loadingPDF$ = new Subject<boolean>();
   multipleImages: any[] = [];
   attachments: any[] = [];
   uploadingMultiple = new Subject<boolean>();
@@ -69,6 +71,7 @@ export class EventsComponent implements OnDestroy {
   sponsorsForDisplay: any[] = [];
   venueValue: any;
   sponsorValue: any;
+  pdfFile: any;
 
   constructor(
     private eventService: EventsService,
@@ -76,7 +79,9 @@ export class EventsComponent implements OnDestroy {
     private fb: FormBuilder,
     public media: MediaUploadService,
     private pageService: PagesService,
-    private router: Router
+    private router: Router,
+    @Inject(TuiPdfViewerService) private readonly pdfService: TuiPdfViewerService,
+    @Inject(DomSanitizer) private readonly sanitizer: DomSanitizer,
   ) {
     this.initFilterForm();
     this.pageService.getAllVenues(1000, 1).pipe(takeUntil(this.destroy$)).subscribe(value => {
@@ -127,6 +132,7 @@ export class EventsComponent implements OnDestroy {
         Validators.required
       ),
       location: new FormControl(null, Validators.required),
+      eventPdf: new FormControl(null),
       openForPublic: new FormControl(true),
       featuredImage: new FormControl(null),
       gallery: new FormControl(undefined),
@@ -241,6 +247,8 @@ export class EventsComponent implements OnDestroy {
       this.f['contactPerson'].setValue(data?.contactPerson)
       this.f['contactNumber'].setValue(data?.contactNumber)
       this.f['featuredImage'].setValue(data?.featuredImage)
+      this.f['eventPdf'].setValue(data?.eventPdf);
+      this.pdfFile = data?.eventPdf;
       this.f['type'].setValue(data?.type)
       this.f['location'].setValue(data?.location?.name)
       this.venueValue = data?.location?.id;
@@ -306,6 +314,32 @@ export class EventsComponent implements OnDestroy {
       ).pipe(takeUntil(this.destroy$)).subscribe()
     }
     return null
+  }
+
+  uploadPDF(event: any) {
+    if(event.target.files && event.target.files[0]?.type == 'application/pdf') {
+      this.loadingPDF$.next(true);
+      return this.media.uploadMedia('test', event.target.files[0]).pipe(
+        map((res: ApiResponse<any>) => {
+          if(!res.hasErrors()) {
+            this.f['eventPdf']?.setValue(res?.data?.url)
+            this.pdfFile = res?.data?.url
+            return res.data?.url
+          }
+          return null;
+        }),
+        finalize(() => this.loadingPDF$.next(false))
+      ).pipe(takeUntil(this.destroy$)).subscribe()
+    }
+    return null
+  }
+
+  showPDF(actions: PolymorpheusContent<TuiPdfViewerOptions>) {
+    this.pdfService.open(this.sanitizer.bypassSecurityTrustResourceUrl(this.pdfFile),
+    {
+      label: 'Pakistan Endocrine Society Conference Manager',
+      actions,
+    }).subscribe()
   }
 
   uploadMultipleImages(event: any) {

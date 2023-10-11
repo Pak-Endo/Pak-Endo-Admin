@@ -8,6 +8,7 @@ import { CoreModule } from 'src/@core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { TuiPdfViewerModule } from '@taiga-ui/kit'
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
       BrowserAnimationsModule,
       TuiRootModule,
       TuiDialogModule,
+      TuiPdfViewerModule,
       TuiAlertModule
 ],
   providers: [{provide: TUI_SANITIZER, useClass: NgDompurifySanitizer}],
