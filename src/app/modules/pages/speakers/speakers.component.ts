@@ -18,7 +18,7 @@ import {TuiCountryIsoCode} from '@taiga-ui/i18n';
 })
 export class SpeakersComponent implements OnDestroy {
   source: Array<any> = [];
-  loading = false;
+  loading = true;
   speakerID: string | null = null;
   dialogSubs: Subscription[] = [];
   savingMember = new Subject<boolean>();
@@ -78,7 +78,8 @@ export class SpeakersComponent implements OnDestroy {
   fetchSpeakerData() {
     this.pageService.getAllSpeakers(this.limit, this.page)
     .pipe(takeUntil(this.destroy$)).subscribe((res: ApiResponse<any>) => {
-      this.source = res.data?.data
+      this.source = res.data?.data;
+      this.loading = false;
     })
   }
 

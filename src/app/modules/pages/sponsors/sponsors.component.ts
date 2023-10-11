@@ -18,7 +18,7 @@ import {TuiCountryIsoCode} from '@taiga-ui/i18n';
 })
 export class SponsorsComponent implements OnDestroy {
   source: Array<any> = [];
-  loading = false;
+  loading = true;
   searching: GuiSearching = {
     enabled: true,
     highlighting: true,
@@ -75,7 +75,8 @@ export class SponsorsComponent implements OnDestroy {
   fetchSponsorData() {
     this.pageService.getAllSponsors(this.limit, this.page)
     .pipe(takeUntil(this.destroy$)).subscribe((res: ApiResponse<any>) => {
-      this.source = res.data?.data
+      this.source = res.data?.data;
+      this.loading = false;
     })
   }
 

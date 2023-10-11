@@ -16,7 +16,7 @@ import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 })
 export class VenuesComponent implements OnDestroy {
   source: Array<any> = [];
-  loading = false;
+  loading = true;
   searching: GuiSearching = {
     enabled: true,
     highlighting: true,
@@ -57,7 +57,8 @@ export class VenuesComponent implements OnDestroy {
   fetchVenues() {
     this.pageService.getAllVenues(this.limit, this.page)
     .pipe(takeUntil(this.destroy$)).subscribe((res: ApiResponse<any>) => {
-      this.source = res.data?.data
+      this.source = res.data?.data;
+      this.loading = false;
     })
   }
 
