@@ -76,7 +76,7 @@
                 <ng-container *ngIf="agent.agendaTitle.toLowerCase().includes('break')">
                   <p class="mt-2">{{agent.agendaTitle}}</p>
                 </ng-container>
-                <p><span class="font-semibold">Speaker</span>: &nbsp; {{agent.speaker ? agent.speaker : 'No speaker'}}</p>
+                <p><span class="font-semibold">Speaker</span>: &nbsp; {{agent.speaker?.speakerName ? agent.speaker?.speakerName : 'No speaker'}}</p>
                 <p><span class="font-semibold">Hall</span>: &nbsp; {{agent.hall}}</p>
                 <p>
                   <span class="font-semibold">From</span> &nbsp; {{agent.from}} &nbsp;
