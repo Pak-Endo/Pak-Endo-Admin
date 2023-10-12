@@ -471,13 +471,14 @@
     <!--Contact-->
     <div class="my-3">
       <label class="text-base font-semibold">Contact Number</label>
-      <tui-input-number formControlName="contactNumber" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1 mb-4">
-        e.g. +923333333333
-        <input
-          tuiTextfield
-          autocomplete="new-password"
-        />
-      </tui-input-number>
+      <tui-input-phone-international
+        class="mt-1"
+        formControlName="contactNumber"
+        [countries]="countries"
+        [tuiTextfieldLabelOutside]="true"
+        [tuiTextfieldCleaner]="true"
+        [(countryIsoCode)]="countryIsoCode"
+      ></tui-input-phone-international>
       <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
         validation: 'required',
         message: 'Please provide a contact number for fee payments',

@@ -198,7 +198,7 @@ export class AgendasComponent implements OnDestroy {
       theme: [{value: this.agendas.at(this.agendas.length - 1)?.get('theme')?.value, disabled: true}, Validators.required],
       sponsor: [null],
       agendaTitle: [null, Validators.required],
-      moderator: [null],
+      moderator: [this.agendas.at(this.agendas.length - 1)?.get('moderator')?.value],
       day: [day, Validators.required],
       from: [null, Validators.required],
       to: [null, Validators.required],
@@ -210,12 +210,12 @@ export class AgendasComponent implements OnDestroy {
       hall: [null, Validators.required],
       streamUrl: [null],
       speaker: [null],
-      speakerTeam: this.fb.array([
-        this.fb.group({
-          name: [null],
-          role: [null]
+      speakerTeam: this.fb.array(this.agendas.at(this.agendas.length - 1)?.get('speakerTeam')?.value?.map((team: {name: string, role: string}) => {
+        return this.fb.group({
+          name: [team.name || null],
+          role: [team.role || null]
         })
-      ]),
+      })),
       attachments: [[]]
     })
     this.agendas.push(agendaForm)
@@ -408,7 +408,8 @@ export class AgendasComponent implements OnDestroy {
         data.speakerTeam = []
       }
       if(!data?.theme && data?.isLunchBreak == false && data?.isTeaBreak == false && data?.isPrelim == false) {
-        data.theme = this.agendas.at(0)?.get('theme')?.value
+        debugger
+        data.theme = this.agendas.at(this.agendas.length - 1)?.get('theme')?.value
       }
       if(data?.isLunchBreak == true || data?.isTeaBreak == true || data?.isPrelim == true) {
         data.theme = null

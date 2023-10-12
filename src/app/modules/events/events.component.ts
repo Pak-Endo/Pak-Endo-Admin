@@ -52,10 +52,7 @@ export class EventsComponent implements OnDestroy {
   daysOfEvents: any = [];
   daysOfEventsValue: any = [];
   readonly countries: readonly TuiCountryIsoCode[] = [
-    TuiCountryIsoCode.PK,
-    TuiCountryIsoCode.US,
-    TuiCountryIsoCode.GB,
-    TuiCountryIsoCode.FR
+    TuiCountryIsoCode.PK
   ];
   countryIsoCode = TuiCountryIsoCode.PK;
   savingMember = new Subject<boolean>();
@@ -252,7 +249,7 @@ export class EventsComponent implements OnDestroy {
       this.f['type'].setValue(data?.type)
       this.f['location'].setValue(data?.location?.name)
       this.venueValue = data?.location?.id;
-      this.f['grandSponsor'].setValue(data?.grandSponsor?.map((val: any) => val.name) || []);
+      this.f['grandSponsor'].setValue(data?.grandSponsor?.map((val: any) => val.sponsorName) || []);
       this.f['openForPublic']?.setValue(data?.openForPublic || true)
       this.multipleImages = data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : []
       this.f['gallery'].setValue(data?.gallery[0]?.mediaUrl !== null ? data?.gallery[0]?.mediaUrl : undefined);
@@ -527,7 +524,7 @@ export class EventsComponent implements OnDestroy {
       this.eventForm.value,
       {startDate: startDateTimestamp},
       {endDate: endDateTimestamp},
-      {grandSponsor: this.sponsors?.filter(value => this.f['grandSponsor']?.value.includes(value.name))},
+      {grandSponsor: this.sponsors?.filter(value => this.f['grandSponsor']?.value.includes(value.sponsorName))},
       {location: this.venues?.filter(value => value?.id == this.f['location']?.value)[0]},
       {gallery: this.f['gallery']?.value ? this.f['gallery']?.value: undefined},
       {agenda: []},
@@ -574,10 +571,11 @@ export class EventsComponent implements OnDestroy {
       this.eventForm.value,
       {startDate: startDateTimestamp},
       {endDate: endDateTimestamp},
-      {grandSponsor: this.sponsors?.filter(value => this.f['grandSponsor']?.value.includes(value.name))},
+      {grandSponsor: this.sponsors?.filter(value => this.f['grandSponsor']?.value.includes(value.sponsorName))},
       {location: this.venues?.filter(value => value?.id == this.f['location']?.value)[0]},
       {gallery: this.f['gallery']?.value ? this.f['gallery']?.value: undefined}
     );
+    debugger
     delete payload.eventDays
     delete payload.agendas
     this.eventService.updateEvent(payload, this.eventID).pipe(takeUntil(this.destroy$)).subscribe(val => {
