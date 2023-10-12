@@ -123,7 +123,7 @@
                         </span>
                       </div>
                       <!--Break Title-->
-                      <div class="col-span-full" *ngIf="agent.get('isLunchBreak')!.value == true && agent.get('isTeaBreak')!.value == false">
+                      <div class="col-span-6" *ngIf="agent.get('isLunchBreak')!.value == true && agent.get('isTeaBreak')!.value == false">
                         <label class="text-base font-semibold">Title</label>
                         <tui-select
                           class="mt-[5px]"
@@ -140,6 +140,22 @@
                             [items]="['Breakfast', 'Lunch', 'Dinner', 'Gala Dinner', 'Luncheon', 'Other']"
                           ></tui-data-list-wrapper>
                         </tui-select>
+                      </div>
+                      <div class="col-span-6" *ngIf="agent.get('isLunchBreak')!.value == true || agent.get('isTeaBreak')!.value == true">
+                        <label class="text-base font-semibold">Sponsor</label>
+                          <tui-combo-box
+                            class="mt-[5px]"
+                            formControlName="sponsor"
+                            [tuiTextfieldLabelOutside]="true"
+                          >
+                            <tui-data-list-wrapper
+                              *tuiDataList
+                              [items]="sponsors | tuiFilterByInput"
+                            ></tui-data-list-wrapper>
+                          </tui-combo-box>
+                        <span *ngIf="(agent.get('sponsor')!.invalid && agent.get('sponsor')!.touched)" class="text-xs text-red-500">
+                          Please provide a sponsor for this agenda
+                        </span>
                       </div>
                     </div>
                     <!--Time-->
@@ -247,7 +263,7 @@
                     </div>
                     <!--Speaker team-->
                     <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false && agent.get('isPrelim')!.value == false" formArrayName="speakerTeam">
-                      <h3 class="mt-5 mb-3 font-semibold">Add Speaker's team</h3>
+                      <h3 class="mt-5 mb-3 font-semibold">Add Speaker's team/ Miscellaneous members</h3>
                       <ng-container *ngFor="let team of getSpeakerTeam(i).controls; let j = index;">
                         <div [formGroupName]="j">
                           <div class="grid grid-cols-12 gap-2 mx-14">
@@ -273,7 +289,7 @@
                               />
                               <tui-data-list-wrapper
                                 *tuiDataList
-                                [items]="['Chairman', 'Chair person', 'Co-Chair', 'Scientific Chair', 'Secretary', 'Moderator', 'Facilitator', 'Expert', 'Judge', 'Other']"
+                                [items]="['Chairman', 'Chair person', 'Co-Chair', 'Scientific Chair', 'Secretary', 'Moderator', 'Facilitator', 'Expert', 'Presenter', 'Judge', 'Other']"
                               ></tui-data-list-wrapper>
                             </tui-select>
                           </div>
