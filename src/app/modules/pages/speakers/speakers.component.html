@@ -33,29 +33,29 @@
       </div>
     </ng-template>
   </gui-grid-column>
-  <gui-grid-column header="Name" field="speakerName" [width]="230">
+  <gui-grid-column header="Name" field="speakerName" [width]="180">
     <ng-template let-value="value" let-item="item">
       {{item?.speakerName}}
     </ng-template>
   </gui-grid-column>
   <!--Email-->
-  <gui-grid-column header="Email" field="email">
+  <gui-grid-column header="Email" field="email" [width]="150">
     <ng-template let-value="value" let-item="item">
       {{item?.email}}
     </ng-template>
   </gui-grid-column>
   <!--Phone No-->
-  <gui-grid-column header="Details" field="description" [width]="360">
+  <gui-grid-column header="Details" field="description" [width]="300">
     <ng-template let-value="value" let-item="item">
       {{item?.description}}
     </ng-template>
   </gui-grid-column>
-  <gui-grid-column header="Country" field="country" [width]="150">
+  <gui-grid-column header="Country" field="country" [width]="120">
     <ng-template let-value="value" let-item="item">
       {{item?.country}}
     </ng-template>
   </gui-grid-column>
-  <gui-grid-column header="City" field="city">
+  <gui-grid-column header="City" field="city" [width]="120">
     <ng-template let-value="value" let-item="item">
       {{item?.city}}
     </ng-template>

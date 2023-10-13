@@ -59,7 +59,8 @@ export class AgendasComponent implements OnDestroy {
   sponsors: any[] = [];
   sponsorList: any[] = [];
   speakerValue: any;
-  dialogSubs: Subscription[] = []
+  dialogSubs: Subscription[] = [];
+  venues: any[] = [];
   agendaForm = this.fb.group({
     agendas: this.fb.array(
       [
@@ -76,6 +77,8 @@ export class AgendasComponent implements OnDestroy {
           isLunchBreak: [false],
           isTeaBreak: [false],
           isPrelim: [false],
+          isWorkshop: [false],
+          workshopVenue: [null],
           isPmTo: [false],
           hall: [null, Validators.required],
           streamUrl: [null],
@@ -125,8 +128,11 @@ export class AgendasComponent implements OnDestroy {
             if(!sponsor.hasErrors()) {
               this.sponsorList = sponsor?.data?.data
               this.sponsors = sponsor?.data?.data?.map((value: any) => value?.sponsorName)
-              this.loadingData.next(false)
             }
+          });
+          this.pageService.getAllVenues(1000, 1).pipe(takeUntil(this.destroy)).subscribe(value => {
+            this.venues = value?.data?.data?.map((venues: any) => venues.venueName);
+            this.loadingData.next(false)
           });
           this.calculateEventDays(data)
           if(data?.agenda && data?.agenda?.length > 0) {
@@ -147,6 +153,8 @@ export class AgendasComponent implements OnDestroy {
                 sponsor: [agenda?.sponsor?.sponsorName || null],
                 isPmFrom: [from[1]?.includes('AM') ? false: true],
                 isPmTo: [to[1]?.includes('AM') ? false: true],
+                isWorkshop: [agenda.isWorkshop],
+                workshopVenue: [agenda.workshopVenue || null],
                 isLunchBreak: [!['Lunch', 'Breakfast', 'Dinner', 'Gala Dinner', 'Other'].includes(agenda.agendaTitle) ? false : true],
                 isTeaBreak: [!['Lunch Break', 'Tea Break'].includes(agenda.agendaTitle) ? false : true],
                 isPrelim: [agenda?.isPrelim],
@@ -207,6 +215,8 @@ export class AgendasComponent implements OnDestroy {
       isPmFrom: [false],
       isPrelim: [false],
       isPmTo: [false],
+      isWorkshop: [false],
+      workshopVenue: [null],
       hall: [null, Validators.required],
       streamUrl: [null],
       speaker: [null],
@@ -216,6 +226,32 @@ export class AgendasComponent implements OnDestroy {
           role: [team.role || null]
         })
       })),
+      attachments: [[]]
+    })
+    this.agendas.push(agendaForm)
+  }
+
+  addWorkshop(day: number) {
+    const agendaForm = this.fb.group({
+      _id: [undefined],
+      theme: ['Workshop', Validators.required],
+      sponsor: [null],
+      agendaTitle: [null, Validators.required],
+      moderator: [null],
+      day: [day, Validators.required],
+      from: [null, Validators.required],
+      to: [null, Validators.required],
+      isLunchBreak: [false],
+      isTeaBreak: [false],
+      isPmFrom: [false],
+      isPrelim: [false],
+      isPmTo: [false],
+      isWorkshop: [true],
+      workshopVenue: [null],
+      hall: [null, Validators.required],
+      streamUrl: [null],
+      speaker: [null],
+      speakerTeam: [[]],
       attachments: [[]]
     })
     this.agendas.push(agendaForm)
@@ -235,6 +271,8 @@ export class AgendasComponent implements OnDestroy {
       isPrelim: [false],
       isPmFrom: [false],
       isPmTo: [false],
+      isWorkshop: [false],
+      workshopVenue: [null],
       hall: [null],
       streamUrl: [null],
       speaker: [null],
@@ -259,6 +297,8 @@ export class AgendasComponent implements OnDestroy {
       isPrelim: [true],
       isPmFrom: [false],
       isPmTo: [false],
+      isWorkshop: [false],
+      workshopVenue: [null],
       hall: [null],
       streamUrl: [null],
       speaker: [null],
@@ -281,6 +321,8 @@ export class AgendasComponent implements OnDestroy {
       isTeaBreak: [true],
       isPmFrom: [false],
       isPmTo: [false],
+      isWorkshop: [false],
+      workshopVenue: [null],
       hall: [null],
       streamUrl: [null],
       speaker: [null],
@@ -408,7 +450,6 @@ export class AgendasComponent implements OnDestroy {
         data.speakerTeam = []
       }
       if(!data?.theme && data?.isLunchBreak == false && data?.isTeaBreak == false && data?.isPrelim == false) {
-        debugger
         data.theme = this.agendas.at(this.agendas.length - 1)?.get('theme')?.value
       }
       if(data?.isLunchBreak == true || data?.isTeaBreak == true || data?.isPrelim == true) {

@@ -86,7 +86,7 @@
                     <!--Hall & Title-->
                     <div class="grid grid-cols-12 gap-3 mt-10">
                        <!--Hall-->
-                      <div class="col-span-6" [ngClass]="(agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false) ? 'col-span-6' : 'col-span-full'">
+                      <div *ngIf="agent.get('isWorkshop')!.value == false" class="col-span-6" [ngClass]="(agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false) ? 'col-span-6' : 'col-span-full'">
                         <label class="text-base font-semibold">Hall <sup class="text-red-500">*</sup></label>
                         <tui-select
                           class="mt-[5px]"
@@ -106,6 +106,25 @@
                         <span *ngIf="(agent.get('hall')!.invalid && agent.get('hall')!.touched)" class="text-xs text-red-500">
                           Please provide a hall for this event
                         </span>
+                      </div>
+                      <!--Workshop Venue-->
+                      <div *ngIf="agent.get('isWorkshop')!.value == true" class="col-span-6">
+                        <label class="text-base font-semibold">Workshop Venue <sup class="text-red-500">*</sup></label>
+                        <tui-select
+                          class="mt-[5px]"
+                          formControlName="workshopVenue"
+                          [tuiTextfieldLabelOutside]="true"
+                        >
+                          Select venue
+                          <input
+                            placeholder="Select venue"
+                            tuiTextfield
+                          />
+                          <tui-data-list-wrapper
+                            *tuiDataList
+                            [items]="venues"
+                          ></tui-data-list-wrapper>
+                        </tui-select>
                       </div>
                       <!--Agenda title-->
                       <div class="col-span-6" *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false">
@@ -332,6 +351,15 @@
                 icon="tuiIconPlusLarge"
                 (click)="addAgenda(index)"
               >Add Agenda</button>
+              <button
+                tuiButton
+                type="button"
+                size="m"
+                class="mt-4 bg-[#224C73] text-white"
+                appearance="custom"
+                icon="tuiIconPlusLarge"
+                (click)="addWorkshop(index)"
+              >Add Workshop</button>
               <button
                 tuiButton
                 type="button"
