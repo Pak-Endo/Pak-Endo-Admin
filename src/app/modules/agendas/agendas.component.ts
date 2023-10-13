@@ -251,7 +251,12 @@ export class AgendasComponent implements OnDestroy {
       hall: [null, Validators.required],
       streamUrl: [null],
       speaker: [null],
-      speakerTeam: [[]],
+      speakerTeam: this.fb.array([
+        this.fb.group({
+          name: [null],
+          role: [null]
+        })
+      ]),
       attachments: [[]]
     })
     this.agendas.push(agendaForm)
