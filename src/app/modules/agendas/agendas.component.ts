@@ -153,7 +153,7 @@ export class AgendasComponent implements OnDestroy {
                 sponsor: [agenda?.sponsor?.sponsorName || null],
                 isPmFrom: [from[1]?.includes('AM') ? false: true],
                 isPmTo: [to[1]?.includes('AM') ? false: true],
-                isWorkshop: [agenda.isWorkshop],
+                isWorkshop: [agenda.isWorkshop || false],
                 workshopVenue: [agenda.workshopVenue || null],
                 isLunchBreak: [!['Lunch', 'Breakfast', 'Dinner', 'Gala Dinner', 'Other'].includes(agenda.agendaTitle) ? false : true],
                 isTeaBreak: [!['Lunch Break', 'Tea Break'].includes(agenda.agendaTitle) ? false : true],
@@ -459,6 +459,12 @@ export class AgendasComponent implements OnDestroy {
       }
       if(data?.isLunchBreak == true || data?.isTeaBreak == true || data?.isPrelim == true) {
         data.theme = null
+      }
+      if(data?.hall == null && data?.isWorkshop == true) {
+        data.hall = 'Workshops'
+      }
+      if(data?.hall == null && data?.isWorkshop == false) {
+        data.hall = 'Miscellaneous'
       }
       if(typeof data.day == 'number') {
         let day = this.daysOfEvents[data.day];
