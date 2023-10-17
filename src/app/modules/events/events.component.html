@@ -348,7 +348,7 @@
     <!--Dates-->
     <div class="my-4">
       <label class="col-span-12 text-base font-semibold">Select event days</label>
-      <tui-input-date-range formControlName="eventDays" class="mt-1" [min]="today">Choose dates</tui-input-date-range>
+      <tui-input-date-range formControlName="eventDays" class="mt-1">Choose dates</tui-input-date-range>
       <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
         validation: 'required',
         message: 'Please provide days in which your event will take place',
