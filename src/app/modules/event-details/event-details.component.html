@@ -16,6 +16,17 @@
         >
       </div>
       <p class="text-center text-xl my-5 rounded-lg font-['Preahvihear']">{{event?.description}}</p>
+      <div class="flex justify-center my-3">
+        <button
+          tuiButton
+          size="s"
+          appearance="custom"
+          class="px-2 text-white bg-green-400"
+          (click)="showPDF(actions, event?.eventPdf)"
+        >
+          Preview PDF
+        </button>
+      </div>
       <div class="text-center text-lg py-1 px-2 rounded-md bg-[#118A4E] text-white font-semibold mb-3 w-2/3 mx-auto">
         <ng-container *ngIf="event?.startDate !== event?.endDate">
           <p class="mt-2"><tui-svg new size="xxs" src="tuiIconCalendarLarge"></tui-svg> &nbsp; {{event?.startDate | date: 'MMM d'}} to {{event?.endDate | date: 'mediumDate'}}</p>
@@ -112,3 +123,18 @@
     <tui-loader class="mt-14" [overlay]="false" size="xl" [inheritColor]="false"></tui-loader>
   </ng-template>
 </app-layout>
+
+<ng-template
+  #actions
+  let-content="content"
+>
+  <a
+    download
+    shape="rounded"
+    size="s"
+    tuiButton
+    [href]="content"
+  >
+    Download
+  </a>
+</ng-template>

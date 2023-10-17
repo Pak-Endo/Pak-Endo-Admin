@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { EventDetailsRoutingModule } from './event-details-routing.module';
 import { EventDetailsComponent } from './event-details.component';
 import { LayoutComponent } from '../layout/layout.component';
-import { TuiLoaderModule, TuiScrollbarModule, TuiSvgModule } from '@taiga-ui/core';
+import { TuiButtonModule, TuiLoaderModule, TuiScrollbarModule, TuiSvgModule } from '@taiga-ui/core';
 import { TuiCarouselModule, TuiTabsModule } from '@taiga-ui/kit';
 
 
@@ -20,7 +20,8 @@ import { TuiCarouselModule, TuiTabsModule } from '@taiga-ui/kit';
     TuiTabsModule,
     TuiScrollbarModule,
     TuiCarouselModule,
-    TuiLoaderModule
+    TuiLoaderModule,
+    TuiButtonModule
   ]
 })
 export class EventDetailsModule { }

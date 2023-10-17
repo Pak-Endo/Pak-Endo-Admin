@@ -1,8 +1,11 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import { EventsService } from '../events/services/events.service';
-import { Observable, Subject, pluck, switchMap, takeUntil } from 'rxjs';
+import { Subject, pluck, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { EventModel } from 'src/@core/models/events.model';
+import { TuiPdfViewerOptions, TuiPdfViewerService } from '@taiga-ui/kit';
+import { DomSanitizer } from '@angular/platform-browser';
+import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 
 @Component({
   selector: 'app-event-details',
@@ -11,6 +14,7 @@ import { EventModel } from 'src/@core/models/events.model';
 })
 export class EventDetailsComponent implements OnDestroy {
   activeItemIndex = 0;
+  pdfFile: any;
   activeItemIndexDates = 0;
   index = 0;
   event: EventModel | any;
@@ -21,7 +25,9 @@ export class EventDetailsComponent implements OnDestroy {
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
 
-  constructor(private events: EventsService, private ac: ActivatedRoute) {
+  constructor(private events: EventsService, private ac: ActivatedRoute,
+    @Inject(TuiPdfViewerService) private readonly pdfService: TuiPdfViewerService,
+    @Inject(DomSanitizer) private readonly sanitizer: DomSanitizer,) {
     this.ac.params.pipe(
       pluck('id'),
       switchMap((id: string) => this.events.getEventByID(id)),
@@ -62,6 +68,14 @@ export class EventDetailsComponent implements OnDestroy {
       }
     }
     return foundArray;
+  }
+
+  showPDF(actions: PolymorpheusContent<TuiPdfViewerOptions>, pdf: any) {
+    this.pdfService.open(this.sanitizer.bypassSecurityTrustResourceUrl(pdf),
+    {
+      label: 'Pakistan Endocrine Society Conference Manager',
+      actions,
+    }).subscribe()
   }
 
   ngOnDestroy(): void {
