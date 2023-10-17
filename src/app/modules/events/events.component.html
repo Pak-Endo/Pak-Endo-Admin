@@ -269,29 +269,36 @@
     <div class="my-3">
       <label class="text-base font-semibold">Featured Image</label>
       <div (change)="uploadFeaturedImage($event)" class="flex items-center justify-center w-full mt-1">
-        <ng-container *ngIf="!f['featuredImage']?.value">
-          <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-              <tui-marker-icon
-                mode="link"
-                src="tuiIconUploadCloud"
-                class="mb-1"
-              ></tui-marker-icon>
-              <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-            </div>
-            <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
-          </label>
-        </ng-container>
-        <ng-container *ngIf="f['featuredImage']?.value">
-          <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
-              <div class="relative w-28 h-28">
-                <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
+        <tui-loader
+          class="w-full"
+          [inheritColor]="true"
+          [overlay]="true"
+          [showLoader]="(loadingFiles$ | async) == true"
+        >
+          <ng-container *ngIf="!f['featuredImage']?.value">
+            <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <tui-marker-icon
+                  mode="link"
+                  src="tuiIconUploadCloud"
+                  class="mb-1"
+                ></tui-marker-icon>
+                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
               </div>
-            </div>
-            <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
-          </label>
-        </ng-container>
+              <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
+            </label>
+          </ng-container>
+          <ng-container *ngIf="f['featuredImage']?.value">
+            <label for="dropzone-file-f" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div class="flex flex-wrap justify-start gap-2 py-4 ml-2 align-top">
+                <div class="relative w-28 h-28">
+                  <img [src]="f['featuredImage'].value" alt="img" width="100" height="100" class="object-contain w-full h-full border border-gray-400 rounded-md">
+                </div>
+              </div>
+              <input id="dropzone-file-f" type="file" accept="image/*" class="hidden" />
+            </label>
+          </ng-container>
+        </tui-loader>
       </div>
     </div>
 
