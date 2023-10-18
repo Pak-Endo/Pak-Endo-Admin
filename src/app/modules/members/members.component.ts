@@ -128,7 +128,7 @@ export class MembersComponent implements OnDestroy {
 
   showAddorEditDialog(content: PolymorpheusContent<TuiDialogContext>, data?: any): void {
     if(data) {
-      this.memberID = data?._id;
+      this.memberID = data?.newID;
       this.f['firstName'].setValue(data?.firstName)
       this.f['lastName'].setValue(data?.lastName)
       this.f['prefix'].setValue(data?.prefix)
@@ -154,7 +154,7 @@ export class MembersComponent implements OnDestroy {
   }
 
   sendMemberForApproval(content: PolymorpheusContent<TuiDialogContext>, data?: any): void {
-    this.memberID = data?._id;
+    this.memberID = data?.newID;
     this.dialogSubs.push(this.dialogs.open(content, {
       dismissible: true,
       closeable: true,
