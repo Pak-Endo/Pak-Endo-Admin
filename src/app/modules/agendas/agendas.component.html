@@ -220,7 +220,7 @@
                       </span>
                     </div>
                     <!--SPEAKER & SPONSOR-->
-                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false && agent.get('isPrelim')!.value == false" class="grid grid-cols-12 gap-3 mt-4">
+                    <div *ngIf="agent.get('isLunchBreak')!.value == false && agent.get('isTeaBreak')!.value == false" class="grid grid-cols-12 gap-3 mt-4">
                       <!--Speaker-->
                       <div class="col-span-6">
                         <label class="text-base font-semibold">Speaker</label>
@@ -235,7 +235,7 @@
                         </span>
                       </div>
                       <!--Sponsor-->
-                      <div class="col-span-6">
+                      <div *ngIf="agent.get('isPrelim')!.value == false" class="col-span-6">
                         <label class="text-base font-semibold">Sponsor</label>
                           <tui-combo-box
                             class="mt-[5px]"
@@ -253,7 +253,7 @@
                       </div>
                     </div>
                     <!--Mdoerator and Stream-->
-                    <div class="grid grid-cols-12 gap-3 mt-4">
+                    <div *ngIf="agent.get('isPrelim')!.value == false" class="grid grid-cols-12 gap-3 mt-4">
                       <div class="col-span-6">
                         <label class="text-base font-semibold">Moderator</label>
                         <tui-input formControlName="moderator" [tuiTextfieldLabelOutside]="true" [tuiTextfieldCleaner]="true" class="mt-1" appUppercase>

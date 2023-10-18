@@ -290,7 +290,7 @@ export class AgendasComponent implements OnDestroy {
   addPreliminaries(day: number) {
     const agendaForm = this.fb.group({
       _id: [undefined],
-      theme: [null],
+      theme: [''],
       sponsor: [null],
       agendaTitle: [null],
       moderator: [null],
@@ -466,6 +466,9 @@ export class AgendasComponent implements OnDestroy {
       if(data?.hall == null && data?.isWorkshop == false) {
         data.hall = 'Miscellaneous'
       }
+      if(data?.isPrelim == true) {
+        data.theme = ''
+      }
       if(typeof data.day == 'number') {
         let day = this.daysOfEvents[data.day];
         day = new Date(day.year, day.month, day.day, 23, 59, 59, 0).getTime();
@@ -486,7 +489,6 @@ export class AgendasComponent implements OnDestroy {
       delete data?.isTeaBreak;
       return Object.assign(data, {day: day})
     })
-    debugger
     this.eventService.updateEvent({agenda: agendasWithDays}, this.eventID).pipe(takeUntil(this.destroy)).subscribe(val => {
       if(val) {
         this.saving.next(false)
