@@ -26,7 +26,7 @@ export class LoginComponent implements OnDestroy {
 
   initloginForm() {
     this.loginForm = new FormGroup({
-      email: new FormControl('admin@gmail.com', Validators.compose([
+      email: new FormControl('muhammadmohid41@gmail.com', Validators.compose([
         Validators.required,
         Validators.email
       ])),
