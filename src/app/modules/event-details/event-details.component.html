@@ -60,6 +60,17 @@
             ></tui-svg>
             Gallery
           </button>
+          <button
+            tuiTab
+            (click)="activeItemIndex = 2"
+            class="font-medium"
+          >
+            <tui-svg
+              src="tuiIconMessageSquareLarge"
+              class="tui-space_right-2"
+            ></tui-svg>
+            Feedback
+          </button>
         </tui-tabs>
       </div>
       <!--Timeline-->
@@ -117,6 +128,44 @@
           />
         </ng-container>
       </tui-carousel>
+      <!--Feedback-->
+      <div *ngIf="activeItemIndex == 2" class="flex flex-col justify-center items-center gap-y-3">
+        <div class="flex gap-x-4">
+          <p class="text-base font-semibold">Food: </p>
+          <tui-rating
+            [readOnly]="true"
+            class="text-yellow-500"
+            [(ngModel)]="food"
+          ></tui-rating>
+        </div>
+        <div class="flex gap-x-4">
+          <p class="text-base font-semibold">Venue: </p>
+          <tui-rating
+            [readOnly]="true"
+            class="text-yellow-500"
+            [(ngModel)]="venue"
+          ></tui-rating>
+        </div>
+        <div class="flex gap-x-4">
+          <p class="text-base font-semibold">Speaker: </p>
+          <tui-rating
+            [readOnly]="true"
+            class="text-yellow-500"
+            [(ngModel)]="speaker"
+          ></tui-rating>
+        </div>
+        <div class="flex gap-x-4">
+          <p class="text-base font-semibold">Overall: </p>
+          <tui-rating
+            [readOnly]="true"
+            class="text-yellow-500"
+            [(ngModel)]="overall"
+          ></tui-rating>
+        </div>
+        <p class="text-base py-4">
+          Comments: &nbsp; {{comments}}
+        </p>
+      </div>
     </div>
   </ng-container>
   <ng-template #loading>

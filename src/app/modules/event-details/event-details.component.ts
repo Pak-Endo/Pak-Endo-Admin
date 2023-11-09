@@ -18,6 +18,11 @@ export class EventDetailsComponent implements OnDestroy {
   activeItemIndexDates = 0;
   index = 0;
   event: EventModel | any;
+  food = 0;
+  venue = 0;
+  speaker = 0;
+  overall = 0;
+  comments = 'N/A';
   destroy$ = new Subject();
   agendaByDay: any = {};
   monthNames = [
@@ -34,6 +39,11 @@ export class EventDetailsComponent implements OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe((val: any) => {
       this.event = val;
+      this.food = Number(this.event?.eventFeedback?.food) || 0;
+      this.venue = Number(this.event?.eventFeedback?.venue) || 0;
+      this.speaker = Number(this.event?.eventFeedback?.speaker) || 0;
+      this.overall = Number(this.event?.eventFeedback?.overall) || 0;
+      this.comments = this.event?.eventFeedback?.comments || 'N/A';
       this.mapAgendasByDays(val.agenda)
     });
   }
