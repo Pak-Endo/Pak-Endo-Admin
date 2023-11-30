@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://pakendo.quaidtech.net/api'
+  apiUrl: 'https://pakendo.quaidtech.net/api'
 };
 
 /*
