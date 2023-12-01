@@ -4,7 +4,7 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'https://pakendo.quaidtech.net/api'
+  apiUrl: 'https://pakendo.animetography-blog.com/api'
 };
 
 /*
